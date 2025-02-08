@@ -21,7 +21,7 @@ const Home = () => {
   const features = [
     { icon: <FiZap className="w-6 h-6" />, text: "Lightning-fast AI processing" },
     { icon: <FiUsers className="w-6 h-6" />, text: "Collaborative workspaces" },
-    { icon: <FiTool  className="w-6 h-6" />, text: "Custom AI agent upload" },
+    { icon: <FiTool  className="w-6 h-6" />, text: "Custom AI agentupload" },
   ]
 
   return (
@@ -34,7 +34,7 @@ const Home = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          CrowdFund
+          CrowdFunds
         </motion.h1>
 
         <motion.p
