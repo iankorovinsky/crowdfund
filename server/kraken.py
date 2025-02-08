@@ -98,7 +98,7 @@ def get_data(symbol: str):
         'Accept': 'application/json'
     }
     response = requests.get(
-        f"https://demo-futures.kraken.com/derivatives/api/v3/tickers/{symbol}", 
+        f"https://futures.kraken.com/derivatives/api/v3/tickers/{symbol}", 
         headers=headers
     )
     return response.json()
@@ -119,3 +119,20 @@ def place_sell_order(order: Order):
 @router.get("/get_data/")  # Changed to GET request since we're fetching data
 async def get_market_data(symbol: str):  # Changed function name to be more descriptive
     return get_data(symbol)
+
+@router.get("/get_balance/")
+def get_balance():
+    url = "https://demo-futures.kraken.com/derivatives/api/v3/accounts"
+
+    payload = {}
+    headers = {
+    'Accept': 'application/json',
+    'APIKey': API_KEY,
+    'Authent': API_SECRET
+    }
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+
+    print(response.text)
+    return response.json()
+
