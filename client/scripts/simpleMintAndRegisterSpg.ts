@@ -83,7 +83,7 @@ export const mintAndRegisterIp = async (
 
 //   const license_reg_response = await client.license.registerCommercialRemixPIL({
 //     currency: '0x1514000000000000000000000000000000000000', // $WIP token address
-//     defaultMintingFee: '10', // 10 $WIP tokens
+//     defaultMintingFee: '1', // 10 $WIP tokens
 //     commercialRevShare: 10, // 10% revenue share
 //     txOptions: { waitForTransaction: true }
 //   });

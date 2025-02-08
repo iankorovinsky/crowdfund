@@ -29,6 +29,7 @@ import {
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 import { TradingPair } from "./TradingNode";
+import payRoyalty from "@/scripts/payRoyalty";
 
 export interface NodeType {
   type: string;
@@ -202,6 +203,10 @@ export function Sidebar({
         edges: storage.edges,
       },
     });
+    // go through all the nodes and pay royalty to the nodes
+    for (const node of storage.nodes) {
+      await payRoyalty(); // node.data.address
+    }
   };
 
   const handleStop = () => {
