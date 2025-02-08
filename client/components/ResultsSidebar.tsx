@@ -84,7 +84,7 @@ export function ResultsSidebar() {
       if (!currentWorkflowId) throw new Error("No workflow ID");
       setCalled(true);
       const response = await fetch(
-        `http://localhost:8000/workflow-status/${currentWorkflowId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/workflow-status/${currentWorkflowId}`,
       );
       return response.json();
     },
