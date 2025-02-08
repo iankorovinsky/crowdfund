@@ -68,7 +68,7 @@ export function UploadAgent() {
 
   return (
     <Drawer>
-      <DrawerTrigger>
+      <DrawerTrigger asChild>
         <Button className="absolute bottom-5 left-5 bg-blue-500 px-6 py-3">
           Upload agent
         </Button>
