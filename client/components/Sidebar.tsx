@@ -104,11 +104,7 @@ export function Sidebar({
   } = useQuery<NodeType[]>({
     queryKey: ["blocks"],
     queryFn: async () => {
-<<<<<<< HEAD
-      const response = await fetch("http://localhost:8000/agents");
-=======
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/agents`);
->>>>>>> b3c348728c58577da260fc1b41cb087e65526a66
       if (!response.ok) {
         throw new Error("Failed to fetch blocks");
       }
@@ -163,11 +159,7 @@ export function Sidebar({
           : "pi_ethusd";
       }
 
-<<<<<<< HEAD
-      const response = await fetch("http://localhost:8000/run-workflow", {
-=======
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/run-workflow`, {
->>>>>>> b3c348728c58577da260fc1b41cb087e65526a66
         method: "POST",
         headers: {
           "Content-Type": "application/json",
