@@ -7,6 +7,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
+import { Navbar } from "@/components/Navbar";
 
 import '@rainbow-me/rainbowkit/styles.css';
 
@@ -24,13 +25,11 @@ import {
 } from 'wagmi/chains';
 
 const config = getDefaultConfig({
-  appName: 'My RainbowKit App',
-  projectId: 'YOUR_PROJECT_ID',
+  appName: 'crowdfund',
+  projectId: 'YOUR_PROJECT_ID', // walletconnect project id
   chains: [mainnet, polygon, optimism, arbitrum, base],
-  ssr: true, // If your dApp uses server side rendering (SSR)
+  ssr: true,
 });
-
-
 
 const queryClient = new QueryClient();
 const geistSans = Geist({
@@ -59,11 +58,16 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <WagmiProvider config={config}>
-            <QueryClientProvider client={queryClient}>
-              <RainbowKitProvider>
-                <ReactFlowProvider>{children}</ReactFlowProvider>
-              </RainbowKitProvider>
-            </QueryClientProvider>
+          <QueryClientProvider client={queryClient}>
+            <RainbowKitProvider>
+              <div className="min-h-screen bg-gray-950">
+                <Navbar />
+                <main className="pt-16">
+                  <ReactFlowProvider>{children}</ReactFlowProvider>
+                </main>
+              </div>
+            </RainbowKitProvider>
+          </QueryClientProvider>
         </WagmiProvider>
       </body>
     </html>
