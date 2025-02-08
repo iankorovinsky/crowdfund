@@ -115,8 +115,10 @@ def get_balance():
         'Authent': sign_message(path, custom_urlencode(payload), nonce),
         'Nonce': nonce
     }
-    response = requests.get(API_URL + path, headers=headers, data=payload)
-    return response.json()
+    response = requests.get(API_URL + path, headers=headers, data=payload).json()
+    balances = response["accounts"]["cash"]["balances"]
+    balances = {k.upper():v for k,v in balances.items()}
+    return balances
     
 # symbol = 'pi_ethusd'  # ETHUSD perpetual future
 # order_type = 'mkt'    # Market order
@@ -138,3 +140,4 @@ async def get_market_data(symbol: str):  # Changed function name to be more desc
 @router.get("/get_balance/")
 def get_account_balance():
     return get_balance()
+
