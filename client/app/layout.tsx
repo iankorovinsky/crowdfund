@@ -49,8 +49,7 @@ export default function RootLayout({
           <QueryClientProvider client={queryClient}>
             <RainbowKitProvider>
               <div className="min-h-screen bg-gray-950">
-                <Navbar />
-                <main className="pt-16">
+                <main>
                   <ReactFlowProvider>{children}</ReactFlowProvider>
                 </main>
               </div>

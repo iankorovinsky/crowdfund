@@ -32,6 +32,7 @@ import { ResultsSidebar } from "@/components/ResultsSidebar";
 import { useParams } from "next/navigation";
 import { UploadAgent } from "@/components/UploadAgent";
 import CustomEdge from "@/components/CustomEdge";
+import { Navbar } from "@/components/Navbar";
 
 const nodeTypes = {
   aiagent: AIAgentNode,
@@ -351,16 +352,7 @@ const Home = () => {
 
         <ResultsSidebar results={exampleResults} />
       </div>
-      <UploadAgent />
-      <div className="bg-gray-800 px-4 py-2 border-gray-700 border-2 flex items-center gap-3 rounded-2xl absolute top-4 left-[60%] -translate-x-1/2">
-        <span className="text-gray-300">Room ID: {roomId}</span>
-        <Copy
-          onClick={() => {
-            navigator.clipboard.writeText(roomId);
-          }}
-          className="h-4 w-4 text-gray-500 hover:text-gray-100 cursor-pointer transition-colors"
-        />
-      </div>
+      <Navbar roomId={roomId} />
     </div>
   );
 };

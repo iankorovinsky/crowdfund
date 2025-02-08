@@ -24,7 +24,7 @@ const Home = () => {
       text: "Lightning-fast AI processing",
     },
     { icon: <FiUsers className="w-6 h-6" />, text: "Collaborative workspaces" },
-    { icon: <FiTool className="w-6 h-6" />, text: "Custom AI agentupload" },
+    { icon: <FiTool className="w-6 h-6" />, text: "Custom AI agent upload" },
   ];
 
   return (
