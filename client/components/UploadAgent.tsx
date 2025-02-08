@@ -55,8 +55,6 @@ export function UploadAgent({ className }: { className?: string }) {
       description: "",
       agentType: undefined,
       pythonFile: undefined,
-      input: "data",
-      output: "result"
     },
     onSubmit: async ({ value }: { value: FormType }) => {
       try {
@@ -67,8 +65,6 @@ export function UploadAgent({ className }: { className?: string }) {
         formData.append("type", value.agentType);
         formData.append("label", value.agentName);
         formData.append("description", value.description);
-        formData.append("input", value.input);
-        formData.append("output", value.output);
         if (value.image) {
           formData.append("image", value.image);
         }

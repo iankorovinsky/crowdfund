@@ -7,17 +7,13 @@ import { useState } from "react";
 import { LoadingScreen } from "./LoadingScreen";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import dynamic from 'next/dynamic';
-
-const PortfolioDialog = dynamic(() => import('./PortfolioDialog'), { ssr: false });
+import { MinimalHoldingsModal } from "./MinimalHoldingsModal";
 
 interface NavbarProps {
   roomId: string;
 }
 
 export function Navbar({ roomId }: NavbarProps) {
-  const [showPortfolio, setShowPortfolio] = useState(false);
-  const [portfolio, setPortfolio] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -25,20 +21,6 @@ export function Navbar({ roomId }: NavbarProps) {
     e.preventDefault();
     setIsLoading(true);
     router.push('/');
-  };
-
-  const fetchBalance = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("http://localhost:8000/get_balance");
-      const data = await response.json();
-      setPortfolio(data);
-      setShowPortfolio(true);
-    } catch (error) {
-      console.error("Failed to fetch balance:", error);
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   return (
@@ -60,23 +42,9 @@ export function Navbar({ roomId }: NavbarProps) {
           </div>
           <UploadAgent className="bg-gray-600 hover:bg-gray-600 hover:scale-[102%] transition-all duration-300 px-6 py-5 text-md rounded-xl" />
           <ConnectButton />
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={fetchBalance}
-            disabled={isLoading}
-            className="bg-gray-800 text-gray-200 border-gray-700 hover:bg-gray-700"
-          >
-            <Wallet className="w-4 h-4 mr-2" />
-            Portfolio
-          </Button>
+          <MinimalHoldingsModal />
         </div>
       </nav>
-      <PortfolioDialog 
-        open={showPortfolio} 
-        onOpenChange={setShowPortfolio}
-        portfolio={portfolio}
-      />
     </>
   );
 }
