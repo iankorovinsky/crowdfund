@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import {
   LiveblocksProvider,
   RoomProvider,
@@ -54,7 +54,7 @@ const initialStorage = {
       },
       "data": {
         "label": "Node 4",
-        "description": "Node 4 does something"
+        "description": "Node 4 does nothing"
       }
     }
   ],

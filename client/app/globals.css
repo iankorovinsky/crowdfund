@@ -1,21 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-<<<<<<< HEAD
-
-.highlight {
-  opacity: 1;
-  filter: brightness(1.2);
-  transition: all 0.3s ease;
-}
-
-.dim {
-  opacity: 0.4;
-  filter: brightness(0.8);
-  transition: all 0.3s ease;
-}
-
-=======
 @layer base {
   :root {
     --background: 221, 39%, 11%; /* bg-gray-900 */
@@ -78,4 +63,3 @@
     @apply bg-background text-foreground;
   }
 }
->>>>>>> 63c437e5a0d23ecb04cc7f559b2ec28c4263e7a3
