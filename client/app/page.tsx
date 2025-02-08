@@ -1,12 +1,16 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { nanoid } from "nanoid"
 import { motion } from "framer-motion"
 import { FiPlus, FiUsers, FiZap, FiLock } from "react-icons/fi"
+import { BoxesCore } from "@/components/Boxes"
+import { JoinRoomDialog } from "@/components/JoinRoom"
 
 const Home = () => {
+  const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false)
   const router = useRouter()
 
   const createNewRoom = () => {
@@ -22,6 +26,7 @@ const Home = () => {
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-blue-900 flex flex-col items-center justify-center p-4 overflow-hidden">
+      <BoxesCore />
       <div className="text-center space-y-8 max-w-4xl mx-auto relative z-10">
         <motion.h1
           className="text-6xl font-extrabold bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text"
@@ -54,9 +59,8 @@ const Home = () => {
             <FiPlus className="w-5 h-5" />
             <span>Create New Room</span>
           </Button>
-
           <Button
-            onClick={() => router.push("/room/1")}
+            onClick={() => setIsJoinDialogOpen(true)}
             className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-6 text-lg rounded-lg transition-all duration-300 shadow-lg hover:shadow-gray-400/20 flex items-center space-x-2"
           >
             <FiUsers className="w-5 h-5" />
@@ -87,6 +91,10 @@ const Home = () => {
           Start building your AI agent workflow by creating a new room or joining an existing one
         </motion.p>
       </div>
+      <JoinRoomDialog
+        isOpen={isJoinDialogOpen}
+        onClose={() => setIsJoinDialogOpen(false)}
+      />
     </div>
   )
 }
