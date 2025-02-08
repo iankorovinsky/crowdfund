@@ -27,10 +27,9 @@ import {
 import "@xyflow/react/dist/style.css";
 import { useCallback, useRef, useEffect, useState, useMemo } from "react";
 import AIAgentNode from "@/components/AIAgentNode";
-import { Trash2, Copy } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { ResultsSidebar } from "@/components/ResultsSidebar";
 import { useParams } from "next/navigation";
-import { UploadAgent } from "@/components/UploadAgent";
 import CustomEdge from "@/components/CustomEdge";
 import { Navbar } from "@/components/Navbar";
 

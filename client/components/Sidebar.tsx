@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { Brain, Search, Code, Link, Workflow, GitBranch, Play, Square, Home } from "lucide-react";
+import { Brain, Search, Code, Link, Workflow, GitBranch, Play, Square } from "lucide-react";
 import { Input } from "./ui/input";
 import {
   Dialog,

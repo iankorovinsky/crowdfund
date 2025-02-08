@@ -4,7 +4,6 @@ import { ReactFlowProvider } from "@xyflow/react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Navbar } from "@/components/Navbar";
 
 import "@rainbow-me/rainbowkit/styles.css";
 
