@@ -22,11 +22,11 @@ import {
   ReactFlowProvider,
   useReactFlow,
   XYPosition,
-  Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useCallback, useRef, useEffect, useState } from "react";
 import AIAgentNode from "@/components/AIAgentNode";
+import { DrawerDemo } from "@/components/Button";
 
 const nodeTypes = {
   aiagent: AIAgentNode,
@@ -235,7 +235,7 @@ const Home = () => {
 
   return (
     <div className="flex h-screen w-screen">
-      <Sidebar />
+      <Sidebar className="w-80 h-full bg-gray-50 p-4 border-r border-gray-200" />
       <div ref={reactFlowWrapper} className="flex-1 h-full">
         <ReactFlow
           nodes={storage.nodes}
@@ -277,6 +277,7 @@ const Home = () => {
           })}
         </ReactFlow>
       </div>
+      <DrawerDemo />
     </div>
   );
 };

@@ -22,7 +22,11 @@ const nodeTypes: NodeType[] = [
   },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  className: string;
+}
+
+export function Sidebar({ className }: SidebarProps) {
   const onDragStart = (event: React.DragEvent, nodeType: NodeType) => {
     event.dataTransfer.setData(
       "application/reactflow",
@@ -32,7 +36,7 @@ export function Sidebar() {
   };
 
   return (
-    <div className="w-80 h-full bg-gray-50 p-4 border-r border-gray-200">
+    <div className={className}>
       <h2 className="text-lg font-semibold mb-4">AI Agents</h2>
       <div className="space-y-3">
         {nodeTypes.map((node, index) => (
