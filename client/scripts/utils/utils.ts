@@ -7,8 +7,19 @@ import {
 import { http, zeroAddress, zeroHash } from "viem";
 import { privateKeyToAccount, Address, Account } from "viem/accounts";
 import dotenv from "dotenv";
-import { LicensingConfig } from "@story-protocol/core-sdk/dist/declarations/src/types/common";
 dotenv.config();
+
+// todo: this should be imported from @story-protocol/core-sdk/declarations/src/types/common
+interface LicensingConfig {
+  isSet: boolean;
+  mintingFee: bigint;
+  licensingHook: Address;
+  hookData: `0x${string}`;
+  commercialRevShare: number;
+  disabled: boolean;
+  expectMinimumGroupRewardShare: number;
+  expectGroupRewardPool: Address;
+}
 
 // Add your rpc provider url to your .env file
 // You can select from one of these: https://docs.story.foundation/docs/story-network#-rpcs

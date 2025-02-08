@@ -49,23 +49,7 @@ const nodeTypes = new Proxy(
 );
 
 const initialNodes: LiveNode[] = [];
-
 const initialEdges: LiveEdge[] = [];
-
-const exampleResults = {
-  node1: {
-    status: "COMPLETED" as const,
-    logs: ["Completed analysis"],
-  },
-  node2: {
-    status: "IN PROGRESS" as const,
-    logs: ["Calculating trade"],
-  },
-  node3: {
-    status: "NOT STARTED" as const,
-    logs: [],
-  },
-};
 
 const Home = () => {
   const params = useParams();
@@ -385,7 +369,7 @@ const Home = () => {
           </div>
         )}
 
-        <ResultsSidebar results={exampleResults} />
+        <ResultsSidebar />
       </div>
       <Navbar roomId={roomId} isFull={sideBar} />
     </div>

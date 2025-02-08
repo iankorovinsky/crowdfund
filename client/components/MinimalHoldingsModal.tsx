@@ -29,7 +29,7 @@ export function MinimalHoldingsModal() {
       const balances: Record<string, number> = await response.json()
       
       const newHoldings: Holding[] = Object.entries(balances)
-        .filter(([symbol, amount]) => amount > 0)
+        .filter(([_, amount]) => amount > 0)
         .map(([symbol, amount]) => {
           const priceInfo = TOKEN_PRICES[symbol] || { usdPrice: 0, change24h: 0 }
           return {

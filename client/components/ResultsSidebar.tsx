@@ -12,18 +12,12 @@ import {
   Loader2,
 } from "lucide-react";
 import { useState } from "react";
-import { NodeStatus } from "./WorkflowStatus";
 
 type Status = "COMPLETED" | "IN_PROGRESS" | "NOT_STARTED" | "FAILED";
 
 interface Log {
   log: string;
   timestamp: string;
-}
-
-interface NodeResult {
-  status: NodeStatus;
-  logs: Log[];
 }
 
 const getStatusConfig = (status: Status) => {
@@ -100,7 +94,7 @@ export function ResultsSidebar() {
   // Transform workflow status data into the format we need
   const results = workflowStatus || {};
 
-  const getDisplayStatus = (status: NodeStatus): Status => {
+  const getDisplayStatus = (status: string): Status => {
     const lowerCaseStatus = status.toLowerCase();
     switch (lowerCaseStatus) {
       case "completed":
@@ -159,7 +153,7 @@ export function ResultsSidebar() {
 
           <div className="space-y-4">
             {Object.entries(results).map(([nodeName, result]) => {
-              const status = getDisplayStatus(result.status as NodeStatus);
+              const status = getDisplayStatus(result.status);
               const config = getStatusConfig(status);
               return (
                 <Card
