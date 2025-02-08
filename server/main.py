@@ -78,14 +78,11 @@ async def health():
 @app.get("/")
 async def root():
     print("token_manager:", token_manager)
-
-    await token_manager.issue_token(1)
-    time.sleep(1)
-    await token_manager.issue_token(1)
     return {"message": "Hello World"}
 
 @app.post("/run-workflow")
 async def post_run_workflow(request: WorkflowRequest, background_tasks: BackgroundTasks):
+    await token_manager.issue_token(1)
     workflow_id = str(uuid.uuid4())
     background_tasks.add_task(run_workflow, workflow_id, request.workflow.dict(), request.symbol)
     return { "workflow_id": workflow_id }
