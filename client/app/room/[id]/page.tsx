@@ -162,11 +162,19 @@ const Home = () => {
         id: `e${params.source}-${params.target}`,
         source: params.source,
         target: params.target,
-        type: 'default',
+        type: "default",
         sourceHandle: params.sourceHandle,
         targetHandle: params.targetHandle,
-        markerEnd: { type: MarkerType.Arrow },
-        style: { strokeWidth: 2 },
+        markerEnd: {
+          type: MarkerType.Arrow,
+          width: 15,
+          height: 15,
+          color: "#3b82f6",
+        },
+        style: {
+          strokeWidth: 2,
+          stroke: "#3b82f6",
+        },
         animated: false,
       };
       updateEdges([...storage.edges, edge]);
@@ -346,9 +354,17 @@ const Home = () => {
           fitView
           className="bg-gray-900"
           defaultEdgeOptions={{
-            type: 'default',
-            style: { strokeWidth: 2 },
-            markerEnd: { type: MarkerType.Arrow },
+            type: "default",
+            style: {
+              strokeWidth: 2,
+              stroke: "#3b82f6",
+            },
+            markerEnd: {
+              type: MarkerType.Arrow,
+              width: 15,
+              height: 15,
+              color: "#3b82f6",
+            },
           }}
           snapToGrid={true}
           snapGrid={[10, 10]}
