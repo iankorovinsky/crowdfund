@@ -1,15 +1,16 @@
 import { BaseUserMeta, createClient } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
-import { Node, Edge } from "@xyflow/react";
 
 export type Presence = {
-  cursor: { x: number; y: number } | null;
+  cursor: { x: number; y: number; lastActive: number } | null;
+  walletAddress: string | null;
 };
 
 export type NodeData = {
   label: string;
   description: string;
   agentId: string;
+  icon?: string;
   tokenName?: string;
   supply?: string;
   issuance?: string;
@@ -18,6 +19,7 @@ export type NodeData = {
   licenseTermsId?: string;
   path?: string;
   ipId?: string;
+  symbol?: string;
 };
 
 export type LiveNode = {
@@ -45,6 +47,7 @@ declare global {
         y: number;
         lastActive: number;
       } | null;
+      walletAddress: string | null;
     };
 
     Storage: {
@@ -111,9 +114,9 @@ export const {
     useEventListener,
     useErrorListener,
     useStorage,
-    useObject,
-    useMap,
-    useList,
+    // useObject,
+    // useMap,
+    // useList,
     useBatch,
     useHistory,
     useUndo,

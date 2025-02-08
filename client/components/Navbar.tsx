@@ -2,18 +2,19 @@
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { UploadAgent } from "@/components/UploadAgent";
-import { Copy, Home, Wallet } from "lucide-react";
+import { Copy, Home } from "lucide-react";
 import { useState } from "react";
 import { LoadingScreen } from "./LoadingScreen";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { MinimalHoldingsModal } from "./MinimalHoldingsModal";
+import { toast } from "sonner";
 
 interface NavbarProps {
   roomId: string;
+  isFull: boolean;
 }
 
-export function Navbar({ roomId }: NavbarProps) {
+export function Navbar({ roomId, isFull }: NavbarProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -26,7 +27,7 @@ export function Navbar({ roomId }: NavbarProps) {
   return (
     <>
       {isLoading && <LoadingScreen LoadingText="Fetching your portfolio..."/>}
-      <nav className="absolute left-80 right-0 h-16 z-50 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4">
+      <nav className={`absolute right-0 h-16 z-50 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4 ${isFull ? "left-80" : "left-0"}`}>
         <div onClick={handleHomeClick} className="cursor-pointer">
           <Home className="text-gray-600 hover:text-gray-400 transition-all duration-300" />
         </div>
@@ -36,6 +37,7 @@ export function Navbar({ roomId }: NavbarProps) {
             <Copy
               onClick={() => {
                 navigator.clipboard.writeText(roomId);
+                toast.success("Copied to clipboard");
               }}
               className="h-4 w-4 text-gray-500 hover:text-gray-100 cursor-pointer transition-colors"
             />

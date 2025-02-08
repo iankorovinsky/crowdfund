@@ -26,7 +26,10 @@ const Room = ({ children, roomId }: RoomProps) => {
     >
       <RoomProvider
         id={roomId || "tartanhacks-flow-editor"}
-        initialPresence={{ cursor: null }}
+        initialPresence={{
+          cursor: null,
+          walletAddress: null,
+        }}
         initialStorage={initialStorage}
       >
         <ClientSideSuspense fallback={<div>Loading…</div>}>

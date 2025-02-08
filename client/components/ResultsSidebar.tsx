@@ -1,22 +1,23 @@
 "use client";
 
-import { CheckCircle2, Loader2, AlertCircle, ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
-import { useWorkflowStatus, NodeStatus } from "./WorkflowStatus";
 import { useWorkflow } from "@/contexts/WorkflowContext";
 import { useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
+import {
+  AlertCircle,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+} from "lucide-react";
+import { useState } from "react";
 
 type Status = "COMPLETED" | "IN_PROGRESS" | "NOT_STARTED" | "FAILED";
 
-interface NodeResult {
-  status: NodeStatus;
-  logs: string[];
-}
-
-interface WorkflowResults {
-  [nodeId: string]: NodeResult;
+interface Log {
+  log: string;
+  timestamp: string;
 }
 
 const getStatusConfig = (status: Status) => {
@@ -64,7 +65,7 @@ const getStatusConfig = (status: Status) => {
 type TWorkflowStatus = {
   [key: string]: {
     status: string;
-    logs: string[];
+    logs: Log[];
   };
 };
 
@@ -93,7 +94,7 @@ export function ResultsSidebar() {
   // Transform workflow status data into the format we need
   const results = workflowStatus || {};
 
-  const getDisplayStatus = (status: NodeStatus): Status => {
+  const getDisplayStatus = (status: string): Status => {
     const lowerCaseStatus = status.toLowerCase();
     switch (lowerCaseStatus) {
       case "completed":
@@ -117,14 +118,21 @@ export function ResultsSidebar() {
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="absolute -left-6 top-1/2 -translate-y-1/2 bg-gray-800 border-2 border-r-0 border-gray-700 rounded-l-lg py-3 px-1 hover:bg-gray-700 transition-colors duration-200 z-50"
+        className={`
+          absolute top-1/2 -translate-y-1/2 z-50
+          bg-gray-800 hover:bg-gray-700
+          border border-gray-700 hover:border-gray-600
+          rounded-full p-2
+          transition-all duration-300 ease-in-out
+          -left-10
+        `}
         title={isOpen ? "Close results" : "Open results"}
       >
-        <ChevronRight
-          className={`w-3 h-3 text-gray-400 transition-transform duration-300 ${
-            !isOpen ? "rotate-180" : ""
-          }`}
-        />
+        {isOpen ? (
+          <ChevronRight className="w-4 h-4 text-gray-400" />
+        ) : (
+          <ChevronLeft className="w-4 h-4 text-gray-400" />
+        )}
       </button>
 
       <div className="w-80 h-full bg-gray-800 border-l border-gray-700 pt-[64px]">
@@ -144,12 +152,12 @@ export function ResultsSidebar() {
           )}
 
           <div className="space-y-4">
-            {Object.entries(results).map(([nodeId, result]) => {
-              const status = getDisplayStatus(result.status as NodeStatus);
+            {Object.entries(results).map(([nodeName, result]) => {
+              const status = getDisplayStatus(result.status);
               const config = getStatusConfig(status);
               return (
                 <Card
-                  key={nodeId}
+                  key={nodeName}
                   className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 border-gray-800"
                 >
                   <motion.div
@@ -163,36 +171,117 @@ export function ResultsSidebar() {
                       ease: "easeInOut",
                     }}
                   />
-                  <div className="p-4 relative">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-lg font-semibold text-gray-100">
-                        Node {nodeId}
-                      </h3>
-                      <div
-                        className={`flex items-center gap-2 ${config.bgColor} px-3 py-1 rounded-full`}
+                  <motion.div
+                    className="p-4 relative"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <motion.h3
+                      className="text-lg font-semibold text-gray-100 mb-2"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {nodeName}
+                    </motion.h3>
+                    <motion.div
+                      className={`inline-flex items-center gap-2 ${config.bgColor} px-3 py-1.5 rounded-full mb-4`}
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ duration: 0.3, delay: 0.1 }}
+                    >
+                      {config.icon}
+                      <span
+                        className={`text-xs font-medium ${config.textColor}`}
                       >
-                        {config.icon}
-                        <span
-                          className={`text-xs font-medium ${config.textColor}`}
+                        {status}
+                      </span>
+                    </motion.div>
+
+                    {result.logs && result.logs[0] && (
+                      <motion.div
+                        className="flex items-center gap-2 mb-4 text-xs text-gray-500"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: 0.2 }}
+                      >
+                        <span>Started:</span>
+                        <time
+                          dateTime={result.logs[0].timestamp}
+                          className="font-mono"
                         >
-                          {status}
-                        </span>
-                      </div>
-                    </div>
-                    {result.logs?.map((log, index) => (
-                      <div key={index} className="flex items-center gap-3 mt-2">
-                        <div
-                          className={`h-2 w-2 rounded-full ${config.dotColor} ${
-                            status === "IN_PROGRESS" ? "animate-pulse" : ""
-                          }`}
-                        />
-                        <div className="text-sm text-gray-400">
-                          <p>{log["log"]}</p>
-                          <p className="text-xs text-gray-500">{log["timestamp"]}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                          {new Date(
+                            result.logs[0].timestamp,
+                          ).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: true,
+                          })}
+                        </time>
+                      </motion.div>
+                    )}
+
+                    <motion.div
+                      initial="hidden"
+                      animate="visible"
+                      variants={{
+                        visible: {
+                          transition: {
+                            staggerChildren: 0.1,
+                          },
+                        },
+                      }}
+                    >
+                      {result.logs
+                        ?.filter((log) => log.log.trim() !== "")
+                        .map((log, index) => (
+                          <motion.div
+                            key={index}
+                            className="flex items-start gap-3 mt-3 group"
+                            variants={{
+                              hidden: { opacity: 0, y: 10 },
+                              visible: { opacity: 1, y: 0 },
+                            }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <motion.div
+                              className={`h-2 w-2 rounded-full mt-2 ${config.dotColor} ${
+                                status === "IN_PROGRESS" ? "animate-pulse" : ""
+                              }`}
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ duration: 0.2 }}
+                            />
+                            <div className="flex-1 space-y-1">
+                              <motion.p
+                                className="text-sm text-gray-300"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.3 }}
+                              >
+                                {log.log}
+                              </motion.p>
+                              <motion.time
+                                dateTime={log.timestamp}
+                                className="text-[11px] text-gray-500 tabular-nums font-mono opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                              >
+                                {new Date(log.timestamp).toLocaleTimeString(
+                                  [],
+                                  {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    second: "2-digit",
+                                    hour12: true,
+                                  },
+                                )}
+                              </motion.time>
+                            </div>
+                          </motion.div>
+                        ))}
+                    </motion.div>
+                  </motion.div>
                 </Card>
               );
             })}

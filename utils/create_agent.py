@@ -1,13 +1,13 @@
 import requests
-
 url = "https://apt-polished-raptor.ngrok-free.app/create-agent/"
 file_path = '/Users/adriangri/programming/crowdfund/agents/portfolio_manager.py'
 data = {
-    "type": "Portfolio Manager",
-    "label": "Portfolio Manager Node 1 Verbose",
-    "description": "A node that decides the best trades to make based on the analysis",
-    "input": "analysis",
-    "output": "decision"
+    "type": "Financial Analysis",
+    "label": "Directed Financial Analysis Agent",
+    "description": "An agent that provides financial analysis for a given symbol based on market data.",
+    "icon": "robot",
+    "input": "market_data",
+    "output": "analysis"
 }
 
 with open(file_path, 'rb') as file:

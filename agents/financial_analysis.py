@@ -21,7 +21,7 @@ prompt = hub.pull("hwchase17/openai-functions-agent")
 
 # Create the agent and executor
 agent = create_tool_calling_agent(llm, tools, prompt)
-agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+agent_executor = AgentExecutor(agent=agent, tools=tools)
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
@@ -34,9 +34,8 @@ if __name__ == "__main__":
     response = agent_executor.invoke({
         "input": (
             f"{market_information}"
-            "Use all the tools provided to retrieve information available for the company upon today. Analyze the positive developments "
-            "and potential concerns of the company with 2-4 most important factors respectively and keep them concise. Most factors should "
-            "be inferred from company related news. Then make a rough prediction (e.g. up/down by 2-3%) of the the company's stock price "
+            "Use all the market information provided to perform an analysis of this symbol. ONLY ANALYZE THIS SYMBOL, DO NOT CONSIDER ANY OTHER SYMBOLS OR STOCKS. Analyze the positive developments "
+            "and potential concerns of the symbol. Then make a rough prediction (e.g. up/down by 2-3%) of the the symbol's price "
             "movement for next week. Provide a summary analysis to support your prediction. This summary should be concise and clear and "
             "formatted such that it can be understood by an AI agent."
         )

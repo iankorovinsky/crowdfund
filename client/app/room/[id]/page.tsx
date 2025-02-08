@@ -27,13 +27,14 @@ import {
 import "@xyflow/react/dist/style.css";
 import { useCallback, useRef, useEffect, useState, useMemo } from "react";
 import AIAgentNode from "@/components/AIAgentNode";
-import { Trash2 } from "lucide-react";
+import { Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { ResultsSidebar } from "@/components/ResultsSidebar";
 import { useParams } from "next/navigation";
 import CustomEdge from "@/components/CustomEdge";
 import { Navbar } from "@/components/Navbar";
 import { useStore } from "@/lib/store";
 import TradingNode from "@/components/TradingNode";
+import { useAccount } from "wagmi";
 
 const nodeTypes = new Proxy(
   {
@@ -48,23 +49,7 @@ const nodeTypes = new Proxy(
 );
 
 const initialNodes: LiveNode[] = [];
-
 const initialEdges: LiveEdge[] = [];
-
-const exampleResults = {
-  node1: {
-    status: "COMPLETED" as const,
-    logs: ["Completed analysis"],
-  },
-  node2: {
-    status: "IN PROGRESS" as const,
-    logs: ["Calculating trade"],
-  },
-  node3: {
-    status: "NOT STARTED" as const,
-    logs: [],
-  },
-};
 
 const Home = () => {
   const params = useParams();
@@ -72,6 +57,8 @@ const Home = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [isRunning, setIsRunning] = useState(false);
+  const [sideBar, setSideBar] = useState(true);
+  const { address } = useAccount();
 
   const storage = useStorage((root) => ({
     nodes: root.nodes ?? initialNodes,
@@ -109,7 +96,8 @@ const Home = () => {
     useStore.setState({
       updateNodeData: (nodeId, newData) => {
         updateNodes(
-          storage.nodes.map((node) => {
+          storage.nodes.map((node: any) => {
+            //todo: fix any here
             if (node.id === nodeId) {
               return {
                 ...node,
@@ -122,6 +110,12 @@ const Home = () => {
       },
     });
   }, [storage.nodes, updateNodes]);
+
+  useEffect(() => {
+    updateMyPresence({
+      walletAddress: address || null,
+    });
+  }, [address, updateMyPresence]);
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
@@ -185,7 +179,7 @@ const Home = () => {
       const reactFlowBounds = reactFlowWrapper.current?.getBoundingClientRect();
       const nodeType = JSON.parse(
         event.dataTransfer.getData("application/reactflow"),
-      ) as NodeType;
+      );
 
       if (!reactFlowBounds) return;
 
@@ -199,9 +193,10 @@ const Home = () => {
         type: nodeType.type,
         position,
         data: {
-          label: nodeType.label,
-          description: nodeType.description,
-          agentId: nodeType.agentId,
+          label: nodeType.data.label,
+          description: nodeType.data.description,
+          icon: nodeType.data.icon,
+          agentId: nodeType.data.agentId,
         },
         agentId: nodeType.agentId,
       };
@@ -226,10 +221,11 @@ const Home = () => {
             y: flowY,
             lastActive: Date.now(),
           },
+          walletAddress: address || null,
         });
       }
     },
-    [getViewport, updateMyPresence],
+    [getViewport, updateMyPresence, address],
   );
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: LiveNode) => {
@@ -269,10 +265,30 @@ const Home = () => {
 
   return (
     <div className="flex h-screen w-screen bg-gray-900">
-      <Sidebar
-        className="w-80 h-full bg-gray-800 p-4 border-r border-gray-700"
-        onRunningChange={setIsRunning}
-      />
+      {sideBar && (
+        <Sidebar
+          className="w-80 h-full bg-gray-800 p-4 border-r border-gray-700"
+          onRunningChange={setIsRunning}
+        />
+      )}
+      <button
+        onClick={() => setSideBar(!sideBar)}
+        className={`
+          absolute top-1/2 -translate-y-1/2 z-50
+          bg-gray-800 hover:bg-gray-700
+          border border-gray-700 hover:border-gray-600
+          rounded-full p-2
+          transition-all duration-300 ease-in-out
+          ${sideBar ? "left-[20.5rem]" : "left-2"}
+        `}
+        title={sideBar ? "Collapse sidebar" : "Expand sidebar"}
+      >
+        {sideBar ? (
+          <ChevronLeft className="w-4 h-4 text-gray-400" />
+        ) : (
+          <ChevronRight className="w-4 h-4 text-gray-400" />
+        )}
+      </button>
       <div ref={reactFlowWrapper} className="flex-1 h-full relative">
         <ReactFlow
           nodes={storage.nodes}
@@ -318,7 +334,7 @@ const Home = () => {
                 x={presence.cursor.x}
                 y={presence.cursor.y}
                 lastActive={presence.cursor.lastActive}
-                name={`User ${connectionId}`}
+                name={presence.walletAddress || "Anonymous User"}
               />
             );
           })}
@@ -354,9 +370,9 @@ const Home = () => {
           </div>
         )}
 
-        <ResultsSidebar results={exampleResults} />
+        <ResultsSidebar />
       </div>
-      <Navbar roomId={roomId} />
+      <Navbar roomId={roomId} isFull={sideBar} />
     </div>
   );
 };
