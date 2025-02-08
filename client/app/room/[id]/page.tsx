@@ -179,7 +179,7 @@ const Home = () => {
       const reactFlowBounds = reactFlowWrapper.current?.getBoundingClientRect();
       const nodeType = JSON.parse(
         event.dataTransfer.getData("application/reactflow"),
-      ) as NodeType;
+      );
 
       if (!reactFlowBounds) return;
 
@@ -193,9 +193,10 @@ const Home = () => {
         type: nodeType.type,
         position,
         data: {
-          label: nodeType.label,
-          description: nodeType.description,
-          agentId: nodeType.agentId,
+          label: nodeType.data.label,
+          description: nodeType.data.description,
+          icon: nodeType.data.icon,
+          agentId: nodeType.data.agentId,
         },
         agentId: nodeType.agentId,
       };

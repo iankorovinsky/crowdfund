@@ -10,6 +10,7 @@ export type NodeData = {
   label: string;
   description: string;
   agentId: string;
+  icon?: string;
   tokenName?: string;
   supply?: string;
   issuance?: string;

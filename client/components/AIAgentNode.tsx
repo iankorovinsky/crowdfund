@@ -1,9 +1,20 @@
+"use client";
+
 import { Handle, Position } from "@xyflow/react";
-import { Brain } from "lucide-react";
+import {
+  Brain,
+  Bot,
+  Coins,
+  Code,
+  Link,
+  Workflow,
+  GitBranch,
+} from "lucide-react";
 
 export interface AIAgentData {
   label: string;
   description: string;
+  icon?: string;
 }
 
 interface AIAgentNodeProps {
@@ -15,6 +26,31 @@ interface AIAgentNodeProps {
 function AIAgentNode({ data, id, activeNodeIds = [] }: AIAgentNodeProps) {
   const isHighlighted =
     activeNodeIds.length === 0 || activeNodeIds.includes(id);
+
+  const getIcon = (iconName?: string) => {
+    const iconClass = `w-6 h-6 transition-colors duration-300 ${
+      isHighlighted ? "text-blue-400" : "text-blue-400/50"
+    }`;
+
+    switch (iconName) {
+      case "brain":
+        return <Brain className={iconClass} />;
+      case "bot":
+        return <Bot className={iconClass} />;
+      case "coins":
+        return <Coins className={iconClass} />;
+      case "code":
+        return <Code className={iconClass} />;
+      case "link":
+        return <Link className={iconClass} />;
+      case "workflow":
+        return <Workflow className={iconClass} />;
+      case "gitBranch":
+        return <GitBranch className={iconClass} />;
+      default:
+        return <Brain className={iconClass} />;
+    }
+  };
 
   return (
     <div
@@ -39,11 +75,7 @@ function AIAgentNode({ data, id, activeNodeIds = [] }: AIAgentNodeProps) {
               isHighlighted ? "bg-blue-500/20" : "bg-gray-900/50"
             }`}
           >
-            <Brain
-              className={`w-6 h-6 transition-colors duration-300 ${
-                isHighlighted ? "text-blue-400" : "text-blue-400/50"
-              }`}
-            />
+            {getIcon(data.icon)}
           </div>
           <div>
             <h3 className="font-semibold text-gray-200">{data.label}</h3>
