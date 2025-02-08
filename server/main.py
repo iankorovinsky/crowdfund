@@ -1,9 +1,19 @@
 from fastapi import FastAPI, UploadFile, File, BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
 import os
 from workflow import get_workflow_status, run_workflow
 import uuid
 
 app = FastAPI()
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust this to your needs
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def root():
