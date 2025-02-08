@@ -28,6 +28,7 @@ import "@xyflow/react/dist/style.css";
 import { useCallback, useRef, useEffect, useState } from "react";
 import AIAgentNode from "@/components/AIAgentNode";
 import { Trash2 } from "lucide-react";
+import { ResultsSidebar } from "@/components/ResultsSidebar";
 
 const nodeTypes = {
   aiagent: AIAgentNode,
@@ -60,6 +61,22 @@ const initialEdges: LiveEdge[] = [
 
 let id = 0;
 const getId = () => `dnd-${id++}`;
+
+// Example results data - in real app this would come from your backend
+const exampleResults = {
+  node1: {
+    status: "COMPLETED" as const,
+    logs: ["Completed analysis"],
+  },
+  node2: {
+    status: "IN PROGRESS" as const,
+    logs: ["Calculating trade"],
+  },
+  node3: {
+    status: "NOT STARTED" as const,
+    logs: [],
+  },
+};
 
 const Home = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -293,7 +310,6 @@ const Home = () => {
           <div
             className="absolute bottom-8 right-8 p-4 bg-gray-800 rounded-full shadow-lg border-2 border-red-900/50 cursor-pointer hover:bg-gray-700 transition-all duration-200 group"
             onClick={() => {
-              // Remove connected edges
               const connectedEdges = storage.edges.filter(
                 (edge) =>
                   edge.source === selectedNode || edge.target === selectedNode
@@ -308,7 +324,6 @@ const Home = () => {
                 );
               }
 
-              // Remove the node
               updateNodes(
                 storage.nodes.filter((node) => node.id !== selectedNode)
               );
@@ -319,9 +334,13 @@ const Home = () => {
             <Trash2 className="w-6 h-6 text-red-400 group-hover:text-red-300 transition-colors duration-200" />
           </div>
         )}
+
+        <ResultsSidebar results={exampleResults} />
       </div>
     </div>
   );
 };
 
 export default Home;
+
+// DATA (fetches the data), FINANCIAL ANALYSIS, PORTFOLIO MANAGER (decider), PERSONALITY
