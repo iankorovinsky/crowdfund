@@ -253,7 +253,7 @@ const Home = () => {
 
   return (
     <div className="flex h-screen w-screen bg-gray-900">
-      <Sidebar />
+      <Sidebar className="w-80 h-full bg-gray-800 p-4 border-r border-gray-700" />
       <div ref={reactFlowWrapper} className="flex-1 h-full relative">
         <ReactFlow
           nodes={storage.nodes}
