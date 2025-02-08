@@ -23,7 +23,8 @@ async function main() {
     txOptions: { waitForTransaction: true },
   });
 
-  console.log(payRoyalty)
+  console.log(`https://aeneid.storyscan.xyz/tx/${payRoyalty.txHash}`)
+  return `https://aeneid.storyscan.xyz/tx/${payRoyalty.txHash}`
 }
 
 main().catch(console.error);
