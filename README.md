@@ -4,7 +4,7 @@
 ## 🌟 **Demo & Submission**  
 🎥 **Demo:** [YouTube Link](https://youtu.be/S20tTL5M9Ig?si=nO4tCv7REsGhUWYl)
 
-🚀 **Submitted to:** TartanHacks
+🚀 **Submitted to:** TartanHacks 2025
 
 ## 💡 **Inspiration**  
 We set out to **redefine crypto trading** by blending **AI automation** with **decentralized finance**. Traditional trading tools often require constant monitoring, manual execution, and complex strategies—**we wanted to change that**. Our platform empowers users to build **AI-driven workflows** that **analyze, strategize, and execute trades automatically**.  
