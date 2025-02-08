@@ -114,7 +114,7 @@ export const mintAndRegisterIp = async (
     console.log(`License Terms already attached to this IPA.`)
   }
   console.log(`https://explorer.story.foundation/ipa/${mintResponse.ipId}`)
-  return `https://explorer.story.foundation/ipa/${mintResponse.ipId}`;
+  return `${mintResponse.ipId}`;
 };
 
 

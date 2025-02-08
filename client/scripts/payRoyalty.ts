@@ -26,7 +26,7 @@ const payRoyalty = async (receiverIpId: `0x${string}`) => {
 
   console.log(`https://aeneid.storyscan.xyz/tx/${payRoyalty.txHash}`)
   window.open(`https://aeneid.storyscan.xyz/tx/${payRoyalty.txHash}`, "_blank");
-  return `https://aeneid.storyscan.xyz/tx/${payRoyalty.txHash}`
+  return payRoyalty;
 }
 
 export default payRoyalty;
