@@ -5,8 +5,10 @@ from workflow import get_workflow_status, run_workflow
 import uuid
 from database import initialize_db, create_agent, get_agent, get_all_agents, update_agent_type
 from cloudflare import upload_file_to_r2
+from kraken import router as kraken_router
 
 app = FastAPI()
+app.include_router(kraken_router)
 
 # Configure CORS
 app.add_middleware(
