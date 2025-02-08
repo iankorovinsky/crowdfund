@@ -12,13 +12,23 @@ import {
   Node,
   Edge,
   ReactFlowProvider,
-  NodeTypes,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useCallback, useRef } from "react";
 import { Sidebar, NodeType } from "@/components/Sidebar";
+import { CursorPresence } from "@/components/CursorPresence";
 
-const initialNodes = [
+interface CustomNode extends Node {
+  data: {
+    label: string;
+  };
+}
+
+interface CustomEdge extends Edge {
+  type: string;
+}
+
+const initialNodes: CustomNode[] = [
   {
     id: "1",
     position: { x: 100, y: 100 },
@@ -33,14 +43,14 @@ const initialNodes = [
   },
 ];
 
-const initialEdges = [
+const initialEdges: CustomEdge[] = [
   { id: "e1-2", source: "1", target: "2", type: "default" },
 ];
 
 let id = 0;
 const getId = () => `dnd-${id++}`;
 
-const Home = () => {
+function Flow() {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -48,13 +58,13 @@ const Home = () => {
 
   const onConnect = useCallback(
     (params: Connection) => {
-      const edge: Edge = {
+      const edge: CustomEdge = {
         id: `e${params.source}-${params.target}`,
         source: params.source,
         target: params.target,
         type: "default",
       };
-      setEdges((eds: any) => [...eds, edge]);
+      setEdges((eds) => [...eds, edge]);
     },
     [setEdges]
   );
@@ -80,14 +90,14 @@ const Home = () => {
         y: event.clientY - reactFlowBounds.top,
       });
 
-      const newNode = {
+      const newNode: CustomNode = {
         id: getId(),
         type: nodeType.type,
         position,
         data: { label: nodeType.label },
-      } as Node;
+      };
 
-      setNodes((nds: any) => [...nds, newNode]);
+      setNodes((nds) => [...nds, newNode]);
     },
     [screenToFlowPosition, setNodes]
   );
@@ -108,10 +118,17 @@ const Home = () => {
         >
           <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
           <Controls />
+          <CursorPresence />
         </ReactFlow>
       </div>
     </div>
   );
 }
 
-export default Home;
+export default function Home() {
+  return (
+    <ReactFlowProvider>
+      <Flow />
+    </ReactFlowProvider>
+  );
+}

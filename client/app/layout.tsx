@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ReactFlowProvider } from "@xyflow/react";
 import { LiveblocksProvider, RoomProvider } from "@liveblocks/react/suspense";
+import Room from "@/components/Room";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,14 +32,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <LiveblocksProvider publicApiKey={"pk_prod_hxsifK11dNff7o_wuiZQx9FH2z5jvTZmS09I6wFNacLK924Rwh0gvA1WL3s6mldT"}>
-          {/* TODO: replace this id */}
-          <RoomProvider id="MY_ROOM_ID_REPLACE_ME"> 
-            <ReactFlowProvider>
-              {children}
-            </ReactFlowProvider>
-          </RoomProvider>
-        </LiveblocksProvider>
+        <Room>  
+          <ReactFlowProvider>{children}</ReactFlowProvider>
+        </Room>
       </body>
     </html>
   );
