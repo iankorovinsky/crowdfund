@@ -27,7 +27,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import { useCallback, useRef, useEffect, useState, useMemo } from "react";
 import AIAgentNode from "@/components/AIAgentNode";
-import { Trash2 } from "lucide-react";
+import { Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { ResultsSidebar } from "@/components/ResultsSidebar";
 import { useParams } from "next/navigation";
 import CustomEdge from "@/components/CustomEdge";
@@ -72,6 +72,7 @@ const Home = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [isRunning, setIsRunning] = useState(false);
+  const [sideBar, setSideBar] = useState(true);
 
   const storage = useStorage((root) => ({
     nodes: root.nodes ?? initialNodes,
@@ -269,10 +270,28 @@ const Home = () => {
 
   return (
     <div className="flex h-screen w-screen bg-gray-900">
-      <Sidebar
+      {sideBar && <Sidebar
         className="w-80 h-full bg-gray-800 p-4 border-r border-gray-700"
         onRunningChange={setIsRunning}
-      />
+      />}
+      <button
+        onClick={() => setSideBar(!sideBar)}
+        className={`
+          absolute top-1/2 -translate-y-1/2 z-50
+          bg-gray-800 hover:bg-gray-700
+          border border-gray-700 hover:border-gray-600
+          rounded-full p-2
+          transition-all duration-300 ease-in-out
+          ${sideBar ? 'left-[19rem]' : 'left-2'}
+        `}
+        title={sideBar ? "Collapse sidebar" : "Expand sidebar"}
+      >
+        {sideBar ? (
+          <ChevronLeft className="w-4 h-4 text-gray-400" />
+        ) : (
+          <ChevronRight className="w-4 h-4 text-gray-400" />
+        )}
+      </button>
       <div ref={reactFlowWrapper} className="flex-1 h-full relative">
         <ReactFlow
           nodes={storage.nodes}
@@ -356,7 +375,7 @@ const Home = () => {
 
         <ResultsSidebar results={exampleResults} />
       </div>
-      <Navbar roomId={roomId} />
+      <Navbar roomId={roomId} isFull={sideBar} />
     </div>
   );
 };
