@@ -1,1 +1,2 @@
-langgraph
+fastapi
+fastapi-cli
