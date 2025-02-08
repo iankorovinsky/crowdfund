@@ -15,7 +15,7 @@ def get_data(symbol: str):
         'Accept': 'application/json'
     }
     response = requests.get(
-        f"https://futures.kraken.com/derivatives/api/v3/tickers/{symbol}", 
+        f"https://demo-futures.kraken.com/derivatives/api/v3/tickers/{symbol}", 
         headers=headers
     )
     return response.json()
