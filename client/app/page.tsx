@@ -59,8 +59,8 @@ const initialEdges: LiveEdge[] = [
   { id: "e1-2", source: "1", target: "2", type: "default" },
 ];
 
-let id = 0;
-const getId = () => `dnd-${id++}`;
+let nextId = Math.max(...initialNodes.map((node) => parseInt(node.id)), 0) + 1;
+const getId = () => String(nextId++);
 
 // Example results data - in real app this would come from your backend
 const exampleResults = {

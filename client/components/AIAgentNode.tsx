@@ -1,4 +1,4 @@
-import { Handle, NodeProps, Position } from "@xyflow/react";
+import { Handle, Position } from "@xyflow/react";
 import { Brain } from "lucide-react";
 
 export interface AIAgentData {
