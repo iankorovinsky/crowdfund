@@ -67,12 +67,12 @@ def initialize_db():
     # Run migration to handle existing data
     migrate_db()
 
-def create_agent(agent_id: str, agent_type: str, label: str, description: str, input: str, output: str, icon: str, hash: str):
+def create_agent(agent_id: str, agent_type: str, label: str, description: str, input: str, output: str, icon: str):
     conn = sqlite3.connect(DATABASE_PATH)
     cursor = conn.cursor()
     cursor.execute('''
-        INSERT INTO agents (id, type, label, description, input, output, icon, hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (agent_id, agent_type, label, description, input, output, icon, hash))
+        INSERT INTO agents (id, type, label, description, input, output, icon) VALUES (?, ?, ?, ?, ?, ?, ?)
+    ''', (agent_id, agent_type, label, description, input, output, icon))
     conn.commit()
     conn.close()
 
@@ -113,6 +113,15 @@ def update_agent_label(agent_id: str, label: str):
     cursor.execute('''
         UPDATE agents SET label = ? WHERE id = ?
     ''', (label, agent_id))
+    conn.commit()
+    conn.close()
+
+def update_agent_hash(agent_id: str, hash: str):
+    conn = sqlite3.connect(DATABASE_PATH)
+    cursor = conn.cursor()
+    cursor.execute('''
+        UPDATE agents SET hash = ? WHERE id = ?
+    ''', (hash, agent_id))
     conn.commit()
     conn.close()
 
