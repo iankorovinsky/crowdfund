@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Brain } from "lucide-react";
+import React from "react";
 
 export interface NodeType {
   type: string;
@@ -9,24 +10,16 @@ export interface NodeType {
   description: string;
 }
 
-const nodeTypes: NodeType[] = [
-  {
-    type: "aiagent",
-    label: "AI Agent",
-    description: "An AI agent that can make trading decisions",
-  },
-  {
-    type: "blocks",
-    label: "Blocks",
-    description: "An AI agent that can make trading decisions",
-  },
-];
-
 interface SidebarProps {
   className: string;
 }
 
 export function Sidebar({ className }: SidebarProps) {
+  const { data: nodeTypes, error, isLoading } = useQuery<NodeType[]>({
+    queryKey: ["agents"],
+    queryFn: () => fetch("http://localhost:8000/agents").then((res) => res.json()),
+  });
+
   const onDragStart = (event: React.DragEvent, nodeType: NodeType) => {
     event.dataTransfer.setData(
       "application/reactflow",
@@ -35,9 +28,26 @@ export function Sidebar({ className }: SidebarProps) {
     event.dataTransfer.effectAllowed = "move";
   };
 
+  if (isLoading || !nodeTypes) {
+    return (
+      <div className={className}>
+        <h2 className="text-lg font-semibold mb-4 text-gray-200">Loading agents...</h2>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={className}>
+        <h2 className="text-lg font-semibold mb-4 text-gray-200">AI Agents</h2>
+        <p className="text-red-400">{error.message}</p>
+      </div>
+    );
+  }
+
   return (
     <div className={className}>
-      <h2 className="text-lg font-semibold mb-4 text-gray-200 ">AI Agents</h2>
+      <h2 className="text-lg font-semibold mb-4 text-gray-200">AI Agents</h2>
       <div className="space-y-3">
         {nodeTypes.map((node, index) => (
           <div

@@ -8,21 +8,8 @@ import {
 } from "@liveblocks/react/suspense";
 
 const initialStorage = {
-  nodes: [
-    {
-      id: "1",
-      position: { x: 100, y: 100 },
-      data: { label: "Node 1", description: "Node 1" },
-      type: "default",
-    },
-    {
-      id: "2",
-      position: { x: 300, y: 200 },
-      data: { label: "Node 2", description: "Node 2" },
-      type: "default",
-    },
-  ],
-  edges: [{ id: "e1-2", source: "1", target: "2", type: "default" }],
+  nodes: [],
+  edges: [],
 };
 
 interface RoomProps {

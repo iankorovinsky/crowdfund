@@ -3,7 +3,13 @@
 import { ReactFlowProvider } from "@xyflow/react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query'
 
+const queryClient = new QueryClient();
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -29,7 +35,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ReactFlowProvider>{children}</ReactFlowProvider>
+        <QueryClientProvider client={queryClient}>
+          <ReactFlowProvider>{children}</ReactFlowProvider>
+        </QueryClientProvider>
       </body>
     </html>
   );
