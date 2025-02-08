@@ -37,7 +37,7 @@ export function Sidebar({ className }: SidebarProps) {
 
   return (
     <div className={className}>
-      <h2 className="text-lg font-semibold mb-4 text-gray-200">AI Agents</h2>
+      <h2 className="text-lg font-semibold mb-4 text-gray-200 ">AI Agents</h2>
       <div className="space-y-3">
         {nodeTypes.map((node, index) => (
           <div
