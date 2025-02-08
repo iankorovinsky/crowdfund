@@ -7,8 +7,8 @@ from database import get_agent
 from datetime import datetime
 
 class WorkflowStatus:
-    NOT_STARTED = "NOT STARTED"
-    IN_PROGRESS = "IN PROGRESS"
+    NOT_STARTED = "NOT_STARTED"
+    IN_PROGRESS = "IN_PROGRESS"
     COMPLETED = "COMPLETED"
     ERROR = "ERROR"
 

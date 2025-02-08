@@ -186,7 +186,10 @@ export function ResultsSidebar() {
                             status === "IN_PROGRESS" ? "animate-pulse" : ""
                           }`}
                         />
-                        <p className="text-sm text-gray-400">{log}</p>
+                        <div className="text-sm text-gray-400">
+                          <p>{log["log"]}</p>
+                          <p className="text-xs text-gray-500">{log["timestamp"]}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
