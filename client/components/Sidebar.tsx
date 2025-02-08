@@ -1,7 +1,16 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { Brain, Search, Code, Link, Workflow, GitBranch, Play, Square } from "lucide-react";
+import {
+  Brain,
+  Search,
+  Code,
+  Link,
+  Workflow,
+  GitBranch,
+  Play,
+  Square,
+} from "lucide-react";
 import { Input } from "./ui/input";
 import {
   Dialog,
@@ -13,6 +22,7 @@ import {
 } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 
 export interface NodeType {
   type: string;
@@ -26,49 +36,6 @@ export interface NodeType {
   };
 }
 
-const nodeTypes: NodeType[] = [
-  {
-    type: "aiagent",
-    label: "AI Agent",
-    description: "Deploy an AI agent to handle tasks",
-    icon: "brain",
-    config: {
-      ipId: "",
-      licenseTermsId: "1"
-    }
-  },
-  {
-    type: "license",
-    label: "License Terms",
-    description: "Attach license terms to your agent",
-    icon: "code",
-    config: {
-      licenseTermsId: "1"
-    }
-  },
-  {
-    type: "ipfs",
-    label: "IPFS Storage",
-    description: "Upload and store data on IPFS",
-    icon: "link",
-    config: {
-      path: ""
-    }
-  },
-  {
-    type: "flow",
-    label: "Flow Control",
-    description: "Control the execution flow of your pipeline",
-    icon: "workflow"
-  },
-  {
-    type: "branch",
-    label: "Branch",
-    description: "Create conditional branches in your flow",
-    icon: "gitBranch"
-  }
-];
-
 interface SidebarProps {
   className: string;
   initialCost?: number;
@@ -77,12 +44,12 @@ interface SidebarProps {
   onRunningChange?: (isRunning: boolean) => void;
 }
 
-export function Sidebar({ 
-  className, 
-  initialCost = 0.1, 
-  onStart, 
+export function Sidebar({
+  className,
+  initialCost = 0.1,
+  onStart,
   onStop,
-  onRunningChange 
+  onRunningChange,
 }: SidebarProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
@@ -90,7 +57,24 @@ export function Sidebar({
   const [showStartDialog, setShowStartDialog] = useState(false);
   const [showStopDialog, setShowStopDialog] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
-  
+
+  // Fetch blocks from backend
+  const {
+    data: nodeTypes,
+    error,
+    isLoading,
+  } = useQuery<NodeType[]>({
+    queryKey: ["blocks"],
+    queryFn: async () => {
+      const response = await fetch("http://localhost:8000/agents");
+      if (!response.ok) {
+        throw new Error("Failed to fetch blocks");
+      }
+      const data = await response.json();
+      return data;
+    },
+  });
+
   // Mock values - replace with real data
   const profit = 0.25; // Example profit
   const royalties = profit * 0.1; // Example royalty calculation
@@ -125,6 +109,7 @@ export function Sidebar({
   };
 
   const filteredNodes = useMemo(() => {
+    if (!nodeTypes) return [];
     if (!searchQuery.trim()) return nodeTypes;
 
     const query = searchQuery.toLowerCase();
@@ -134,7 +119,7 @@ export function Sidebar({
         node.description.toLowerCase().includes(query) ||
         node.type.toLowerCase().includes(query),
     );
-  }, [searchQuery]);
+  }, [searchQuery, nodeTypes]);
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
@@ -161,6 +146,29 @@ export function Sidebar({
     event.dataTransfer.effectAllowed = "move";
   };
 
+  if (isLoading) {
+    return (
+      <div className={className}>
+        <h2 className="text-lg font-semibold text-gray-200">
+          Loading blocks...
+        </h2>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={className}>
+        <h2 className="text-lg font-semibold text-gray-200">
+          Error loading blocks
+        </h2>
+        <p className="text-red-400 mt-2">
+          {error instanceof Error ? error.message : "Unknown error"}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className={className}>
@@ -174,8 +182,8 @@ export function Sidebar({
               onClick={handleStart}
               disabled={isRunning}
               className={`${
-                !isRunning 
-                  ? "bg-green-600 hover:bg-green-700 text-white" 
+                !isRunning
+                  ? "bg-green-600 hover:bg-green-700 text-white"
                   : "bg-gray-600 cursor-not-allowed"
               }`}
             >
@@ -188,8 +196,8 @@ export function Sidebar({
               onClick={handleStop}
               disabled={!isRunning}
               className={`${
-                isRunning 
-                  ? "bg-red-600 hover:bg-red-700 text-white" 
+                isRunning
+                  ? "bg-red-600 hover:bg-red-700 text-white"
                   : "bg-gray-600 cursor-not-allowed"
               }`}
             >
@@ -212,14 +220,16 @@ export function Sidebar({
           />
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         </div>
-        
+
         {/* Nodes list */}
         <div className="space-y-3">
           {filteredNodes.map((node, index) => (
             <div
               key={index}
               className={`flex items-start p-3 rounded-lg shadow-sm cursor-move transition-all duration-200 ${
-                isSearchFocused && searchQuery && node.label.toLowerCase().includes(searchQuery.toLowerCase())
+                isSearchFocused &&
+                searchQuery &&
+                node.label.toLowerCase().includes(searchQuery.toLowerCase())
                   ? "bg-blue-500/20 scale-102"
                   : "bg-gray-900/50 hover:bg-gray-700"
               }`}
@@ -227,11 +237,15 @@ export function Sidebar({
               onDragStart={(e) => onDragStart(e, node)}
               style={{ borderLeft: "4px solid #3B82F6" }}
             >
-              <div className={`p-2 rounded-lg mr-3 transition-colors duration-300 ${
-                isSearchFocused && searchQuery && node.label.toLowerCase().includes(searchQuery.toLowerCase())
-                  ? "bg-blue-500/20"
-                  : "bg-gray-800/50"
-              }`}>
+              <div
+                className={`p-2 rounded-lg mr-3 transition-colors duration-300 ${
+                  isSearchFocused &&
+                  searchQuery &&
+                  node.label.toLowerCase().includes(searchQuery.toLowerCase())
+                    ? "bg-blue-500/20"
+                    : "bg-gray-800/50"
+                }`}
+              >
                 {getIcon(node.icon || "brain")}
               </div>
               <div>
@@ -249,15 +263,15 @@ export function Sidebar({
           <DialogHeader>
             <DialogTitle>Start Flow</DialogTitle>
             <DialogDescription className="pt-3">
-              This will cost <span className="font-semibold text-white">{initialCost} ETH</span> to run. 
-              Do you want to proceed?
+              This will cost{" "}
+              <span className="font-semibold text-white">
+                {initialCost} ETH
+              </span>{" "}
+              to run. Do you want to proceed?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex justify-end gap-2 pt-4">
-            <Button
-              variant="outline"
-              onClick={() => setShowStartDialog(false)}
-            >
+            <Button variant="outline" onClick={() => setShowStartDialog(false)}>
               Cancel
             </Button>
             <Button
@@ -280,20 +294,21 @@ export function Sidebar({
               <div className="space-y-4 pt-3">
                 <div className="flex flex-col gap-1">
                   <span className="text-gray-400">Profit</span>
-                  <span className="text-2xl font-semibold text-white">+{profit} ETH</span>
+                  <span className="text-2xl font-semibold text-white">
+                    +{profit} ETH
+                  </span>
                 </div>
                 <div className="flex flex-col gap-1">
                   <span className="text-gray-400">Royalties</span>
-                  <span className="text-2xl font-semibold text-red-400">-{royalties} ETH</span>
+                  <span className="text-2xl font-semibold text-red-400">
+                    -{royalties} ETH
+                  </span>
                 </div>
               </div>
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex justify-end gap-2 pt-4">
-            <Button
-              variant="outline"
-              onClick={() => setShowStopDialog(false)}
-            >
+            <Button variant="outline" onClick={() => setShowStopDialog(false)}>
               Cancel
             </Button>
             <Button
