@@ -1,3 +1,83 @@
+"use client";
+
+import { Cursor } from "@/components/Cursor";
+import { NodeType, Sidebar } from "@/components/Sidebar";
+import { LiveEdge, LiveNode } from "@/liveblocks.config";
+import {
+  useMutation,
+  useMyPresence,
+  useOthers,
+  useStorage,
+} from "@liveblocks/react/suspense";
+import {
+  Background,
+  BackgroundVariant,
+  Connection,
+  Controls,
+  EdgeChange,
+  EdgeRemoveChange,
+  NodeChange,
+  NodePositionChange,
+  ReactFlow,
+  ReactFlowProvider,
+  useReactFlow,
+  XYPosition,
+  Node,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import { useCallback, useRef, useEffect, useState } from "react";
+import AIAgentNode from "@/components/AIAgentNode";
+import { Trash2 } from "lucide-react";
+import { ResultsSidebar } from "@/components/ResultsSidebar";
+import { useParams } from "next/navigation";
+
+const nodeTypes = {
+  aiagent: AIAgentNode,
+};
+
+const initialNodes: LiveNode[] = [
+  {
+    id: "1",
+    type: "aiagent",
+    position: { x: 100, y: 100 },
+    data: {
+      label: "Market Analysis",
+      description: "Analyzes market conditions and trends",
+    },
+  },
+  {
+    id: "2",
+    type: "aiagent",
+    position: { x: 400, y: 100 },
+    data: {
+      label: "Decision Maker",
+      description: "Makes final trading decisions",
+    },
+  },
+];
+
+const initialEdges: LiveEdge[] = [
+  { id: "e1-2", source: "1", target: "2", type: "default" },
+];
+
+let nextId = Math.max(...initialNodes.map((node) => parseInt(node.id)), 0) + 1;
+const getId = () => String(nextId++);
+
+const exampleResults = {
+  node1: {
+    status: "COMPLETED" as const,
+    logs: ["Completed analysis"],
+  },
+  node2: {
+    status: "IN PROGRESS" as const,
+    logs: ["Calculating trade"],
+  },
+  node3: {
+    status: "NOT STARTED" as const,
+    logs: [],
+  },
+};
+
 const Home = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
@@ -173,7 +253,7 @@ const Home = () => {
 
   return (
     <div className="flex h-screen w-screen bg-gray-900">
-      <Sidebar className="w-80 h-full bg-gray-50 p-4 border-r border-gray-200" />
+      <Sidebar className="w-80 h-full bg-gray-800 p-4 border-r border-gray-700" />
       <div ref={reactFlowWrapper} className="flex-1 h-full relative">
         <ReactFlow
           nodes={storage.nodes}
@@ -257,9 +337,10 @@ const Home = () => {
 
         <ResultsSidebar results={exampleResults} />
       </div>
-      <DrawerDemo />
     </div>
   );
 };
 
 export default Home;
+
+// DATA (fetches the data), FINANCIAL ANALYSIS, PORTFOLIO MANAGER (decider), PERSONALITY
