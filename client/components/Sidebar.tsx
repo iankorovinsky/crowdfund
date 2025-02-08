@@ -37,6 +37,7 @@ export interface NodeType {
   description: string;
   icon?: string;
   agentId: string;
+  hash?: `0x${string}`;
 }
 
 interface SidebarProps {
@@ -105,14 +106,20 @@ export function Sidebar({
   } = useQuery<NodeType[]>({
     queryKey: ["blocks"],
     queryFn: async () => {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/agents`);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/agents`,
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch blocks");
       }
       const data = await response.json();
       return data.map((agent: any) => ({
-        ...agent,
+        type: agent.type,
+        label: agent.label,
+        description: agent.description,
+        icon: agent.icon,
         agentId: agent.id,
+        hash: (agent.hash as `0x${string}`) || undefined,
       }));
     },
   });
@@ -160,13 +167,16 @@ export function Sidebar({
           : "pi_ethusd";
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/run-workflow`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/run-workflow`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(modifiedBody),
         },
-        body: JSON.stringify(modifiedBody),
-      });
+      );
       return response.json();
     },
     onError: (error) => {
@@ -194,18 +204,23 @@ export function Sidebar({
     setShowStartDialog(true);
     await createWorkflow({
       workflow: {
-        nodes: storage.nodes.map((node) => ({
-          id: node.id,
-          agent_id: node.data.agentId,
-          type: node.type,
-          position: node.position,
-        })),
+        nodes: storage.nodes.map((node) => {
+          return {
+            id: node.id,
+            agent_id: node.data.agentId,
+            type: node.type,
+            position: node.position,
+            hash: node.hash,
+          };
+        }),
         edges: storage.edges,
       },
     });
     // go through all the nodes and pay royalty to the nodes
     for (const node of storage.nodes) {
-      await payRoyalty(); // node.data.address
+      if (node.hash) {
+        await payRoyalty(node.hash as `0x${string}`);
+      }
     }
   };
 
@@ -276,17 +291,19 @@ export function Sidebar({
   };
 
   const onDragStart = (event: React.DragEvent, nodeType: NodeType) => {
+    const dragData = {
+      ...nodeType,
+      data: {
+        label: nodeType.label,
+        description: nodeType.description,
+        icon: nodeType.icon || "brain",
+        agentId: nodeType.agentId,
+      },
+      hash: nodeType.hash,
+    };
     event.dataTransfer.setData(
       "application/reactflow",
-      JSON.stringify({
-        ...nodeType,
-        data: {
-          label: nodeType.label,
-          description: nodeType.description,
-          icon: nodeType.icon || "brain",
-          agentId: nodeType.agentId,
-        },
-      }),
+      JSON.stringify(dragData),
     );
     event.dataTransfer.effectAllowed = "move";
   };
