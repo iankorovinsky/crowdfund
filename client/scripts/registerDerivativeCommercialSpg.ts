@@ -106,5 +106,3 @@ const main = async function () {
   console.log("Parent claimed revenue:");
   console.dir(parentClaimRevenue.claimedTokens);
 };
-
-main();

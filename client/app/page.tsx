@@ -44,12 +44,12 @@ const Home = () => {
         >
           <Image 
             src="/logo.png" 
-            alt="CrowdFunds Logo"
+            alt="CrowdFund Logo"
             width={80}
             height={92}
           />
           <h1 className="text-6xl font-extrabold bg-gradient-to-r from-cyan-400 to-blue-600 text-transparent bg-clip-text">
-            CrowdFunds
+            CrowdFund
           </h1>
         </motion.div>
 

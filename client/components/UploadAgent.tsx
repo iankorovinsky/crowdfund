@@ -22,6 +22,7 @@ import {
 } from "./ui/select";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
+import { mintAndRegisterIp } from "../scripts/simpleMintAndRegisterSpg";
 
 const AGENT_TYPES = [
   "Data",
@@ -39,6 +40,8 @@ interface FormType {
   agentType: AgentType | undefined;
   pythonFile: File | undefined;
   image?: File;
+  input: string;
+  output: string;
 }
 
 export function UploadAgent({ className }: { className?: string }) {
@@ -52,6 +55,8 @@ export function UploadAgent({ className }: { className?: string }) {
       description: "",
       agentType: undefined,
       pythonFile: undefined,
+      input: "data",
+      output: "result"
     },
     onSubmit: async ({ value }: { value: FormType }) => {
       try {
@@ -62,6 +67,8 @@ export function UploadAgent({ className }: { className?: string }) {
         formData.append("type", value.agentType);
         formData.append("label", value.agentName);
         formData.append("description", value.description);
+        formData.append("input", value.input);
+        formData.append("output", value.output);
         if (value.image) {
           formData.append("image", value.image);
         }
@@ -76,7 +83,10 @@ export function UploadAgent({ className }: { className?: string }) {
         }
 
         const result = await response.json();
-        console.log("Agent created:", result);
+        console.log("Agent created, minting IP on Story Protocol:", result);
+        const ip_url = await mintAndRegisterIp(value.agentName, value.description);
+        console.log("IP minted and registered on Story Protocol:", ip_url);
+        window.open(ip_url, '_blank');
         form.reset();
         setImagePreview(null);
 
