@@ -81,6 +81,7 @@ def parse_react_flow(workflow: dict):
 # Build the graph
 def build_graph(workflow_id: str, nodes: list, edges: list):
     graph_builder = StateGraph(State)
+    id_to_agent_id = {node["id"]: node["agent_id"] for node in nodes}
     node_names = [node["agent_id"] for node in nodes]
 
     for node_name in node_names:
@@ -92,7 +93,7 @@ def build_graph(workflow_id: str, nodes: list, edges: list):
     nodes_no_input = set(node_names)
 
     for edge in edges:
-        node1, node2 = edge["source"], edge["target"]
+        node1, node2 = id_to_agent_id[edge["source"]], id_to_agent_id[edge["target"]]
         nodes_no_input.discard(node2)
         graph_builder.add_edge(node1, node2)
 
