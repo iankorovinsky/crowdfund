@@ -34,9 +34,15 @@ import CustomEdge from "@/components/CustomEdge";
 import { Navbar } from "@/components/Navbar";
 import { useStore } from "@/lib/store";
 
-const nodeTypes = {
-  aiagent: AIAgentNode,
-};
+const nodeTypes = new Proxy(
+  { aiagent: AIAgentNode },
+  {
+    get: (target, prop) => {
+      // Return AIAgentNode for any node type
+      return AIAgentNode;
+    },
+  },
+);
 
 const initialNodes: LiveNode[] = [
   {
@@ -116,8 +122,6 @@ const Home = () => {
   const { screenToFlowPosition, getViewport } = useReactFlow();
   const [, updateMyPresence] = useMyPresence();
   const others = useOthers();
-
-  const updateNodeData = useStore((state) => state.updateNodeData);
 
   useEffect(() => {
     useStore.setState({
@@ -278,20 +282,6 @@ const Home = () => {
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [selectedNode, storage.nodes, storage.edges, updateNodes, updateEdges]);
-
-  console.log("nodes", storage.nodes);
-  console.log("edges", storage.edges);
-
-  console.log(
-    JSON.stringify(
-      {
-        nodes: storage.nodes,
-        edges: storage.edges,
-      },
-      null,
-      2,
-    ),
-  );
 
   return (
     <div className="flex h-screen w-screen bg-gray-900">

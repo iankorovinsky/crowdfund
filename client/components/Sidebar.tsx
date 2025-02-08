@@ -96,24 +96,20 @@ export function Sidebar({
   }, [isRunning, onRunningChange]);
 
   const handleStart = () => {
-    console.log("Opening start dialog");
     setShowStartDialog(true);
   };
 
   const handleStop = () => {
-    console.log("Opening stop dialog");
     setShowStopDialog(true);
   };
 
   const confirmStart = () => {
-    console.log("Confirming start");
     setIsRunning(true);
     setShowStartDialog(false);
     onStart?.();
   };
 
   const confirmStop = () => {
-    console.log("Confirming stop");
     setIsRunning(false);
     setShowStopDialog(false);
     onStop?.();

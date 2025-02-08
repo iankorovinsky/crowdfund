@@ -21,12 +21,6 @@ const main = async function () {
     },
     txOptions: { waitForTransaction: true },
   });
-  console.log(
-    `Root IPA created at transaction hash ${ipResponse.txHash}, IPA ID: ${ipResponse.ipId}`,
-  );
-  console.log(
-    `View on the explorer: https://explorer.story.foundation/ipa/${ipResponse.ipId}`,
-  );
 
   // 2. Raise a Dispute
   //
@@ -42,9 +36,6 @@ const main = async function () {
     liveness: 2592000,
     txOptions: { waitForTransaction: true },
   });
-  console.log(
-    `Dispute raised at transaction hash ${disputeResponse.txHash}, Dispute ID: ${disputeResponse.disputeId}`,
-  );
 };
 
 main();

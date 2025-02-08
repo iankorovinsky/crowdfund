@@ -80,7 +80,6 @@ export function UploadAgent({className} : {className?: string}) {
       }
 
       const result = await response.json();
-      console.log("Upload successful:", result);
 
       setAgentName("");
       setDescription("");
