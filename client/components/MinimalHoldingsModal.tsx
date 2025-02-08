@@ -62,10 +62,10 @@ export function MinimalHoldingsModal() {
     <>
       <Button 
         onClick={() => setIsOpen(true)} 
-        className="bg-gray-800 hover:bg-gray-700 text-white"
+        className="bg-gray-800 hover:bg-gray-700 hover:scale-[102%] transition-all duration-300 px-3 py-5 text-md rounded-xl"
         disabled={isLoading}
       >
-        {isLoading ? "Loading..." : "View Holdings"}
+        View Holdings
       </Button>
       <AnimatePresence>
         {isOpen && (
