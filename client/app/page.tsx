@@ -254,87 +254,88 @@ const Home = () => {
   return (
     <div className="flex h-screen w-screen bg-gray-900">
       <Sidebar />
-      <div ref={reactFlowWrapper} className="flex-1 h-full relative">
-        <ReactFlow
-          nodes={storage.nodes}
-          edges={storage.edges}
-          nodeTypes={nodeTypes}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          onDragOver={onDragOver}
-          onDrop={onDrop}
-          onMouseMove={updateCursorPosition}
-          onNodeDrag={(e) => {
-            if (e.clientX && e.clientY) {
-              updateCursorPosition(e);
-            }
-          }}
-          onNodeClick={onNodeClick}
-          onPaneClick={() => setSelectedNode(null)}
-          onMouseLeave={() => {
-            updateMyPresence({
-              cursor: null,
-            });
-          }}
-          fitView
-          className="bg-gray-900"
-          defaultEdgeOptions={{
-            style: { stroke: "#4B5563" },
-            type: "default",
-          }}
-        >
-          <Background
-            variant={BackgroundVariant.Dots}
-            gap={12}
-            size={1}
-            color="#4B5563"
-          />
-          <Controls className="bg-gray-800 border-gray-700 fill-gray-400 [&>button]:border-gray-700 [&>button]:bg-gray-800" />
-          {others.map(({ connectionId, presence }) => {
-            if (!presence.cursor) return null;
-            return (
-              <Cursor
-                key={connectionId}
-                x={presence.cursor.x}
-                y={presence.cursor.y}
-                lastActive={presence.cursor.lastActive}
-                name={`User ${connectionId}`}
-              />
-            );
-          })}
-        </ReactFlow>
-
-        {/* Trash Bin */}
-        {selectedNode && (
-          <div
-            className="absolute bottom-8 right-8 p-4 bg-gray-800 rounded-full shadow-lg border-2 border-red-900/50 cursor-pointer hover:bg-gray-700 transition-all duration-200 group"
-            onClick={() => {
-              const connectedEdges = storage.edges.filter(
-                (edge) =>
-                  edge.source === selectedNode || edge.target === selectedNode
-              );
-              if (connectedEdges.length > 0) {
-                updateEdges(
-                  storage.edges.filter(
-                    (edge) =>
-                      edge.source !== selectedNode &&
-                      edge.target !== selectedNode
-                  )
-                );
+      <div className="flex-1 relative">
+        <div ref={reactFlowWrapper} className="h-full w-full">
+          <ReactFlow
+            nodes={storage.nodes}
+            edges={storage.edges}
+            nodeTypes={nodeTypes}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onDragOver={onDragOver}
+            onDrop={onDrop}
+            onMouseMove={updateCursorPosition}
+            onNodeDrag={(e) => {
+              if (e.clientX && e.clientY) {
+                updateCursorPosition(e);
               }
-
-              updateNodes(
-                storage.nodes.filter((node) => node.id !== selectedNode)
-              );
-              setSelectedNode(null);
             }}
-            title="Delete selected node (or press Delete/Backspace)"
+            onNodeClick={onNodeClick}
+            onPaneClick={() => setSelectedNode(null)}
+            onMouseLeave={() => {
+              updateMyPresence({
+                cursor: null,
+              });
+            }}
+            fitView
+            className="bg-gray-900"
+            defaultEdgeOptions={{
+              style: { stroke: "#4B5563" },
+              type: "default",
+            }}
           >
-            <Trash2 className="w-6 h-6 text-red-400 group-hover:text-red-300 transition-colors duration-200" />
-          </div>
-        )}
+            <Background
+              variant={BackgroundVariant.Dots}
+              gap={12}
+              size={1}
+              color="#4B5563"
+            />
+            <Controls className="bg-gray-800 border-gray-700 fill-gray-400 [&>button]:border-gray-700 [&>button]:bg-gray-800" />
+            {others.map(({ connectionId, presence }) => {
+              if (!presence.cursor) return null;
+              return (
+                <Cursor
+                  key={connectionId}
+                  x={presence.cursor.x}
+                  y={presence.cursor.y}
+                  lastActive={presence.cursor.lastActive}
+                  name={`User ${connectionId}`}
+                />
+              );
+            })}
+          </ReactFlow>
 
+          {/* Trash Bin */}
+          {selectedNode && (
+            <div
+              className="absolute bottom-8 right-8 p-4 bg-gray-800 rounded-full shadow-lg border-2 border-red-900/50 cursor-pointer hover:bg-gray-700 transition-all duration-200 group"
+              onClick={() => {
+                const connectedEdges = storage.edges.filter(
+                  (edge) =>
+                    edge.source === selectedNode || edge.target === selectedNode
+                );
+                if (connectedEdges.length > 0) {
+                  updateEdges(
+                    storage.edges.filter(
+                      (edge) =>
+                        edge.source !== selectedNode &&
+                        edge.target !== selectedNode
+                    )
+                  );
+                }
+
+                updateNodes(
+                  storage.nodes.filter((node) => node.id !== selectedNode)
+                );
+                setSelectedNode(null);
+              }}
+              title="Delete selected node (or press Delete/Backspace)"
+            >
+              <Trash2 className="w-6 h-6 text-red-400 group-hover:text-red-300 transition-colors duration-200" />
+            </div>
+          )}
+        </div>
         <ResultsSidebar results={exampleResults} />
       </div>
     </div>

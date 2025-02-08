@@ -27,11 +27,11 @@ export function ResultsSidebar({ results }: ResultsSidebarProps) {
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="absolute -left-7 top-1/2 -translate-y-1/2 bg-gray-800 border-2 border-r-0 border-gray-700 rounded-l-lg p-1.5 hover:bg-gray-700 transition-colors duration-200"
+        className="absolute -left-6 top-1/2 -translate-y-1/2 bg-gray-800 border-2 border-r-0 border-gray-700 rounded-l-lg py-3 px-1 hover:bg-gray-700 transition-colors duration-200 z-50"
         title={isOpen ? "Close results" : "Open results"}
       >
         <ChevronRight
-          className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${
+          className={`w-3 h-3 text-gray-400 transition-transform duration-300 ${
             !isOpen ? "rotate-180" : ""
           }`}
         />
