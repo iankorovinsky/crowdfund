@@ -50,3 +50,12 @@ def get_all_agents() -> List[Dict[str, Any]]:
     rows = cursor.fetchall()
     conn.close()
     return [{"id": row[0], "type": row[1], "label": row[2], "description": row[3]} for row in rows]
+
+def update_agent_type(agent_id: str, agent_type: str):
+    conn = sqlite3.connect(DATABASE_PATH)
+    cursor = conn.cursor()
+    cursor.execute('''
+        UPDATE agents SET type = ? WHERE id = ?
+    ''', (agent_type, agent_id))
+    conn.commit()
+    conn.close()

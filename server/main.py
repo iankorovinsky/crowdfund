@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 from workflow import get_workflow_status, run_workflow
 import uuid
-from database import initialize_db, create_agent, get_agent, get_all_agents
+from database import initialize_db, create_agent, get_agent, get_all_agents, update_agent_type
 
 app = FastAPI()
 
@@ -57,3 +57,8 @@ async def get_agent_info(agent_id: str):
 @app.get("/agents")
 async def get_agents():
     return get_all_agents()
+
+@app.put("/agent/{agent_id}/type")
+async def update_agent_type_endpoint(agent_id: str, type: str = Form(...)):
+    update_agent_type(agent_id, type)
+    return {"info": f"Agent '{agent_id}' type updated to '{type}'"}
