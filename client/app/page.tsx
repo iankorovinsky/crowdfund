@@ -16,7 +16,8 @@ import {
 import "@xyflow/react/dist/style.css";
 import { useCallback, useRef } from "react";
 import { Sidebar, NodeType } from "@/components/Sidebar";
-import { CursorPresence } from "@/components/CursorPresence";
+import { useMyPresence, useOthers } from "@liveblocks/react/suspense";
+import { Cursor } from "@/components/Cursor";
 
 interface CustomNode extends Node {
   data: {
@@ -50,11 +51,13 @@ const initialEdges: CustomEdge[] = [
 let id = 0;
 const getId = () => `dnd-${id++}`;
 
-function Flow() {
+const Home = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const { screenToFlowPosition } = useReactFlow();
+  const { screenToFlowPosition, getViewport } = useReactFlow();
+  const [, updateMyPresence] = useMyPresence();
+  const others = useOthers();
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -114,21 +117,48 @@ function Flow() {
           onConnect={onConnect}
           onDragOver={onDragOver}
           onDrop={onDrop}
+          onMouseMove={(e) => {
+            if (reactFlowWrapper.current) {
+              const bounds = reactFlowWrapper.current.getBoundingClientRect();
+              const { zoom, x: vpX, y: vpY } = getViewport();
+
+              const flowX = (e.clientX - bounds.left - vpX) / zoom;
+              const flowY = (e.clientY - bounds.top - vpY) / zoom;
+
+              updateMyPresence({
+                cursor: {
+                  x: flowX,
+                  y: flowY,
+                  lastActive: Date.now(),
+                },
+              });
+            }
+          }}
+          onMouseLeave={() => {
+            updateMyPresence({
+              cursor: null,
+            });
+          }}
           fitView
         >
           <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
           <Controls />
-          <CursorPresence />
+          {others.map(({ connectionId, presence }) => {
+            if (!presence.cursor) return null;
+            return (
+              <Cursor
+                key={connectionId}
+                x={presence.cursor.x}
+                y={presence.cursor.y}
+                lastActive={presence.cursor.lastActive}
+                name={`User ${connectionId}`}
+              />
+            );
+          })}
         </ReactFlow>
       </div>
     </div>
   );
 }
 
-export default function Home() {
-  return (
-    <ReactFlowProvider>
-      <Flow />
-    </ReactFlowProvider>
-  );
-}
+export default Home;
