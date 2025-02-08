@@ -36,6 +36,70 @@ export interface NodeType {
   };
 }
 
+const NODE_TYPE_CONSTANTS: NodeType[] = [
+  {
+    type: "aiagent",
+    label: "AI Agent",
+    description: "Deploy an AI agent to handle tasks",
+    icon: "brain",
+    config: {
+      ipId: "",
+      licenseTermsId: "1"
+    }
+  },
+  {
+    type: "eliza",
+    label: "Eliza Chatbot",
+    description: "Create a customizable chatbot with personality",
+    icon: "bot",
+    config: {
+      personality: "",
+      responses: ""
+    }
+  },
+  {
+    type: "token",
+    label: "Token Issuer",
+    description: "Create and issue custom XRPL tokens",
+    icon: "coins",
+    config: {
+      tokenName: "",
+      supply: "",
+      issuance: ""
+    }
+  },
+  {
+    type: "license",
+    label: "License Terms",
+    description: "Attach license terms to your agent",
+    icon: "code",
+    config: {
+      licenseTermsId: "1"
+    }
+  },
+  {
+    type: "ipfs",
+    label: "IPFS Storage",
+    description: "Upload and store data on IPFS",
+    icon: "link",
+    config: {
+      path: ""
+    }
+  },
+  {
+    type: "flow",
+    label: "Flow Control",
+    description: "Control the execution flow of your pipeline",
+    icon: "workflow"
+  },
+  {
+    type: "branch",
+    label: "Branch",
+    description: "Create conditional branches in your flow",
+    icon: "gitBranch"
+  }
+];
+
 interface SidebarProps {
   className: string;
   initialCost?: number;
@@ -125,6 +189,10 @@ export function Sidebar({
     switch (iconName) {
       case "brain":
         return <Brain className="w-6 h-6 text-blue-400" />;
+      case "bot":
+        return <Bot className="w-6 h-6 text-purple-400" />;
+      case "coins":
+        return <Coins className="w-6 h-6 text-green-400" />;
       case "code":
         return <Code className="w-6 h-6 text-purple-400" />;
       case "link":
