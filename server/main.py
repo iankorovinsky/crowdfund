@@ -81,18 +81,10 @@ async def root():
 
 @app.post("/run-workflow")
 async def post_run_workflow(request: WorkflowRequest, background_tasks: BackgroundTasks):
-    await token_manager.issue_token(1)
     workflow_id = str(uuid.uuid4())
+    background_tasks.add_task(token_manager.issue_token, 1)
     background_tasks.add_task(run_workflow, workflow_id, request.workflow.dict(), request.symbol)
     return { "workflow_id": workflow_id }
-
-@app.post("/issue-tokens")
-async def issue_tokens_post():
-    try:
-        await token_manager.issue_token(1)
-        return { "status": "success" }
-    except Exception as e:
-        return { "status": "error", "message": str(e) }
 
 @app.get("/workflow-status/{workflow_id}")
 async def workflow_status(workflow_id: str):

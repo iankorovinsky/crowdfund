@@ -231,12 +231,6 @@ export function Sidebar({
 
   const confirmStart = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/issue-tokens`, {
-        method: 'POST',
-      });
-      if (!response.ok) {
-        throw new Error('Failed to issue tokens');
-      }
       setIsRunning(true);
       setShowStartDialog(false);
       onStart?.();
