@@ -40,7 +40,7 @@ const initialEdges = [
 let id = 0;
 const getId = () => `dnd-${id++}`;
 
-function Flow() {
+const Home = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -54,7 +54,7 @@ function Flow() {
         target: params.target,
         type: "default",
       };
-      setEdges((eds) => [...eds, edge]);
+      setEdges((eds: any) => [...eds, edge]);
     },
     [setEdges]
   );
@@ -114,12 +114,4 @@ function Flow() {
   );
 }
 
-
-
-export default function Home() {
-  return (
-    <ReactFlowProvider>
-      <Flow />
-    </ReactFlowProvider>
-  );
-}
+export default Home;
