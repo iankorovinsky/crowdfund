@@ -88,7 +88,7 @@ def place_order(symbol, order_type, size, side, leverage=None, limit_price=None,
 
 symbol = 'pi_ethusd'  # ETHUSD perpetual future
 order_type = 'mkt'    # Market order
-size = 0.01           # Size of the order
+size = 1           # Size of the order
 side = 'buy'          # Buy order
 
 order_response = place_order(symbol, order_type, size, side)
