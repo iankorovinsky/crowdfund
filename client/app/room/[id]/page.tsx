@@ -282,7 +282,7 @@ const Home = () => {
           border border-gray-700 hover:border-gray-600
           rounded-full p-2
           transition-all duration-300 ease-in-out
-          ${sideBar ? 'left-[19rem]' : 'left-2'}
+          ${sideBar ? 'left-[20.5rem]' : 'left-2'}
         `}
         title={sideBar ? "Collapse sidebar" : "Expand sidebar"}
       >
