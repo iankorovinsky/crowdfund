@@ -3,6 +3,7 @@ from langgraph.graph import START, StateGraph, END
 import subprocess
 import os
 from cloudflare import download_file_from_s3
+from database import get_agent
 
 class WorkflowStatus:
     NOT_STARTED = "NOT STARTED"
@@ -43,7 +44,10 @@ workflow_statuses = {
 
 # Define the state schema
 class State(TypedDict):
-    nodes_ran: list[str]
+    symbol: str
+    market_data: str
+    analysis: str
+    decision: str
 
 # Function to run a file with subprocess
 def run_node_script(workflow_id: str, node_name: str, state: State):
@@ -55,14 +59,20 @@ def run_node_script(workflow_id: str, node_name: str, state: State):
 
     if not os.path.exists(script_path):
         update_workflow_status(workflow_id, node_name, WorkflowStatus.ERROR)
-        return {"nodes_ran": state["nodes_ran"]}
+        return state
+    
+    agent_data = get_agent(node_name)
+    agent_input = state[agent_data["input"]]
+    agent_output_name = agent_data["output"]
     
     update_workflow_status(workflow_id, node_name, WorkflowStatus.IN_PROGRESS)
-    result = subprocess.run(["python3", script_path], capture_output=True, text=True)
+    result = subprocess.run(["python3", script_path, f'"{agent_input}"'], capture_output=True, text=True)
     update_workflow_status(workflow_id, node_name, WorkflowStatus.COMPLETED)
     add_workflow_log(workflow_id, node_name, result.stdout.strip())
+
+    state[agent_output_name] = result.stdout.strip()
     
-    return {"nodes_ran": state["nodes_ran"] + [node_name]}
+    return state
 
 # Parse react_flow.txt
 def parse_react_flow(workflow: dict):
@@ -102,7 +112,7 @@ def run_workflow(workflow_id, workflow: dict):
     workflow_statuses[workflow_id] = {}
     
     # invoke graph asynchronously
-    graph.invoke({"nodes_ran": []})
+    graph.invoke({"symbol": "pi_ethusd"})
 
     return {"success": True}
 

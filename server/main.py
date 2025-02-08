@@ -41,7 +41,9 @@ async def upload_python_file(
     file: UploadFile = File(...),
     type: str = Form(...),
     label: str = Form(...),
-    description: str = Form(...)
+    description: str = Form(...),
+    input: str = Form(...),
+    output: str = Form(...)
 ):
     agent_id = str(uuid.uuid4())
     file_location = f"/tmp/crowdfund/{agent_id}.py"
@@ -52,7 +54,7 @@ async def upload_python_file(
     # Upload file to R2
     upload_file_to_r2(file_location, f"{agent_id}.py")
     
-    create_agent(agent_id, type, label, description)
+    create_agent(agent_id, type, label, description, input, output)
 
     return {"info": f"file '{agent_id}' saved at '{file_location}' and uploaded to R2"}
 

@@ -37,7 +37,7 @@ prompt = hub.pull("hwchase17/openai-functions-agent")
 
 # Create the agent and executor
 agent = create_tool_calling_agent(llm, tools, prompt)
-agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+agent_executor = AgentExecutor(agent=agent, tools=tools)
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
