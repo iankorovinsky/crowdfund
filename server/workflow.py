@@ -181,9 +181,6 @@ def update_workflow_output(workflow_id: str, node_id: str):
             final_output_index = i
             break
     
-    if final_output_index == -1:
-        return None
-    
     logs = logs[final_output_index+1:]
 
     output = ""

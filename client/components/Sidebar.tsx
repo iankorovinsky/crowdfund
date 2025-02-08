@@ -104,7 +104,11 @@ export function Sidebar({
   } = useQuery<NodeType[]>({
     queryKey: ["blocks"],
     queryFn: async () => {
+<<<<<<< HEAD
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/agents`);
+=======
+      const response = await fetch("https://apt-polished-raptor.ngrok-free.app/agents");
+>>>>>>> b2b0c7109d406da7c37026436c31fe61fb0a799a
       if (!response.ok) {
         throw new Error("Failed to fetch blocks");
       }
@@ -122,7 +126,11 @@ export function Sidebar({
     queryFn: async () => {
       if (!currentWorkflowId) throw new Error("No workflow ID");
       const response = await fetch(
+<<<<<<< HEAD
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/workflow-status/${currentWorkflowId}`,
+=======
+        `https://apt-polished-raptor.ngrok-free.app/workflow-status/${currentWorkflowId}`,
+>>>>>>> b2b0c7109d406da7c37026436c31fe61fb0a799a
       );
       if (!response.ok) {
         throw new Error("Failed to fetch workflow status");
@@ -159,7 +167,11 @@ export function Sidebar({
           : "pi_ethusd";
       }
 
+<<<<<<< HEAD
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/run-workflow`, {
+=======
+      const response = await fetch("https://apt-polished-raptor.ngrok-free.app/run-workflow", {
+>>>>>>> b2b0c7109d406da7c37026436c31fe61fb0a799a
         method: "POST",
         headers: {
           "Content-Type": "application/json",

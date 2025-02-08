@@ -23,7 +23,11 @@ export function MinimalHoldingsModal() {
   const fetchHoldings = async () => {
     setIsLoading(true)
     try {
+<<<<<<< HEAD
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/get_balance`)
+=======
+      const response = await fetch("https://apt-polished-raptor.ngrok-free.app/get_balance")
+>>>>>>> b2b0c7109d406da7c37026436c31fe61fb0a799a
       if (!response.ok) throw new Error("Failed to fetch balance")
       
       const balances: Record<string, number> = await response.json()
