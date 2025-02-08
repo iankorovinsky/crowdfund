@@ -59,3 +59,12 @@ def update_agent_type(agent_id: str, agent_type: str):
     ''', (agent_type, agent_id))
     conn.commit()
     conn.close()
+
+def delete_agent(agent_id: str):
+    conn = sqlite3.connect(DATABASE_PATH)
+    cursor = conn.cursor()
+    cursor.execute('''
+        DELETE FROM agents WHERE id = ?
+    ''', (agent_id,))
+    conn.commit()
+    conn.close()

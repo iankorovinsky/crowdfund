@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import APIRouter
 import time
 import hashlib
 import hmac
@@ -10,13 +10,13 @@ from dotenv import load_dotenv
 import os
 from pydantic import BaseModel
 
-app = FastAPI()
-
 load_dotenv()
 
 API_URL = 'https://demo-futures.kraken.com/derivatives'
 API_KEY = 'hCoQq+WfWbwvUQapx/kBBUuN0te27+gBln6OwiiE8gGl5QrrsfwNdSAt'
 API_SECRET = '8eZJMGjLCDinGPDIYiX/dSBdxYMTn+z+aN4Cka1gdw/BrgYaCKjL9tZj0xx+R76Un/GCCLJuSy0c8RBuFe4k5Wro'
+
+router = APIRouter()
 
 # Add Order model for request validation
 class Order(BaseModel):
@@ -108,14 +108,14 @@ def get_data(symbol: str):
 # size = 1           # Size of the order
 # side = 'buy'          # Buy order
 
-@app.post("/buy/")
+@router.post("/buy/")
 def place_buy_order(order: Order):  # Changed function name to match the action
     return place_order(order.symbol, order.order_type, order.size, 'buy')
 
-@app.post("/sell/")
+@router.post("/sell/")
 def place_sell_order(order: Order):
     return place_order(order.symbol, order.order_type, order.size, 'sell')
 
-@app.get("/get_data/")  # Changed to GET request since we're fetching data
+@router.get("/get_data/")  # Changed to GET request since we're fetching data
 async def get_market_data(symbol: str):  # Changed function name to be more descriptive
     return get_data(symbol)
