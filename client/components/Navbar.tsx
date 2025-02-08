@@ -24,7 +24,7 @@ export function Navbar({ roomId }: NavbarProps) {
   return (
     <>
       {isLoading && <LoadingScreen LoadingText="Rerouting to your home page"/>}
-      <nav className="absolute left-80 right-0 h-16 z-50 bg-gray-950 bg-opacity-50 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-4">
+      <nav className="absolute left-80 right-0 h-16 z-50 bg-gradient-to-r from-gray-950 to-[#121c3b] bg-opacity-50 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-4">
         <div onClick={handleHomeClick} className="cursor-pointer">
           <Home className="text-gray-600 hover:text-gray-400 transition-all duration-300" />
         </div>

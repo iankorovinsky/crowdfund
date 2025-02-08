@@ -14,12 +14,12 @@ export function LoadingScreen({ LoadingText = "Preparing your workspace" }: { Lo
         <div className="relative">
           <Loader2 className="w-12 h-12 animate-spin text-blue-500 mx-auto" />
           <p className="text-lg text-gray-300 mt-4 animate-pulse">
-            Loading
-            <span className="inline-flex animate-bounce">.</span>
-            <span className="inline-flex animate-bounce delay-100">.</span>
+            Loading{" "}
+            <span className="inline-flex animate-bounce pr-[1px]">.</span>
+            <span className="inline-flex animate-bounce delay-100 pr-[1px]">.</span>
             <span className="inline-flex animate-bounce delay-200">.</span>
           </p>
-          <p className="text-sm text-gray-400 mt-2">
+          <p className="text-sm text-gray-400 mt-2 px-2">
             {LoadingText}
           </p>
         </div>
