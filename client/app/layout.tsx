@@ -1,11 +1,8 @@
 "use client";
 
-import type { Metadata } from "next";
+import { ReactFlowProvider } from "@xyflow/react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ReactFlowProvider } from "@xyflow/react";
-import { LiveblocksProvider, RoomProvider } from "@liveblocks/react/suspense";
-import Room from "@/components/Room";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,9 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Room> 
-          <ReactFlowProvider>{children}</ReactFlowProvider>
-        </Room>
+        <ReactFlowProvider>{children}</ReactFlowProvider>
       </body>
     </html>
   );

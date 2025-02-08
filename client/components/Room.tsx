@@ -25,7 +25,12 @@ const initialStorage = {
   edges: [{ id: "e1-2", source: "1", target: "2", type: "default" }],
 };
 
-const Room = ({ children }: { children: ReactNode }) => {
+interface RoomProps {
+  children: ReactNode;
+  roomId?: string;
+}
+
+const Room = ({ children, roomId }: RoomProps) => {
   return (
     <LiveblocksProvider
       publicApiKey={
@@ -33,7 +38,7 @@ const Room = ({ children }: { children: ReactNode }) => {
       }
     >
       <RoomProvider
-        id="tartanhacks-flow-editor"
+        id={roomId || "tartanhacks-flow-editor"}
         initialPresence={{ cursor: null }}
         initialStorage={initialStorage}
       >
