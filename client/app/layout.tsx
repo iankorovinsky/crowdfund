@@ -5,6 +5,7 @@ import { ReactFlowProvider } from "@xyflow/react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import { WorkflowProvider } from "@/contexts/WorkflowContext";
 
 import "@rainbow-me/rainbowkit/styles.css";
 
@@ -69,17 +70,19 @@ export default function RootLayout({
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
             <RainbowKitProvider>
-              <div className="min-h-screen bg-gray-950">
-                <main>
-                  <ReactFlowProvider>{children}</ReactFlowProvider>
-                </main>
-              </div>
-              <Toaster
-                position="bottom-right"
-                theme="dark"
-                closeButton
-                richColors
-              />
+              <WorkflowProvider>
+                <div className="min-h-screen bg-gray-950">
+                  <main>
+                    <ReactFlowProvider>{children}</ReactFlowProvider>
+                  </main>
+                </div>
+                <Toaster
+                  position="bottom-right"
+                  theme="dark"
+                  closeButton
+                  richColors
+                />
+              </WorkflowProvider>
             </RainbowKitProvider>
           </QueryClientProvider>
         </WagmiProvider>
