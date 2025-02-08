@@ -15,6 +15,11 @@ const nodeTypes: NodeType[] = [
     label: "AI Agent",
     description: "An AI agent that can make trading decisions",
   },
+  {
+    type: "blocks",
+    label: "Blocks",
+    description: "An AI agent that can make trading decisions",
+  },
 ];
 
 export function Sidebar() {
@@ -30,9 +35,9 @@ export function Sidebar() {
     <div className="w-80 h-full bg-gray-50 p-4 border-r border-gray-200">
       <h2 className="text-lg font-semibold mb-4">AI Agents</h2>
       <div className="space-y-3">
-        {nodeTypes.map((node) => (
+        {nodeTypes.map((node, index) => (
           <div
-            key={node.type}
+            key={index}
             className="flex items-start p-3 bg-white rounded-lg shadow-sm cursor-move hover:shadow-md transition-shadow duration-200"
             draggable
             onDragStart={(e) => onDragStart(e, node)}

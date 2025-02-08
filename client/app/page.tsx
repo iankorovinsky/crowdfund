@@ -22,9 +22,10 @@ import {
   ReactFlowProvider,
   useReactFlow,
   XYPosition,
+  Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useEffect, useState } from "react";
 import AIAgentNode from "@/components/AIAgentNode";
 
 const nodeTypes = {
@@ -61,6 +62,7 @@ const getId = () => `dnd-${id++}`;
 
 const Home = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const storage = useStorage((root) => ({
     nodes: root.nodes ?? initialNodes,
     edges: root.edges ?? initialEdges,
@@ -183,6 +185,40 @@ const Home = () => {
     [getViewport, updateMyPresence]
   );
 
+  const onNodeClick = useCallback((event: React.MouseEvent, node: LiveNode) => {
+    setSelectedNode(node.id);
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (
+        selectedNode &&
+        (event.key === "Backspace" || event.key === "Delete")
+      ) {
+        // Also remove any connected edges
+        const connectedEdges = storage.edges.filter(
+          (edge) => edge.source === selectedNode || edge.target === selectedNode
+        );
+        if (connectedEdges.length > 0) {
+          updateEdges(
+            storage.edges.filter(
+              (edge) =>
+                edge.source !== selectedNode && edge.target !== selectedNode
+            )
+          );
+        }
+
+        updateNodes(storage.nodes.filter((node) => node.id !== selectedNode));
+        setSelectedNode(null);
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [selectedNode, storage.nodes, storage.edges, updateNodes, updateEdges]);
+
   console.log("nodes", storage.nodes);
   console.log("edges", storage.edges);
 
@@ -216,6 +252,8 @@ const Home = () => {
               updateCursorPosition(e);
             }
           }}
+          onNodeClick={onNodeClick}
+          onPaneClick={() => setSelectedNode(null)}
           onMouseLeave={() => {
             updateMyPresence({
               cursor: null,
