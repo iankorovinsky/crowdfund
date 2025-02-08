@@ -116,21 +116,6 @@ export function UploadAgent({ className }: { className?: string }) {
     },
   });
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        return;
-      }
-      form.setFieldValue("image", file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.name.endsWith(".py")) {
@@ -302,61 +287,6 @@ export function UploadAgent({ className }: { className?: string }) {
                 </div>
               )}
             </form.Field>
-
-            {/* Image Upload */}
-            <div
-              className="relative group cursor-pointer"
-              onClick={() => imageInputRef.current?.click()}
-            >
-              <input
-                ref={imageInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
-                aria-label="Upload agent image"
-              />
-              <div
-                className={`
-                  flex items-center justify-center w-full p-4 
-                  border-2 border-dashed rounded-lg
-                  transition-all duration-200
-                  ${
-                    imagePreview
-                      ? "border-blue-500/50 bg-blue-500/10"
-                      : "border-gray-700 hover:border-gray-600 hover:bg-gray-800/50"
-                  }
-                `}
-              >
-                {imagePreview ? (
-                  <div className="relative w-full aspect-square rounded-lg overflow-hidden">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <p className="text-white text-sm">
-                        Click to change image
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center gap-2">
-                    <ImageIcon className="w-6 h-6 text-gray-400" />
-                    <div className="text-sm text-center">
-                      <span className="text-blue-400 font-medium">
-                        Upload agent image
-                      </span>
-                      <span className="text-gray-400"> (optional)</span>
-                      <p className="text-xs text-gray-400 mt-1">
-                        PNG, JPG, GIF up to 10MB
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
 
             {/* Python File Upload */}
             <form.Field

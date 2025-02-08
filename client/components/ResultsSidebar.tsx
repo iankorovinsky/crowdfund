@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Loader2, AlertCircle, ChevronRight } from "lucide-react";
+import { CheckCircle2, Loader2, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
@@ -117,14 +117,21 @@ export function ResultsSidebar() {
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="absolute -left-6 top-1/2 -translate-y-1/2 bg-gray-800 border-2 border-r-0 border-gray-700 rounded-l-lg py-3 px-1 hover:bg-gray-700 transition-colors duration-200 z-50"
+        className={`
+          absolute top-1/2 -translate-y-1/2 z-50
+          bg-gray-800 hover:bg-gray-700
+          border border-gray-700 hover:border-gray-600
+          rounded-full p-2
+          transition-all duration-300 ease-in-out
+          -left-10
+        `}
         title={isOpen ? "Close results" : "Open results"}
       >
-        <ChevronRight
-          className={`w-3 h-3 text-gray-400 transition-transform duration-300 ${
-            !isOpen ? "rotate-180" : ""
-          }`}
-        />
+        {isOpen ? (
+          <ChevronRight className="w-4 h-4 text-gray-400" />
+        ) : (
+          <ChevronLeft className="w-4 h-4 text-gray-400" />
+        )}
       </button>
 
       <div className="w-80 h-full bg-gray-800 border-l border-gray-700 pt-[64px]">
