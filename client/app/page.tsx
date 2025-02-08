@@ -9,6 +9,7 @@ import { FiPlus, FiUsers, FiZap, FiTool } from "react-icons/fi";
 import { BoxesCore } from "@/components/Boxes";
 import { JoinRoomDialog } from "@/components/JoinRoom";
 import { LoadingScreen } from "@/components/LoadingScreen";
+import Image from "next/image";
 
 const Home = () => {
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
@@ -35,14 +36,22 @@ const Home = () => {
       {isLoading && <LoadingScreen />}
       <BoxesCore />
       <div className="text-center space-y-8 max-w-4xl mx-auto relative z-10">
-        <motion.h1
-          className="text-6xl font-extrabold bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text"
+        <motion.div
+          className="flex flex-row items-center justify-center gap-4"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          CrowdFunds
-        </motion.h1>
+          <Image 
+            src="/logo.png" 
+            alt="CrowdFunds Logo"
+            width={80}
+            height={92}
+          />
+          <h1 className="text-6xl font-extrabold bg-gradient-to-r from-cyan-400 to-blue-600 text-transparent bg-clip-text">
+            CrowdFunds
+          </h1>
+        </motion.div>
 
         <motion.p
           className="text-gray-300 text-xl"
@@ -62,7 +71,7 @@ const Home = () => {
         >
           <Button
             onClick={createNewRoom}
-            className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white px-8 py-6 text-lg rounded-lg transition-all duration-300 shadow-lg hover:shadow-blue-500/20 flex items-center space-x-2"
+            className="bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white px-8 py-6 text-lg rounded-lg transition-all duration-300 shadow-lg hover:shadow-blue-500/20 flex items-center space-x-2"
           >
             <FiPlus className="w-5 h-5" />
             <span>Create New Room</span>
