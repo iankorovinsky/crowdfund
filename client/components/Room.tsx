@@ -12,13 +12,13 @@ const initialStorage = {
     {
       id: "1",
       position: { x: 100, y: 100 },
-      data: { label: "Node 1" },
+      data: { label: "Node 1", description: "Node 1" },
       type: "default",
     },
     {
       id: "2",
       position: { x: 300, y: 200 },
-      data: { label: "Node 2" },
+      data: { label: "Node 2", description: "Node 2" },
       type: "default",
     },
   ],

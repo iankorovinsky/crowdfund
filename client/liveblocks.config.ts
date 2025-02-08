@@ -6,7 +6,7 @@ export type LiveNode = {
   id: string;
   type: string;
   position: { x: number; y: number };
-  data: { label: string };
+  data: { label: string; description: string };
   [key: string]: any;
 };
 

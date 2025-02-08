@@ -25,19 +25,30 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useCallback, useRef } from "react";
+import AIAgentNode from "@/components/AIAgentNode";
+
+const nodeTypes = {
+  aiagent: AIAgentNode,
+};
 
 const initialNodes: LiveNode[] = [
   {
     id: "1",
+    type: "aiagent",
     position: { x: 100, y: 100 },
-    data: { label: "Node 1" },
-    type: "default",
+    data: {
+      label: "Market Analysis",
+      description: "Analyzes market conditions and trends",
+    },
   },
   {
     id: "2",
-    position: { x: 300, y: 200 },
-    data: { label: "Node 2" },
-    type: "default",
+    type: "aiagent",
+    position: { x: 400, y: 100 },
+    data: {
+      label: "Decision Maker",
+      description: "Makes final trading decisions",
+    },
   },
 ];
 
@@ -138,9 +149,12 @@ const Home = () => {
 
       const newNode: LiveNode = {
         id: getId(),
-        type: nodeType.type,
+        type: "aiagent",
         position,
-        data: { label: nodeType.label },
+        data: {
+          label: nodeType.label,
+          description: nodeType.description,
+        },
       };
 
       updateNodes([...storage.nodes, newNode]);
@@ -190,6 +204,7 @@ const Home = () => {
         <ReactFlow
           nodes={storage.nodes}
           edges={storage.edges}
+          nodeTypes={nodeTypes}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
@@ -228,4 +243,10 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default function App() {
+  return (
+    <ReactFlowProvider>
+      <Home />
+    </ReactFlowProvider>
+  );
+}
