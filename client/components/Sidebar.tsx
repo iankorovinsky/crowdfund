@@ -24,29 +24,17 @@ import {
 } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useStorage } from "@/liveblocks.config";
+import { toast } from "sonner";
 
 export interface NodeType {
   type: string;
   label: string;
   description: string;
   icon?: string;
-  config?: {
-    ipId?: string;
-    licenseTermsId?: string;
-    [key: string]: any;
-  };
+  agentId: string;
 }
-
-const NODE_TYPE_CONSTANTS: NodeType[] = [
-  {
-    type: "aiagent",
-    label: "AI Agent",
-    description: "Deploy an AI agent to handle tasks",
-    icon: "brain",
-  },
-];
-
 interface SidebarProps {
   className: string;
   initialCost?: number;
@@ -69,6 +57,14 @@ export function Sidebar({
   const [showStopDialog, setShowStopDialog] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
 
+  // Get current nodes and edges from Liveblocks storage
+  const storage = useStorage((root) => ({
+    nodes: root.nodes,
+    edges: root.edges,
+  }));
+
+  console.log("storage", storage);
+
   // Fetch blocks from backend
   const {
     data: nodeTypes,
@@ -82,7 +78,25 @@ export function Sidebar({
         throw new Error("Failed to fetch blocks");
       }
       const data = await response.json();
-      return data;
+      return data.map((agent: any) => ({
+        ...agent,
+        agentId: agent.id,
+      }));
+    },
+  });
+
+  const { mutate: createWorkflow } = useMutation({
+    mutationFn: async (body: any) => {
+      const response = await fetch("http://localhost:8000/run-workflow", {
+        method: "POST",
+        body: JSON.stringify(body),
+      });
+      return response.json();
+    },
+    onError: (error) => {
+      toast.error("Error creating workflow", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
     },
   });
 
@@ -95,8 +109,20 @@ export function Sidebar({
     onRunningChange?.(isRunning);
   }, [isRunning, onRunningChange]);
 
-  const handleStart = () => {
+  const handleStart = async () => {
     setShowStartDialog(true);
+    const workflow = await createWorkflow({
+      workflow: {
+        nodes: storage.nodes.map((node) => ({
+          id: node.id,
+          agent_id: node.data.agentId,
+          type: node.type,
+          position: node.position,
+        })),
+        edges: storage.edges,
+      },
+    });
+    console.log("workflow", workflow);
   };
 
   const handleStop = () => {
@@ -234,7 +260,7 @@ export function Sidebar({
 
         {/* Nodes list */}
         <div className="space-y-3">
-          {filteredNodes.map((node, index) => (
+          {filteredNodes?.map((node, index) => (
             <div
               key={index}
               className={`flex items-start p-3 rounded-lg shadow-sm cursor-move transition-all duration-200 ${

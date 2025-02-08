@@ -44,30 +44,9 @@ const nodeTypes = new Proxy(
   },
 );
 
-const initialNodes: LiveNode[] = [
-  {
-    id: "1",
-    type: "aiagent",
-    position: { x: 100, y: 100 },
-    data: {
-      label: "Market Analysis",
-      description: "Analyzes market conditions and trends",
-    },
-  },
-  {
-    id: "2",
-    type: "aiagent",
-    position: { x: 400, y: 100 },
-    data: {
-      label: "Decision Maker",
-      description: "Makes final trading decisions",
-    },
-  },
-];
+const initialNodes: LiveNode[] = [];
 
-const initialEdges: LiveEdge[] = [
-  { id: "e1-2", source: "1", target: "2", type: "default" },
-];
+const initialEdges: LiveEdge[] = [];
 
 const exampleResults = {
   node1: {
@@ -219,7 +198,9 @@ const Home = () => {
         data: {
           label: nodeType.label,
           description: nodeType.description,
+          agentId: nodeType.agentId,
         },
+        agentId: nodeType.agentId,
       };
 
       updateNodes([...storage.nodes, newNode]);

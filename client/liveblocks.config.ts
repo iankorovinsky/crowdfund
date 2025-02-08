@@ -9,6 +9,7 @@ export type Presence = {
 export type NodeData = {
   label: string;
   description: string;
+  agentId: string;
   tokenName?: string;
   supply?: string;
   issuance?: string;
@@ -24,6 +25,7 @@ export type LiveNode = {
   type: string;
   position: { x: number; y: number };
   data: NodeData;
+  agentId: string;
 };
 
 export type LiveEdge = {
@@ -90,7 +92,8 @@ export type UserMeta = BaseUserMeta;
 export type RoomEvent = {};
 
 const client = createClient({
-  publicApiKey: process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY!,
+  publicApiKey:
+    "pk_prod_hxsifK11dNff7o_wuiZQx9FH2z5jvTZmS09I6wFNacLK924Rwh0gvA1WL3s6mldT",
 });
 
 export const {
