@@ -17,7 +17,7 @@ const openai = new OpenAI({
 
 export const mintAndRegisterIp = async (
   title: string,
-  description: string
+  description: string,
 ): Promise<string> => {
   // 1. Set up your IP Metadata
   //

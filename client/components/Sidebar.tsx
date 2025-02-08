@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { Brain, Search, Code, Link, Workflow, GitBranch, Play, Square } from "lucide-react";
+import { Brain, Search, Code, Link, Workflow, GitBranch, Play, Square, Home } from "lucide-react";
 import { Input } from "./ui/input";
 import {
   Dialog,
@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 export interface NodeType {
   type: string;
@@ -83,6 +84,7 @@ export function Sidebar({
   onStop,
   onRunningChange 
 }: SidebarProps) {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [showStartDialog, setShowStartDialog] = useState(false);
@@ -124,13 +126,13 @@ export function Sidebar({
 
   const filteredNodes = useMemo(() => {
     if (!searchQuery.trim()) return nodeTypes;
-    
+
     const query = searchQuery.toLowerCase();
     return nodeTypes.filter(
-      node =>
+      (node) =>
         node.label.toLowerCase().includes(query) ||
         node.description.toLowerCase().includes(query) ||
-        node.type.toLowerCase().includes(query)
+        node.type.toLowerCase().includes(query),
     );
   }, [searchQuery]);
 
@@ -154,7 +156,7 @@ export function Sidebar({
   const onDragStart = (event: React.DragEvent, nodeType: NodeType) => {
     event.dataTransfer.setData(
       "application/reactflow",
-      JSON.stringify(nodeType)
+      JSON.stringify(nodeType),
     );
     event.dataTransfer.effectAllowed = "move";
   };
@@ -194,7 +196,7 @@ export function Sidebar({
           </Button>
         </div>
 
-        {/* Existing search input */}
+        {/* Search input */}
         <div className="mb-4 relative">
           <Input
             type="text"
@@ -208,7 +210,7 @@ export function Sidebar({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         </div>
         
-        {/* Existing nodes list */}
+        {/* Nodes list */}
         <div className="space-y-3">
           {filteredNodes.map((node, index) => (
             <div

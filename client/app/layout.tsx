@@ -3,7 +3,23 @@
 import { ReactFlowProvider } from "@xyflow/react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Navbar } from "@/components/Navbar";
 
+import "@rainbow-me/rainbowkit/styles.css";
+
+import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { WagmiProvider } from "wagmi";
+import { mainnet, polygon, optimism, arbitrum, base } from "wagmi/chains";
+
+const config = getDefaultConfig({
+  appName: "crowdfund",
+  projectId: "YOUR_PROJECT_ID", // walletconnect project id
+  chains: [mainnet, polygon, optimism, arbitrum, base],
+  ssr: true,
+});
+
+const queryClient = new QueryClient();
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -29,7 +45,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ReactFlowProvider>{children}</ReactFlowProvider>
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <RainbowKitProvider>
+              <div className="min-h-screen bg-gray-950">
+                <Navbar />
+                <main className="pt-16">
+                  <ReactFlowProvider>{children}</ReactFlowProvider>
+                </main>
+              </div>
+            </RainbowKitProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
       </body>
     </html>
   );

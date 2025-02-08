@@ -27,7 +27,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import { useCallback, useRef, useEffect, useState, useMemo } from "react";
 import AIAgentNode from "@/components/AIAgentNode";
-import { Trash2 } from "lucide-react";
+import { Trash2, Copy } from "lucide-react";
 import { ResultsSidebar } from "@/components/ResultsSidebar";
 import { useParams } from "next/navigation";
 import { UploadAgent } from "@/components/UploadAgent";
@@ -81,6 +81,8 @@ const exampleResults = {
 };
 
 const Home = () => {
+  const params = useParams();
+  const roomId = params.id as string;
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [isRunning, setIsRunning] = useState(false);
@@ -107,7 +109,7 @@ const Home = () => {
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
       const positionChange = changes.find(
-        (change): change is NodePositionChange => change.type === "position"
+        (change): change is NodePositionChange => change.type === "position",
       );
       if (positionChange && positionChange.position) {
         updateNodes(
@@ -119,25 +121,25 @@ const Home = () => {
               };
             }
             return node;
-          })
+          }),
         );
       }
     },
-    [storage.nodes, updateNodes]
+    [storage.nodes, updateNodes],
   );
 
   const onEdgesChange = useCallback(
     (changes: EdgeChange[]) => {
       const removeChange = changes.find(
-        (change): change is EdgeRemoveChange => change.type === "remove"
+        (change): change is EdgeRemoveChange => change.type === "remove",
       );
       if (removeChange) {
         updateEdges(
-          storage.edges.filter((edge) => edge.id !== removeChange.id)
+          storage.edges.filter((edge) => edge.id !== removeChange.id),
         );
       }
     },
-    [storage.edges, updateEdges]
+    [storage.edges, updateEdges],
   );
 
   const onConnect = useCallback(
@@ -151,7 +153,7 @@ const Home = () => {
       };
       updateEdges([...storage.edges, edge]);
     },
-    [storage.edges, updateEdges]
+    [storage.edges, updateEdges],
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -165,7 +167,7 @@ const Home = () => {
 
       const reactFlowBounds = reactFlowWrapper.current?.getBoundingClientRect();
       const nodeType = JSON.parse(
-        event.dataTransfer.getData("application/reactflow")
+        event.dataTransfer.getData("application/reactflow"),
       ) as NodeType;
 
       if (!reactFlowBounds) return;
@@ -187,7 +189,7 @@ const Home = () => {
 
       updateNodes([...storage.nodes, newNode]);
     },
-    [screenToFlowPosition, storage.nodes, updateNodes]
+    [screenToFlowPosition, storage.nodes, updateNodes],
   );
 
   const updateCursorPosition = useCallback(
@@ -208,7 +210,7 @@ const Home = () => {
         });
       }
     },
-    [getViewport, updateMyPresence]
+    [getViewport, updateMyPresence],
   );
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: LiveNode) => {
@@ -223,14 +225,15 @@ const Home = () => {
       ) {
         // Also remove any connected edges
         const connectedEdges = storage.edges.filter(
-          (edge) => edge.source === selectedNode || edge.target === selectedNode
+          (edge) =>
+            edge.source === selectedNode || edge.target === selectedNode,
         );
         if (connectedEdges.length > 0) {
           updateEdges(
             storage.edges.filter(
               (edge) =>
-                edge.source !== selectedNode && edge.target !== selectedNode
-            )
+                edge.source !== selectedNode && edge.target !== selectedNode,
+            ),
           );
         }
 
@@ -255,8 +258,8 @@ const Home = () => {
         edges: storage.edges,
       },
       null,
-      2
-    )
+      2,
+    ),
   );
 
   return (
@@ -349,6 +352,15 @@ const Home = () => {
         <ResultsSidebar results={exampleResults} />
       </div>
       <UploadAgent />
+      <div className="bg-gray-800 px-4 py-2 border-gray-700 border-2 flex items-center gap-3 rounded-2xl absolute top-4 left-[60%] -translate-x-1/2">
+        <span className="text-gray-300">Room ID: {roomId}</span>
+        <Copy
+          onClick={() => {
+            navigator.clipboard.writeText(roomId);
+          }}
+          className="h-4 w-4 text-gray-500 hover:text-gray-100 cursor-pointer transition-colors"
+        />
+      </div>
     </div>
   );
 };

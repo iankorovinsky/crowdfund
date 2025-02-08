@@ -2,6 +2,7 @@ from typing_extensions import TypedDict
 from langgraph.graph import START, StateGraph, END
 import subprocess
 import os
+from cloudflare import download_file_from_s3
 
 class WorkflowStatus:
     NOT_STARTED = "NOT STARTED"
@@ -48,7 +49,10 @@ class State(TypedDict):
 def run_node_script(workflow_id: str, node_name: str, state: State):
     script_path = f"/tmp/crowdfund/{node_name}.py"
 
-    # check if file exists
+    # check if file exists locally, if not download from S3
+    if not os.path.exists(script_path):
+        download_file_from_s3(f"{node_name}.py", script_path)
+
     if not os.path.exists(script_path):
         update_workflow_status(workflow_id, node_name, WorkflowStatus.ERROR)
         return {"nodes_ran": state["nodes_ran"]}
