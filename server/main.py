@@ -46,9 +46,9 @@ token_manager = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global token_manager
-    token_manager = XRPLTokenManager()
-    await token_manager.init()
+    # global token_manager
+    # token_manager = XRPLTokenManager()
+    # await token_manager.init()
     # task = asyncio.create_task(token_manager.init())
 
     yield
@@ -139,8 +139,7 @@ async def update_agent_label_endpoint(agent_id: str, label: str = Form(...)):
     return {"info": f"Agent '{agent_id}' label updated to '{label}'"}
 
 @app.put("/agent/{agent_id}/hash")
-async def update_agent_hash(agent_id: str, hash_update: HashUpdate):
-    print("Updating agent hash:", agent_id, hash_update.hash)
+async def update_agent_hash_endpoint(agent_id: str, hash_update: HashUpdate):
     update_agent_hash(agent_id, hash_update.hash)
     return {"info": f"Agent '{agent_id}' hash updated to '{hash_update.hash}'"}
 

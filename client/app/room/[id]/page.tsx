@@ -1,7 +1,13 @@
 "use client";
 
+import AIAgentNode from "@/components/AIAgentNode";
 import { Cursor } from "@/components/Cursor";
-import { NodeType, Sidebar } from "@/components/Sidebar";
+import CustomEdge from "@/components/CustomEdge";
+import { Navbar } from "@/components/Navbar";
+import { ResultsSidebar } from "@/components/ResultsSidebar";
+import { Sidebar } from "@/components/Sidebar";
+import TradingNode from "@/components/TradingNode";
+import { useStore } from "@/lib/store";
 import { LiveEdge, LiveNode } from "@/liveblocks.config";
 import {
   useMutation,
@@ -16,26 +22,18 @@ import {
   Controls,
   EdgeChange,
   EdgeRemoveChange,
+  MarkerType,
+  Node,
   NodeChange,
   NodePositionChange,
   ReactFlow,
-  ReactFlowProvider,
   useReactFlow,
   XYPosition,
-  Node,
-  MarkerType,
-  Position,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useCallback, useRef, useEffect, useState, useMemo } from "react";
-import AIAgentNode from "@/components/AIAgentNode";
-import { Trash2, ChevronLeft, ChevronRight } from "lucide-react";
-import { ResultsSidebar } from "@/components/ResultsSidebar";
+import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { useParams } from "next/navigation";
-import CustomEdge from "@/components/CustomEdge";
-import { Navbar } from "@/components/Navbar";
-import { useStore } from "@/lib/store";
-import TradingNode from "@/components/TradingNode";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAccount } from "wagmi";
 
 const nodeTypes = new Proxy(
@@ -99,7 +97,6 @@ const Home = () => {
       updateNodeData: (nodeId, newData) => {
         updateNodes(
           storage.nodes.map((node: any) => {
-            //todo: fix any here
             if (node.id === nodeId) {
               return {
                 ...node,
@@ -192,7 +189,7 @@ const Home = () => {
       event.preventDefault();
 
       const reactFlowBounds = reactFlowWrapper.current?.getBoundingClientRect();
-      const nodeType = JSON.parse(
+      const nodeData = JSON.parse(
         event.dataTransfer.getData("application/reactflow"),
       );
 
@@ -205,15 +202,16 @@ const Home = () => {
 
       const newNode: LiveNode = {
         id: getId(),
-        type: nodeType.type,
+        type: nodeData.type,
         position,
         data: {
-          label: nodeType.data.label,
-          description: nodeType.data.description,
-          icon: nodeType.data.icon,
-          agentId: nodeType.data.agentId,
+          label: nodeData.data.label,
+          description: nodeData.data.description,
+          icon: nodeData.data.icon,
+          agentId: nodeData.data.agentId,
         },
-        agentId: nodeType.agentId,
+        agentId: nodeData.agentId,
+        hash: nodeData.hash,
       };
 
       updateNodes([...storage.nodes, newNode]);

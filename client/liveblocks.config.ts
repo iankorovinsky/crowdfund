@@ -28,6 +28,7 @@ export type LiveNode = {
   position: { x: number; y: number };
   data: NodeData;
   agentId: string;
+  hash?: `0x${string}`;
 };
 
 export type LiveEdge = {

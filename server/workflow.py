@@ -83,7 +83,7 @@ def parse_react_flow(workflow: dict):
 # Clean up graph
 def clean_graph(nodes: list, edges: list):
     # remove nodes that are not supported type
-    nodes = [node for node in nodes if get_node_input_and_output(node["type"]) is not None]
+    nodes = [node for node in nodes if node["type"] != "trading"]
 
     node_ids = set([node["id"] for node in nodes])
     
