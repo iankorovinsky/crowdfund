@@ -83,11 +83,7 @@ export function UploadAgent({ className }: { className?: string }) {
           formData.append("image", value.image);
         }
 
-<<<<<<< HEAD
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/create-agent`, {
-=======
-        const response = await fetch("https://apt-polished-raptor.ngrok-free.app/create-agent", {
->>>>>>> b2b0c7109d406da7c37026436c31fe61fb0a799a
           method: "POST",
           body: formData,
         });
