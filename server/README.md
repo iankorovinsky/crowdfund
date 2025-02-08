@@ -8,6 +8,7 @@ cd venv/Scripts
 
 Mac:
 source .venv/bin/activate
+
 pip install fastapi fastapi-cli
 
 Run FastAPI Server:
