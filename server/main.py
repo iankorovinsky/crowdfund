@@ -1,3 +1,4 @@
+import time
 from fastapi import FastAPI, UploadFile, File, BackgroundTasks, Form
 from fastapi.middleware.cors import CORSMiddleware
 import os
@@ -9,6 +10,7 @@ from kraken import router as kraken_router
 from pydantic import BaseModel
 from typing import List
 from helpers import copy_env_to_tmp, get_node_input_and_output
+from xrpl_token import XRPLTokenManager
 
 class Position(BaseModel):
     x: float
@@ -51,8 +53,19 @@ initialize_db()
 migrate_db()  # Run migration again to ensure it's up to date
 copy_env_to_tmp()
 
+# Initialize token manager asynchronously
+token_manager = None
+
+@app.on_event("startup")
+async def startup_event():
+    global token_manager
+    token_manager = await XRPLTokenManager()
+
 @app.get("/")
 async def root():
+    await token_manager.issue_token(1)
+    time.sleep(1)
+    await token_manager.issue_token(1)
     return {"message": "Hello World"}
 
 @app.post("/run-workflow")
