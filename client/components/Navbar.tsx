@@ -7,6 +7,7 @@ import { useState } from "react";
 import { LoadingScreen } from "./LoadingScreen";
 import { useRouter } from "next/navigation";
 import { MinimalHoldingsModal } from "./MinimalHoldingsModal";
+import { toast } from "sonner";
 
 interface NavbarProps {
   roomId: string;
@@ -36,6 +37,7 @@ export function Navbar({ roomId, isFull }: NavbarProps) {
             <Copy
               onClick={() => {
                 navigator.clipboard.writeText(roomId);
+                toast.success("Copied to clipboard");
               }}
               className="h-4 w-4 text-gray-500 hover:text-gray-100 cursor-pointer transition-colors"
             />
