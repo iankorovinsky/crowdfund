@@ -77,5 +77,21 @@ export const mintAndRegisterIp = async (
     txOptions: { waitForTransaction: true },
   });
 
+  if (!mintResponse.ipId) {
+    throw new Error("Failed to get ipId from mint response");
+  }
+
+  const license_response = await client.license.attachLicenseTerms({
+      licenseTermsId: "3", 
+      ipId: mintResponse.ipId,
+      txOptions: { waitForTransaction: true }
+  });
+    
+  if (license_response.success) {
+    console.log(`Attached License Terms to IPA at transaction hash ${license_response.txHash}.`)
+  } else {
+    console.log(`License Terms already attached to this IPA.`)
+  }
+
   return `https://explorer.story.foundation/ipa/${mintResponse.ipId}`;
 };
