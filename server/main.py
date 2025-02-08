@@ -3,8 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 from workflow import get_workflow_status, run_workflow
 import uuid
-from database import initialize_db, create_agent, get_agent, get_all_agents, update_agent_type
-from cloudflare import upload_file_to_r2
+from database import initialize_db, create_agent, get_agent, get_all_agents, update_agent_type, delete_agent
+from cloudflare import upload_file_to_r2, delete_file_from_r2
 from kraken import router as kraken_router
 
 app = FastAPI()
@@ -68,3 +68,9 @@ async def get_agents():
 async def update_agent_type_endpoint(agent_id: str, type: str = Form(...)):
     update_agent_type(agent_id, type)
     return {"info": f"Agent '{agent_id}' type updated to '{type}'"}
+
+@app.delete("/agent/{agent_id}")
+async def delete_agent_endpoint(agent_id: str):
+    delete_agent(agent_id)
+    delete_file_from_r2(f"{agent_id}.py")
+    return {"info": f"Agent '{agent_id}' and associated file deleted successfully"}

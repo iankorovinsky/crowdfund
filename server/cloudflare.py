@@ -46,3 +46,10 @@ def download_file_from_s3(key: str, download_path: str):
         print(f"File {key} downloaded to {download_path}")
     except Exception as e:
         print(f"Error downloading file: {e}")
+
+def delete_file_from_r2(file_key: str):
+    try:
+        s3.meta.client.delete_object(Bucket=BUCKET_NAME, Key=file_key)
+        print(f"File {file_key} deleted from bucket {BUCKET_NAME}")
+    except Exception as e:
+        print(f"Error deleting file: {e}")
