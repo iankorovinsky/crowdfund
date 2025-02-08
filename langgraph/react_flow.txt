@@ -1,0 +1,68 @@
+{
+  "nodes": [
+    {
+      "id": "1",
+      "position": {
+        "x": -68.24918978727011,
+        "y": 331.9945569982324
+      },
+      "data": {
+        "label": "Node 1"
+      },
+      "type": "default"
+    },
+    {
+      "id": "2",
+      "position": {
+        "x": -14.381722464594532,
+        "y": 495.9414990183453
+      },
+      "data": {
+        "label": "Node 2"
+      },
+      "type": "default"
+    },
+    {
+      "id": "3",
+      "type": "code",
+      "position": {
+        "x": 92.92113613071264,
+        "y": 761.0788109188085
+      },
+      "data": {
+        "label": "Code"
+      }
+    },
+    {
+      "id": "4",
+      "type": "database",
+      "position": {
+        "x": -12.020337458506432,
+        "y": 622.2277583550806
+      },
+      "data": {
+        "label": "Database"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1-2",
+      "source": "1",
+      "target": "2",
+      "type": "default"
+    },
+    {
+      "id": "e2-3",
+      "source": "2",
+      "target": "3",
+      "type": "default"
+    },
+    {
+      "id": "e3-4",
+      "source": "3",
+      "target": "4",
+      "type": "default"
+    }
+  ]
+}
