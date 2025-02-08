@@ -1,35 +1,37 @@
 "use client";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactFlowProvider } from "@xyflow/react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "sonner";
 
 import "@rainbow-me/rainbowkit/styles.css";
 
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
-import { mainnet, polygon, optimism, arbitrum, base, Chain } from "wagmi/chains";
+import { arbitrum, base, mainnet, optimism, polygon } from "wagmi/chains";
 
 const story_testnet = {
   id: 43_115,
-  name: 'Story Testnet',
-  iconUrl: 'https://pbs.twimg.com/profile_images/1820303986349805569/MKfPfLtz_400x400.jpg',
-  iconBackground: '#fff',
-  nativeCurrency: { name: 'Story Testnet', symbol: 'IP', decimals: 18 },
+  name: "Story Testnet",
+  iconUrl:
+    "https://pbs.twimg.com/profile_images/1820303986349805569/MKfPfLtz_400x400.jpg",
+  iconBackground: "#fff",
+  nativeCurrency: { name: "Story Testnet", symbol: "IP", decimals: 18 },
   rpcUrls: {
-    default: { http: ['https://aeneid.storyrpc.io'] },
+    default: { http: ["https://aeneid.storyrpc.io"] },
   },
   blockExplorers: {
-    default: { name: 'Explorer', url: 'https://explorer.story.foundation/' },
+    default: { name: "Explorer", url: "https://explorer.story.foundation/" },
   },
   contracts: {
     multicall3: {
-      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      address: "0xcA11bde05977b3631167028862bE2a173976CA11",
       blockCreated: 1516,
     },
   },
-} as const satisfies Chain;
+} as const;
 
 const config = getDefaultConfig({
   appName: "crowdfund",
@@ -48,7 +50,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
 
 // export const metadata: Metadata = {
 //   title: "Create Next App",
@@ -73,6 +74,12 @@ export default function RootLayout({
                   <ReactFlowProvider>{children}</ReactFlowProvider>
                 </main>
               </div>
+              <Toaster
+                position="bottom-right"
+                theme="dark"
+                closeButton
+                richColors
+              />
             </RainbowKitProvider>
           </QueryClientProvider>
         </WagmiProvider>

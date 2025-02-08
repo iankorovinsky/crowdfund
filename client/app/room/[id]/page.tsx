@@ -32,51 +32,24 @@ import { ResultsSidebar } from "@/components/ResultsSidebar";
 import { useParams } from "next/navigation";
 import CustomEdge from "@/components/CustomEdge";
 import { Navbar } from "@/components/Navbar";
-import ElizaNode from "@/components/ElizaNode";
-import TokenNode from "@/components/TokenNode";
-import LicenseNode from "@/components/LicenseNode";
-import IPFSNode from "@/components/IPFSNode";
-import FlowNode from "@/components/FlowNode";
-import BranchNode from "@/components/BranchNode";
 import { useStore } from "@/lib/store";
+import TradingNode from "@/components/TradingNode";
 
-const nodeTypes = {
-  aiagent: AIAgentNode,
-  eliza: ElizaNode,
-  token: TokenNode,
-  license: LicenseNode,
-  ipfs: IPFSNode,
-  flow: FlowNode,
-  branch: BranchNode,
-};
-
-const initialNodes: LiveNode[] = [
+const nodeTypes = new Proxy(
   {
-    id: "1",
-    type: "aiagent",
-    position: { x: 100, y: 100 },
-    data: {
-      label: "Market Analysis",
-      description: "Analyzes market conditions and trends",
-    },
+    aiagent: AIAgentNode,
+    trading: TradingNode,
   },
   {
-    id: "2",
-    type: "aiagent",
-    position: { x: 400, y: 100 },
-    data: {
-      label: "Decision Maker",
-      description: "Makes final trading decisions",
+    get: (target, prop) => {
+      return target[prop as keyof typeof target] || AIAgentNode;
     },
   },
-];
+);
 
-const initialEdges: LiveEdge[] = [
-  { id: "e1-2", source: "1", target: "2", type: "default" },
-];
+const initialNodes: LiveNode[] = [];
 
-let nextId = Math.max(...initialNodes.map((node) => parseInt(node.id)), 0) + 1;
-const getId = () => String(nextId++);
+const initialEdges: LiveEdge[] = [];
 
 const exampleResults = {
   node1: {
@@ -100,14 +73,27 @@ const Home = () => {
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [isRunning, setIsRunning] = useState(false);
 
-  const edgeTypes = useMemo(() => ({
-    default: (props: any) => <CustomEdge {...props} isActive={isRunning} />,
-  }), [isRunning]);
-
   const storage = useStorage((root) => ({
     nodes: root.nodes ?? initialNodes,
     edges: root.edges ?? initialEdges,
   }));
+
+  const getId = useCallback(() => {
+    const highestId = Math.max(
+      ...initialNodes.map((node) => parseInt(node.id)),
+      ...storage.nodes.map((node) => parseInt(node.id)),
+      0,
+    );
+    return String(highestId + 1);
+  }, [storage.nodes]);
+
+  const edgeTypes = useMemo(
+    () => ({
+      default: (props: any) => <CustomEdge {...props} isActive={isRunning} />,
+    }),
+    [isRunning],
+  );
+
   const updateNodes = useMutation(({ storage }, nodes: LiveNode[]) => {
     storage.set("nodes", nodes);
   }, []);
@@ -118,8 +104,6 @@ const Home = () => {
   const { screenToFlowPosition, getViewport } = useReactFlow();
   const [, updateMyPresence] = useMyPresence();
   const others = useOthers();
-
-  const updateNodeData = useStore(state => state.updateNodeData);
 
   useEffect(() => {
     useStore.setState({
@@ -133,7 +117,7 @@ const Home = () => {
               };
             }
             return node;
-          })
+          }),
         );
       },
     });
@@ -217,31 +201,14 @@ const Home = () => {
         data: {
           label: nodeType.label,
           description: nodeType.description,
-          ...(nodeType.type === 'token' && {
-            tokenName: '',
-            supply: '',
-            issuance: '',
-          }),
-          ...(nodeType.type === 'eliza' && {
-            personality: '',
-            responses: '',
-          }),
-          ...(nodeType.type === 'license' && {
-            licenseTermsId: '',
-          }),
-          ...(nodeType.type === 'ipfs' && {
-            path: '',
-          }),
-          ...(nodeType.type === 'aiagent' && {
-            ipId: '',
-            licenseTermsId: '',
-          }),
+          agentId: nodeType.agentId,
         },
+        agentId: nodeType.agentId,
       };
 
       updateNodes([...storage.nodes, newNode]);
     },
-    [screenToFlowPosition, storage.nodes, updateNodes],
+    [screenToFlowPosition, storage.nodes, updateNodes, getId],
   );
 
   const updateCursorPosition = useCallback(
@@ -300,24 +267,10 @@ const Home = () => {
     };
   }, [selectedNode, storage.nodes, storage.edges, updateNodes, updateEdges]);
 
-  console.log("nodes", storage.nodes);
-  console.log("edges", storage.edges);
-
-  console.log(
-    JSON.stringify(
-      {
-        nodes: storage.nodes,
-        edges: storage.edges,
-      },
-      null,
-      2,
-    ),
-  );
-
   return (
     <div className="flex h-screen w-screen bg-gray-900">
-      <Sidebar 
-        className="w-80 h-full bg-gray-800 p-4 border-r border-gray-700" 
+      <Sidebar
+        className="w-80 h-full bg-gray-800 p-4 border-r border-gray-700"
         onRunningChange={setIsRunning}
       />
       <div ref={reactFlowWrapper} className="flex-1 h-full relative">
@@ -378,20 +331,20 @@ const Home = () => {
             onClick={() => {
               const connectedEdges = storage.edges.filter(
                 (edge) =>
-                  edge.source === selectedNode || edge.target === selectedNode
+                  edge.source === selectedNode || edge.target === selectedNode,
               );
               if (connectedEdges.length > 0) {
                 updateEdges(
                   storage.edges.filter(
                     (edge) =>
                       edge.source !== selectedNode &&
-                      edge.target !== selectedNode
-                  )
+                      edge.target !== selectedNode,
+                  ),
                 );
               }
 
               updateNodes(
-                storage.nodes.filter((node) => node.id !== selectedNode)
+                storage.nodes.filter((node) => node.id !== selectedNode),
               );
               setSelectedNode(null);
             }}

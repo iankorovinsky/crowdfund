@@ -4,6 +4,7 @@ from langchain.agents import create_tool_calling_agent
 from langchain.agents import AgentExecutor
 from langchain_community.tools.tavily_search import TavilySearchResults
 from dotenv import load_dotenv
+import sys
 
 # Load environment variables from .env file
 load_dotenv()
@@ -22,26 +23,24 @@ prompt = hub.pull("hwchase17/openai-functions-agent")
 agent = create_tool_calling_agent(llm, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools)
 
-# Define market information
-market_information = (
-    "Over the past week, Apple's stock (AAPL) has experienced a decline, closing at $227.63 on February 7, 2025, "
-    "down from $236.00 on January 31, 2025. This decrease is partly attributed to reports that China's State Administration "
-    "for Market Regulation is preparing a potential probe into Apple's App Store fees and practices, focusing on its 30% commission "
-    "on in-app spending. Additionally, escalating trade tensions between the U.S. and China, marked by recent tariff impositions, "
-    "have contributed to the downward pressure on Apple's stock."
-)
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python financial_analysis.py <market_information>")
+        sys.exit(1)
+    
+    market_information = sys.argv[1]
 
-# Invoke the agent with the market information
-response = agent_executor.invoke({
-    "input": (
-        f"{market_information}"
-        "Use all the tools provided to retrieve information available for the company upon today. Analyze the positive developments "
-        "and potential concerns of the company with 2-4 most important factors respectively and keep them concise. Most factors should "
-        "be inferred from company related news. Then make a rough prediction (e.g. up/down by 2-3%) of the the company's stock price "
-        "movement for next week. Provide a summary analysis to support your prediction. This summary should be concise and clear and "
-        "formatted such that it can be understood by an AI agent."
-    )
-})
+    # Invoke the agent with the market information
+    response = agent_executor.invoke({
+        "input": (
+            f"{market_information}"
+            "Use all the tools provided to retrieve information available for the company upon today. Analyze the positive developments "
+            "and potential concerns of the company with 2-4 most important factors respectively and keep them concise. Most factors should "
+            "be inferred from company related news. Then make a rough prediction (e.g. up/down by 2-3%) of the the company's stock price "
+            "movement for next week. Provide a summary analysis to support your prediction. This summary should be concise and clear and "
+            "formatted such that it can be understood by an AI agent."
+        )
+    })
 
-# Print the response
-print(response)
+    # Print the response
+    print(response["output"])

@@ -40,9 +40,6 @@ const main = async function () {
     },
     txOptions: { waitForTransaction: true },
   });
-  console.log(
-    `Root IPA created at transaction hash ${parentIp.txHash}, IPA ID: ${parentIp.ipId}, License Terms IDs: ${parentIp.licenseTermsIds}`,
-  );
 
   // 2. Register another (child) IP Asset
   //
@@ -68,9 +65,6 @@ const main = async function () {
     },
     txOptions: { waitForTransaction: true },
   });
-  console.log(
-    `Derivative IPA created at transaction hash ${childIp.txHash}, IPA ID: ${childIp.ipId}`,
-  );
 
   // 3. Pay Royalty
   //
@@ -82,7 +76,6 @@ const main = async function () {
     amount: 2,
     txOptions: { waitForTransaction: true },
   });
-  console.log(`Paid royalty at transaction hash ${payRoyalty.txHash}`);
 
   // 4. Child Claim Revenue
   //
@@ -94,7 +87,6 @@ const main = async function () {
     royaltyPolicies: [],
     currencyTokens: [WIP_TOKEN_ADDRESS],
   });
-  console.log("Child claimed revenue:");
   console.dir(childClaimRevenue.claimedTokens);
 
   // 5. Parent Claim Revenue
@@ -107,7 +99,6 @@ const main = async function () {
     royaltyPolicies: [RoyaltyPolicyLAP],
     currencyTokens: [WIP_TOKEN_ADDRESS],
   });
-  console.log("Parent claimed revenue:");
   console.dir(parentClaimRevenue.claimedTokens);
 };
 

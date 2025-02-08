@@ -41,20 +41,28 @@ async def upload_python_file(
     file: UploadFile = File(...),
     type: str = Form(...),
     label: str = Form(...),
-    description: str = Form(...)
+    description: str = Form(...),
+    image: UploadFile | None = File(None)
 ):
     agent_id = str(uuid.uuid4())
+    
+    # Handle Python file
     file_location = f"/tmp/crowdfund/{agent_id}.py"
     os.makedirs(os.path.dirname(file_location), exist_ok=True)
     with open(file_location, "wb") as f:
         f.write(await file.read())
     
-    # Upload file to R2
+    # Upload Python file to R2
     upload_file_to_r2(file_location, f"{agent_id}.py")
     
-    create_agent(agent_id, type, label, description)
+    create_agent(agent_id, type, label, description, input, output)
 
-    return {"info": f"file '{agent_id}' saved at '{file_location}' and uploaded to R2"}
+    return {
+        "success": True,
+        "info": f"file '{agent_id}' saved at '{file_location}' and uploaded to R2",
+        "agent_id": agent_id,
+        "image_path": image_path
+    }
 
 @app.get("/agent/{agent_id}")
 async def get_agent_info(agent_id: str):
