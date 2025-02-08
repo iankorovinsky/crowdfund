@@ -27,6 +27,8 @@ import "@xyflow/react/dist/style.css";
 import { useCallback, useRef, useEffect, useState } from "react";
 import AIAgentNode from "@/components/AIAgentNode";
 import { DrawerDemo } from "@/components/Button";
+import { Trash2 } from "lucide-react";
+import { ResultsSidebar } from "@/components/ResultsSidebar";
 
 const nodeTypes = {
   aiagent: AIAgentNode,
@@ -59,6 +61,22 @@ const initialEdges: LiveEdge[] = [
 
 let id = 0;
 const getId = () => `dnd-${id++}`;
+
+// Example results data - in real app this would come from your backend
+const exampleResults = {
+  node1: {
+    status: "COMPLETED" as const,
+    logs: ["Completed analysis"],
+  },
+  node2: {
+    status: "IN PROGRESS" as const,
+    logs: ["Calculating trade"],
+  },
+  node3: {
+    status: "NOT STARTED" as const,
+    logs: [],
+  },
+};
 
 const Home = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -234,9 +252,9 @@ const Home = () => {
   );
 
   return (
-    <div className="flex h-screen w-screen">
+    <div className="flex h-screen w-screen bg-gray-900">
       <Sidebar className="w-80 h-full bg-gray-50 p-4 border-r border-gray-200" />
-      <div ref={reactFlowWrapper} className="flex-1 h-full">
+      <div ref={reactFlowWrapper} className="flex-1 h-full relative">
         <ReactFlow
           nodes={storage.nodes}
           edges={storage.edges}
@@ -260,9 +278,19 @@ const Home = () => {
             });
           }}
           fitView
+          className="bg-gray-900"
+          defaultEdgeOptions={{
+            style: { stroke: "#4B5563" },
+            type: "default",
+          }}
         >
-          <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-          <Controls />
+          <Background
+            variant={BackgroundVariant.Dots}
+            gap={12}
+            size={1}
+            color="#4B5563"
+          />
+          <Controls className="bg-gray-800 border-gray-700 fill-gray-400 [&>button]:border-gray-700 [&>button]:bg-gray-800" />
           {others.map(({ connectionId, presence }) => {
             if (!presence.cursor) return null;
             return (
@@ -276,16 +304,44 @@ const Home = () => {
             );
           })}
         </ReactFlow>
+
+        {/* Trash Bin */}
+        {selectedNode && (
+          <div
+            className="absolute bottom-8 right-8 p-4 bg-gray-800 rounded-full shadow-lg border-2 border-red-900/50 cursor-pointer hover:bg-gray-700 transition-all duration-200 group"
+            onClick={() => {
+              const connectedEdges = storage.edges.filter(
+                (edge) =>
+                  edge.source === selectedNode || edge.target === selectedNode
+              );
+              if (connectedEdges.length > 0) {
+                updateEdges(
+                  storage.edges.filter(
+                    (edge) =>
+                      edge.source !== selectedNode &&
+                      edge.target !== selectedNode
+                  )
+                );
+              }
+
+              updateNodes(
+                storage.nodes.filter((node) => node.id !== selectedNode)
+              );
+              setSelectedNode(null);
+            }}
+            title="Delete selected node (or press Delete/Backspace)"
+          >
+            <Trash2 className="w-6 h-6 text-red-400 group-hover:text-red-300 transition-colors duration-200" />
+          </div>
+        )}
+
+        <ResultsSidebar results={exampleResults} />
       </div>
       <DrawerDemo />
     </div>
   );
 };
 
-export default function App() {
-  return (
-    <ReactFlowProvider>
-      <Home />
-    </ReactFlowProvider>
-  );
-}
+export default Home;
+
+// DATA (fetches the data), FINANCIAL ANALYSIS, PORTFOLIO MANAGER (decider), PERSONALITY
