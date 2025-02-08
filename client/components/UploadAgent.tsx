@@ -12,7 +12,7 @@ import {
 } from "./ui/drawer";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Upload, Image as ImageIcon } from "lucide-react";
+import { Upload, Image as ImageIcon, Brain, Bot, Coins, Code, Link, Workflow, GitBranch } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -32,7 +32,18 @@ const AGENT_TYPES = [
   "XRP",
 ] as const;
 
+const ICON_OPTIONS = [
+  { value: "brain", label: "Brain", icon: <Brain className="w-4 h-4" /> },
+  { value: "bot", label: "Robot", icon: <Bot className="w-4 h-4" /> },
+  { value: "coins", label: "Coins", icon: <Coins className="w-4 h-4" /> },
+  { value: "code", label: "Code", icon: <Code className="w-4 h-4" /> },
+  { value: "link", label: "Link", icon: <Link className="w-4 h-4" /> },
+  { value: "workflow", label: "Workflow", icon: <Workflow className="w-4 h-4" /> },
+  { value: "gitBranch", label: "Git Branch", icon: <GitBranch className="w-4 h-4" /> },
+] as const;
+
 type AgentType = (typeof AGENT_TYPES)[number];
+type IconType = (typeof ICON_OPTIONS)[number]["value"];
 
 interface FormType {
   agentName: string;
@@ -42,6 +53,7 @@ interface FormType {
   image?: File;
   input: string;
   output: string;
+  icon: IconType | undefined;
 }
 
 export function UploadAgent({ className }: { className?: string }) {
@@ -55,16 +67,20 @@ export function UploadAgent({ className }: { className?: string }) {
       description: "",
       agentType: undefined,
       pythonFile: undefined,
+      icon: undefined,
+      input: "",
+      output: "",
     },
     onSubmit: async ({ value }: { value: FormType }) => {
       try {
         const formData = new FormData();
-        if (!value.pythonFile || !value.agentType) return;
+        if (!value.pythonFile || !value.agentType || !value.icon) return;
 
         formData.append("file", value.pythonFile);
         formData.append("type", value.agentType);
         formData.append("label", value.agentName);
         formData.append("description", value.description);
+        formData.append("icon", value.icon);
         if (value.image) {
           formData.append("image", value.image);
         }
@@ -196,6 +212,55 @@ export function UploadAgent({ className }: { className?: string }) {
                       {AGENT_TYPES.map((type) => (
                         <SelectItem key={type} value={type}>
                           {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {field.state.meta.touchedErrors && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {field.state.meta.touchedErrors}
+                    </p>
+                  )}
+                </div>
+              )}
+            </form.Field>
+
+            <form.Field
+              name="icon"
+              validators={{
+                onChange: ({ value }: { value: IconType | undefined }) =>
+                  !value ? "Icon is required" : undefined,
+              }}
+            >
+              {(field: any) => (
+                <div>
+                  <Select
+                    value={field.state.value}
+                    onValueChange={(value) =>
+                      field.handleChange(value as IconType)
+                    }
+                  >
+                    <SelectTrigger
+                      className={
+                        field.state.meta.touchedErrors ? "border-red-500" : ""
+                      }
+                    >
+                      <SelectValue placeholder="Select icon">
+                        {field.state.value && (
+                          <div className="flex items-center gap-2">
+                            {ICON_OPTIONS.find(opt => opt.value === field.state.value)?.icon}
+                            <span>{ICON_OPTIONS.find(opt => opt.value === field.state.value)?.label}</span>
+                          </div>
+                        )}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ICON_OPTIONS.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          <div className="flex items-center gap-2">
+                            {opt.icon}
+                            <span>{opt.label}</span>
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
