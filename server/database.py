@@ -119,10 +119,9 @@ def update_agent_label(agent_id: str, label: str):
 def update_agent_hash(agent_id: str, hash: str):
     conn = sqlite3.connect(DATABASE_PATH)
     cursor = conn.cursor()
-    cursor.execute(
-        "UPDATE agents SET hash = ? WHERE id = ?",
-        (hash, agent_id)
-    )
+    cursor.execute('''
+        UPDATE agents SET hash = ? WHERE id = ?
+    ''', (hash, agent_id))
     conn.commit()
     conn.close()
 
