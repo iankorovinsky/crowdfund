@@ -2,10 +2,10 @@ from langchain_openai import ChatOpenAI
 from langchain import hub
 from langchain.agents import create_tool_calling_agent
 from langchain.agents import AgentExecutor
-from langchain_community.tools.tavily_search import TavilySearchResults
 from dotenv import load_dotenv
 import requests
 from langchain_core.tools import Tool
+import sys
 
 # Load environment variables from .env file
 load_dotenv()
@@ -39,16 +39,20 @@ prompt = hub.pull("hwchase17/openai-functions-agent")
 agent = create_tool_calling_agent(llm, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
-# Define market information
-symbol = "pi_ethusd"
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python market_data.py <symbol>")
+        sys.exit(1)
+    
+    symbol = sys.argv[1]
 
-# Invoke the agent with the market information
-response = agent_executor.invoke({
-    "input": (
-        f"Get the latest market data for the symbol {symbol}."
-        "Use all the tools provided to retrieve information available for the company upon today."
-    )
-})
+    # Invoke the agent with the market information
+    response = agent_executor.invoke({
+        "input": (
+            f"Get the latest market data for the symbol {symbol}."
+            "Use all the tools provided to retrieve information available for the company upon today."
+        )
+    })
 
-# Print the response
-print(response["output"])
+    # Print the response
+    print(response["output"])
