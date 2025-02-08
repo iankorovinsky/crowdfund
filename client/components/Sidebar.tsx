@@ -104,7 +104,7 @@ export function Sidebar({
   } = useQuery<NodeType[]>({
     queryKey: ["blocks"],
     queryFn: async () => {
-      const response = await fetch("https://apt-polished-raptor.ngrok-free.app/agents");
+      const response = await fetch("http://localhost:8000/agents");
       if (!response.ok) {
         throw new Error("Failed to fetch blocks");
       }
@@ -122,7 +122,7 @@ export function Sidebar({
     queryFn: async () => {
       if (!currentWorkflowId) throw new Error("No workflow ID");
       const response = await fetch(
-        `https://apt-polished-raptor.ngrok-free.app/workflow-status/${currentWorkflowId}`,
+        `http://localhost:8000/workflow-status/${currentWorkflowId}`,
       );
       if (!response.ok) {
         throw new Error("Failed to fetch workflow status");
@@ -159,7 +159,7 @@ export function Sidebar({
           : "pi_ethusd";
       }
 
-      const response = await fetch("https://apt-polished-raptor.ngrok-free.app/run-workflow", {
+      const response = await fetch("http://localhost:8000/run-workflow", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
