@@ -46,10 +46,9 @@ token_manager = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # global token_manager
-    # token_manager = XRPLTokenManager()
-    # await token_manager.init()
-    # task = asyncio.create_task(token_manager.init())
+    global token_manager
+    token_manager = XRPLTokenManager()
+    await token_manager.init()
 
     yield
     # after
@@ -86,6 +85,14 @@ async def post_run_workflow(request: WorkflowRequest, background_tasks: Backgrou
     workflow_id = str(uuid.uuid4())
     background_tasks.add_task(run_workflow, workflow_id, request.workflow.dict(), request.symbol)
     return { "workflow_id": workflow_id }
+
+@app.post("/issue-tokens")
+async def issue_tokens_post():
+    try:
+        await token_manager.issue_token(1)
+        return { "status": "success" }
+    except Exception as e:
+        return { "status": "error", "message": str(e) }
 
 @app.get("/workflow-status/{workflow_id}")
 async def workflow_status(workflow_id: str):

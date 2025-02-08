@@ -229,10 +229,22 @@ export function Sidebar({
     resetWorkflow();
   };
 
-  const confirmStart = () => {
-    setIsRunning(true);
-    setShowStartDialog(false);
-    onStart?.();
+  const confirmStart = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/issue-tokens`, {
+        method: 'POST',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to issue tokens');
+      }
+      setIsRunning(true);
+      setShowStartDialog(false);
+      onStart?.();
+    } catch (error) {
+      toast.error('Failed to issue tokens', {
+        description: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
   };
 
   const confirmStop = () => {
