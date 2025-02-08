@@ -1,15 +1,33 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
 import os
-from status import get_workflow_status
+from workflow import get_workflow_status, run_workflow
+import uuid
 
 app = FastAPI()
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust this to your needs
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
 
+@app.post("/run-workflow")
+async def post_run_workflow(body: dict, background_tasks: BackgroundTasks):
+    workflow_id = str(uuid.uuid4())
+    background_tasks.add_task(run_workflow, workflow_id, body["workflow"])
+
+    return { "workflow_id": workflow_id }
+
 @app.get("/workflow-status/{workflow_id}")
-async def read_item(workflow_id: str):
+async def workflow_status(workflow_id: str):
     return get_workflow_status(workflow_id)
 
 @app.post("/upload-file")
