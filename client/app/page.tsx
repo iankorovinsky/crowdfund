@@ -27,6 +27,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import { useCallback, useRef, useEffect, useState } from "react";
 import AIAgentNode from "@/components/AIAgentNode";
+import { Trash2 } from "lucide-react";
 
 const nodeTypes = {
   aiagent: AIAgentNode,
@@ -236,7 +237,7 @@ const Home = () => {
   return (
     <div className="flex h-screen w-screen">
       <Sidebar />
-      <div ref={reactFlowWrapper} className="flex-1 h-full">
+      <div ref={reactFlowWrapper} className="flex-1 h-full relative">
         <ReactFlow
           nodes={storage.nodes}
           edges={storage.edges}
@@ -276,6 +277,38 @@ const Home = () => {
             );
           })}
         </ReactFlow>
+
+        {/* Trash Bin */}
+        {selectedNode && (
+          <div
+            className="absolute bottom-8 right-8 p-4 bg-white rounded-full shadow-lg border-2 border-red-100 cursor-pointer hover:bg-red-50 transition-all duration-200 group"
+            onClick={() => {
+              // Remove connected edges
+              const connectedEdges = storage.edges.filter(
+                (edge) =>
+                  edge.source === selectedNode || edge.target === selectedNode
+              );
+              if (connectedEdges.length > 0) {
+                updateEdges(
+                  storage.edges.filter(
+                    (edge) =>
+                      edge.source !== selectedNode &&
+                      edge.target !== selectedNode
+                  )
+                );
+              }
+
+              // Remove the node
+              updateNodes(
+                storage.nodes.filter((node) => node.id !== selectedNode)
+              );
+              setSelectedNode(null);
+            }}
+            title="Delete selected node (or press Delete/Backspace)"
+          >
+            <Trash2 className="w-6 h-6 text-red-400 group-hover:text-red-500 transition-colors duration-200" />
+          </div>
+        )}
       </div>
     </div>
   );
