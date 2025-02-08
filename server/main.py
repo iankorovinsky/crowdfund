@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 from workflow import get_workflow_status, run_workflow
 import uuid
-from database import initialize_db, create_agent, get_agent, get_all_agents, update_agent_type, delete_agent, migrate_db
+from database import initialize_db, create_agent, get_agent, get_all_agents, update_agent_type, delete_agent, migrate_db, update_agent_label
 from cloudflare import upload_file_to_r2, delete_file_from_r2
 from kraken import router as kraken_router
 from pydantic import BaseModel
@@ -106,6 +106,11 @@ async def get_agents():
 async def update_agent_type_endpoint(agent_id: str, type: str = Form(...)):
     update_agent_type(agent_id, type)
     return {"info": f"Agent '{agent_id}' type updated to '{type}'"}
+
+@app.put("/agent/{agent_id}/label")
+async def update_agent_label_endpoint(agent_id: str, label: str = Form(...)):
+    update_agent_label(agent_id, label)
+    return {"info": f"Agent '{agent_id}' label updated to '{label}'"}
 
 @app.delete("/agent/{agent_id}")
 async def delete_agent_endpoint(agent_id: str):
