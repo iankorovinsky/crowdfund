@@ -33,13 +33,16 @@ import { useParams } from "next/navigation";
 import CustomEdge from "@/components/CustomEdge";
 import { Navbar } from "@/components/Navbar";
 import { useStore } from "@/lib/store";
+import TradingNode from "@/components/TradingNode";
 
 const nodeTypes = new Proxy(
-  { aiagent: AIAgentNode },
+  {
+    aiagent: AIAgentNode,
+    trading: TradingNode,
+  },
   {
     get: (target, prop) => {
-      // Return AIAgentNode for any node type
-      return AIAgentNode;
+      return target[prop as keyof typeof target] || AIAgentNode;
     },
   },
 );

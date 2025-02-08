@@ -43,6 +43,14 @@ interface SidebarProps {
   onRunningChange?: (isRunning: boolean) => void;
 }
 
+const SYMBOL_NODE: NodeType = {
+  type: "trading",
+  label: "Symbol",
+  description: "Select a crypto symbol for analysis",
+  icon: "coins",
+  agentId: "123021093821903812093801923",
+};
+
 export function Sidebar({
   className,
   initialCost = 0.1,
@@ -142,10 +150,20 @@ export function Sidebar({
   };
 
   const filteredNodes = useMemo(() => {
-    if (!nodeTypes) return [];
-    if (!searchQuery.trim()) return nodeTypes;
+    if (!nodeTypes) return [SYMBOL_NODE];
+    if (!searchQuery.trim()) return [SYMBOL_NODE, ...nodeTypes];
 
     const query = searchQuery.toLowerCase();
+    if (SYMBOL_NODE.label.toLowerCase().includes(query) ||
+        SYMBOL_NODE.description.toLowerCase().includes(query)) {
+      return [SYMBOL_NODE, ...nodeTypes.filter(
+        (node) =>
+          node.label.toLowerCase().includes(query) ||
+          node.description.toLowerCase().includes(query) ||
+          node.type.toLowerCase().includes(query),
+      )];
+    }
+    
     return nodeTypes.filter(
       (node) =>
         node.label.toLowerCase().includes(query) ||
