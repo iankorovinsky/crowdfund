@@ -1,75 +1,47 @@
 "use client";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useRouter, usePathname } from "next/navigation";
-import { motion } from "framer-motion";
-import { Brain } from "lucide-react";
-import Link from "next/link";
+import { UploadAgent } from "@/components/UploadAgent";
+import { Copy, Home } from "lucide-react";
+import { useState } from "react";
+import { LoadingScreen } from "./LoadingScreen";
+import { useRouter } from "next/navigation";
 
-export function Navbar() {
+interface NavbarProps {
+  roomId: string;
+}
+
+export function Navbar({ roomId }: NavbarProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const pathname = usePathname();
 
-  const isActive = (path: string) => pathname === path;
-
-  if (pathname === "/") {
-    return null;
-  }
+  const handleHomeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    router.push('/');
+  };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-900/80 backdrop-blur-md border-b border-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo and Brand */}
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
-                Crowdfund
-              </span>
-            </Link>
-          </div>
-
-          {/* Navigation Links */}
-          <div className="hidden md:flex items-center space-x-8">
-            {/* <NavLink href="/" label="Home" isActive={isActive('/')} /> */}
-            {/* <NavLink href="/explore" label="Explore" isActive={isActive('/explore')} />
-            <NavLink href="/docs" label="Docs" isActive={isActive('/docs')} /> */}
-          </div>
-
-          {/* Wallet Connection */}
-          <div className="flex items-center">
-            <ConnectButton />
-          </div>
+    <>
+      {isLoading && <LoadingScreen LoadingText="Rerouting to your home page"/>}
+      <nav className="absolute left-80 right-0 h-16 z-50 bg-gray-950 bg-opacity-50 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-4">
+        <div onClick={handleHomeClick} className="cursor-pointer">
+          <Home className="text-gray-600 hover:text-gray-400 transition-all duration-300" />
         </div>
-      </div>
-    </nav>
-  );
-}
-
-interface NavLinkProps {
-  href: string;
-  label: string;
-  isActive: boolean;
-}
-
-function NavLink({ href, label, isActive }: NavLinkProps) {
-  return (
-    <Link href={href} className="relative">
-      <span
-        className={`text-sm font-medium transition-colors duration-200 ${
-          isActive ? "text-blue-400" : "text-gray-300 hover:text-blue-400"
-        }`}
-      >
-        {label}
-      </span>
-      {isActive && (
-        <motion.div
-          layoutId="activeNav"
-          className="absolute -bottom-[21px] left-0 right-0 h-0.5 bg-blue-500"
-          initial={false}
-          transition={{ type: "spring", stiffness: 380, damping: 30 }}
-        />
-      )}
-    </Link>
+        <div className="flex items-center gap-4">
+          <div className="bg-gray-800 px-4 py-2 border-gray-700 border flex items-center gap-3 rounded-xl">
+            <span className="text-gray-300">Room ID: {roomId}</span>
+            <Copy
+              onClick={() => {
+                navigator.clipboard.writeText(roomId);
+              }}
+              className="h-4 w-4 text-gray-500 hover:text-gray-100 cursor-pointer transition-colors"
+            />
+          </div>
+          <UploadAgent className="bg-gray-600 hover:bg-gray-600 hover:scale-[102%] transition-all duration-300 px-6 py-5 text-md rounded-xl" />
+          <ConnectButton />
+        </div>
+      </nav>
+    </>
   );
 }

@@ -8,12 +8,15 @@ import { motion } from "framer-motion";
 import { FiPlus, FiUsers, FiZap, FiTool } from "react-icons/fi";
 import { BoxesCore } from "@/components/Boxes";
 import { JoinRoomDialog } from "@/components/JoinRoom";
+import { LoadingScreen } from "@/components/LoadingScreen";
 
 const Home = () => {
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const createNewRoom = () => {
+    setIsLoading(true);
     const roomId = nanoid(10);
     router.push(`/room/${roomId}`);
   };
@@ -24,11 +27,12 @@ const Home = () => {
       text: "Lightning-fast AI processing",
     },
     { icon: <FiUsers className="w-6 h-6" />, text: "Collaborative workspaces" },
-    { icon: <FiTool className="w-6 h-6" />, text: "Custom AI agentupload" },
+    { icon: <FiTool className="w-6 h-6" />, text: "Custom AI agent upload" },
   ];
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-blue-900 flex flex-col items-center justify-center p-4 overflow-hidden">
+      {isLoading && <LoadingScreen />}
       <BoxesCore />
       <div className="text-center space-y-8 max-w-4xl mx-auto relative z-10">
         <motion.h1

@@ -24,7 +24,7 @@ import {
 const AGENT_TYPES = ["Data", "Financial Analysis", "Portfolio Manager", "Personality", "XRP"] as const;
 type AgentType = typeof AGENT_TYPES[number];
 
-export function UploadAgent() {
+export function UploadAgent({className} : {className?: string}) {
   const [agentName, setAgentName] = useState("");
   const [description, setDescription] = useState("");
   const [agentType, setAgentType] = useState<AgentType | "">("");
@@ -96,7 +96,7 @@ export function UploadAgent() {
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button className="absolute bottom-5 right-5 bg-blue-500 px-6 py-3">
+        <Button className={className}>
           Upload Agent
         </Button>
       </DrawerTrigger>

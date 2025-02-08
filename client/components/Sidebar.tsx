@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { Brain, Search, Code, Link, Workflow, GitBranch, Play, Square, Home } from "lucide-react";
+import { Brain, Search, Code, Link, Workflow, GitBranch, Play, Square } from "lucide-react";
 import { Input } from "./ui/input";
 import {
   Dialog,
@@ -204,7 +204,7 @@ export function Sidebar({
           <Input
             type="text"
             placeholder="Search blocks..."
-            className="pl-10 w-full bg-gray-800/50 border-gray-700/50 rounded-xl text-base transition-all duration-300 focus:ring-2 focus:ring-blue-500/50 hover:border-gray-600"
+            className="pl-10 w-full bg-gray-900 border-gray-700 border rounded-xl text-base transition-all duration-300 focus:ring-2 focus:ring-blue-500/50 hover:border-gray-600"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => setIsSearchFocused(true)}

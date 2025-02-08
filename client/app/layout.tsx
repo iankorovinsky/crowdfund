@@ -4,7 +4,6 @@ import { ReactFlowProvider } from "@xyflow/react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Navbar } from "@/components/Navbar";
 
 import "@rainbow-me/rainbowkit/styles.css";
 
@@ -49,8 +48,7 @@ export default function RootLayout({
           <QueryClientProvider client={queryClient}>
             <RainbowKitProvider>
               <div className="min-h-screen bg-gray-950">
-                <Navbar />
-                <main className="pt-16">
+                <main>
                   <ReactFlowProvider>{children}</ReactFlowProvider>
                 </main>
               </div>

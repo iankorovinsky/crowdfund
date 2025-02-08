@@ -69,7 +69,7 @@ export function ResultsSidebar({ results }: ResultsSidebarProps) {
         />
       </button>
 
-      <div className="w-80 h-full bg-gray-800 border-l border-gray-700">
+      <div className="w-80 h-full bg-gray-800 border-l border-gray-700 pt-[64px]">
         <div className="p-4 h-full overflow-y-auto">
           <h2 className="text-lg font-semibold text-gray-100 mb-4">
             Execution Results
