@@ -32,17 +32,6 @@
       "data": {
         "label": "Code"
       }
-    },
-    {
-      "id": "4",
-      "type": "database",
-      "position": {
-        "x": -12.020337458506432,
-        "y": 622.2277583550806
-      },
-      "data": {
-        "label": "Database"
-      }
     }
   ],
   "edges": [
@@ -56,12 +45,6 @@
       "id": "e2-3",
       "source": "2",
       "target": "3",
-      "type": "default"
-    },
-    {
-      "id": "e3-4",
-      "source": "3",
-      "target": "4",
       "type": "default"
     }
   ]
