@@ -6,6 +6,7 @@ import {
   RoomProvider,
   ClientSideSuspense,
 } from "@liveblocks/react/suspense";
+import { LoadingScreen } from "./LoadingScreen";
 
 const initialStorage = {
   nodes: [],
@@ -32,7 +33,7 @@ const Room = ({ children, roomId }: RoomProps) => {
         }}
         initialStorage={initialStorage}
       >
-        <ClientSideSuspense fallback={<div>Loading…</div>}>
+        <ClientSideSuspense fallback={<LoadingScreen />}>
           {children}
         </ClientSideSuspense>
       </RoomProvider>

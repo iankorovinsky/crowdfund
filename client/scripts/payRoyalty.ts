@@ -16,12 +16,14 @@ export const client = StoryClient.newClient(config);
 
 async function main() {
   const payRoyalty = await client.royalty.payRoyaltyOnBehalf({
-    receiverIpId: "0xa79A00f8aFc1E41E9D353dE7cB98f16DDa37b313", // child ipId
+    receiverIpId: "0x222D64ffF449579EC1D015E6064DA521468E219f", // child ipId
     payerIpId: zeroAddress,
     token: WIP_TOKEN_ADDRESS,
     amount: 1,
     txOptions: { waitForTransaction: true },
   });
+
+  console.log(payRoyalty)
 }
 
 main().catch(console.error);

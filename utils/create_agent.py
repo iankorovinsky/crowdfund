@@ -1,5 +1,5 @@
 import requests
-url = "https://apt-polished-raptor.ngrok-free.app/create-agent/"
+url = "http://localhost:8000/create-agent/"
 file_path = '/Users/adriangri/programming/crowdfund/agents/portfolio_manager.py'
 data = {
     "type": "Financial Analysis",
