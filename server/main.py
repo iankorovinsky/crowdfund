@@ -1,5 +1,6 @@
 import time
 from fastapi import FastAPI, UploadFile, File, BackgroundTasks, Form
+from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from workflow import get_workflow_status, run_workflow
@@ -39,7 +40,21 @@ class WorkflowRequest(BaseModel):
 class HashUpdate(BaseModel):
     hash: str
 
-app = FastAPI()
+
+# Initialize token manager asynchronously
+token_manager = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global token_manager
+    token_manager = XRPLTokenManager()
+    await token_manager.init()
+    # task = asyncio.create_task(token_manager.init())
+
+    yield
+    # after
+
+app = FastAPI(lifespan=lifespan)
 app.include_router(kraken_router)
 
 # Configure CORS
@@ -56,16 +71,14 @@ initialize_db()
 migrate_db()  # Run migration again to ensure it's up to date
 copy_env_to_tmp()
 
-# Initialize token manager asynchronously
-token_manager = None
-
-@app.on_event("startup")
-async def startup_event():
-    global token_manager
-    token_manager = await XRPLTokenManager()
+@app.get("/health")
+async def health():
+    return { "health": "OK" }
 
 @app.get("/")
 async def root():
+    print("token_manager:", token_manager)
+
     await token_manager.issue_token(1)
     time.sleep(1)
     await token_manager.issue_token(1)

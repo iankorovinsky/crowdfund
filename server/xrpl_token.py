@@ -1,13 +1,20 @@
 import xrpl
 from typing import Tuple
 from rich.console import Console
-from xrpl.wallet import generate_faucet_wallet
+from xrpl.wallet import generate_faucet_wallet as async_generate_faucet_wallet
 import asyncio
 
 console = Console()
 
 class XRPLTokenManager:
-    async def __init__(self):
+    def __init__(self):
+        self.client = None
+        self.cold_wallet = None
+        self.hot_wallet = None
+        self.currency_code = None
+        self.testnet_url = None
+
+    async def init(self):
         console.print("""[cyan]
 ██╗  ██╗██████╗ ██████╗ ██╗      ████████╗ ██████╗ ██╗  ██╗███████╗███╗   ██╗
 ╚██╗██╔╝██╔══██╗██╔══██╗██║      ╚══██╔══╝██╔═══██╗██║ ██╔╝██╔════╝████╗  ██║
@@ -27,9 +34,9 @@ class XRPLTokenManager:
 
         # 🏦 Generate Wallets
         console.print("[bold blue]🔑 Generating Cold Storage Wallet...[/bold blue]")
-        self.cold_wallet = await generate_faucet_wallet(self.client, debug=True)
+        self.cold_wallet = await async_generate_faucet_wallet(self.client, debug=True)
         console.print("[bold blue]🔑 Generating Hot Wallet...[/bold blue]")
-        self.hot_wallet = await generate_faucet_wallet(self.client, debug=True)
+        self.hot_wallet = await async_generate_faucet_wallet(self.client, debug=True)
 
         # 🛠️ Configure Cold Wallet (Issuer)
         console.print("[bold blue]🔧 Configuring Cold Storage (Issuer) Settings...[/bold blue]")
@@ -112,10 +119,10 @@ class XRPLTokenManager:
 
         return hot_balance, cold_balance
 
-if __name__ == "__main__":
-    # Example usage
-    async def main():
-        token_manager = await XRPLTokenManager()
-        await token_manager.issue_token(10)
+# if __name__ == "__main__":
+#     # Example usage
+#     async def main():
+#         token_manager = await XRPLTokenManager()
+#         await token_manager.issue_token(10)
     
-    asyncio.run(main())
+#     asyncio.run(main())
