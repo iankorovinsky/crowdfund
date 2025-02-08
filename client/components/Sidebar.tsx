@@ -90,7 +90,7 @@ export function Sidebar({
   } = useQuery<NodeType[]>({
     queryKey: ["blocks"],
     queryFn: async () => {
-      const response = await fetch("http://localhost:8000/agents");
+      const response = await fetch("https://apt-polished-raptor.ngrok-free.app/agents");
       if (!response.ok) {
         throw new Error("Failed to fetch blocks");
       }
@@ -108,7 +108,7 @@ export function Sidebar({
     queryFn: async () => {
       if (!currentWorkflowId) throw new Error("No workflow ID");
       const response = await fetch(
-        `http://localhost:8000/workflow-status/${currentWorkflowId}`,
+        `https://apt-polished-raptor.ngrok-free.app/workflow-status/${currentWorkflowId}`,
       );
       if (!response.ok) {
         throw new Error("Failed to fetch workflow status");
@@ -134,7 +134,7 @@ export function Sidebar({
 
   const { mutate: createWorkflow } = useMutation({
     mutationFn: async (body: any) => {
-      const response = await fetch("http://localhost:8000/run-workflow", {
+      const response = await fetch("https://apt-polished-raptor.ngrok-free.app/run-workflow", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -81,17 +81,29 @@ export const mintAndRegisterIp = async (
     throw new Error("Failed to get ipId from mint response");
   }
 
-  const license_response = await client.license.attachLicenseTerms({
-      licenseTermsId: "3", 
-      ipId: mintResponse.ipId,
-      txOptions: { waitForTransaction: true }
+  const license_reg_response = await client.license.registerCommercialRemixPIL({
+    currency: '0x1514000000000000000000000000000000000000', // $WIP token address
+    defaultMintingFee: '10', // 10 $WIP tokens
+    commercialRevShare: 10, // 10% revenue share
+    txOptions: { waitForTransaction: true }
   });
-    
-  if (license_response.success) {
-    console.log(`Attached License Terms to IPA at transaction hash ${license_response.txHash}.`)
+  
+  console.log(`PIL Terms registered at transaction hash ${license_reg_response.txHash}, License Terms ID: ${license_reg_response.licenseTermsId}`) 
+  
+  const response = await client.license.attachLicenseTerms({
+    licenseTermsId: license_reg_response.licenseTermsId?.toString() || '0', 
+    ipId: mintResponse.ipId,
+    txOptions: { waitForTransaction: true }
+  });
+  
+  if (response.success) {
+    console.log(`Attached License Terms to IPA at transaction hash ${response.txHash}.`)
   } else {
     console.log(`License Terms already attached to this IPA.`)
   }
 
   return `https://explorer.story.foundation/ipa/${mintResponse.ipId}`;
 };
+
+
+mintAndRegisterIp("Test Running Full", "Test Running Full")

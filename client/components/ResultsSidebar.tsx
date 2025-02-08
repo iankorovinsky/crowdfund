@@ -83,7 +83,7 @@ export function ResultsSidebar() {
       if (!currentWorkflowId) throw new Error("No workflow ID");
       setCalled(true);
       const response = await fetch(
-        `http://localhost:8000/workflow-status/${currentWorkflowId}`,
+        `https://apt-polished-raptor.ngrok-free.app/workflow-status/${currentWorkflowId}`,
       );
       return response.json();
     },
