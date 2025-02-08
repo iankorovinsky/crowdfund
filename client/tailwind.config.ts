@@ -58,7 +58,20 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+  		keyframes: {
+  			'gradient-x': {
+  				'0%, 100%': {
+  					'background-position': '0% 50%',
+  				},
+  				'50%': {
+  					'background-position': '100% 50%',
+  				},
+  			},
+  		},
+  		animation: {
+  			'gradient-x': 'gradient-x 3s ease infinite',
+  		},
   	}
   },
   plugins: [require("tailwindcss-animate"), addVariablesForColors],
