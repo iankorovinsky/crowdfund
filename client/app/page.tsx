@@ -21,7 +21,7 @@ import {
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
-  XYPosition
+  XYPosition,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useCallback, useRef } from "react";
@@ -148,6 +148,41 @@ const Home = () => {
     [screenToFlowPosition, storage.nodes, updateNodes]
   );
 
+  const updateCursorPosition = useCallback(
+    (e: { clientX: number; clientY: number }) => {
+      if (reactFlowWrapper.current) {
+        const bounds = reactFlowWrapper.current.getBoundingClientRect();
+        const { zoom, x: vpX, y: vpY } = getViewport();
+
+        const flowX = (e.clientX - bounds.left - vpX) / zoom;
+        const flowY = (e.clientY - bounds.top - vpY) / zoom;
+
+        updateMyPresence({
+          cursor: {
+            x: flowX,
+            y: flowY,
+            lastActive: Date.now(),
+          },
+        });
+      }
+    },
+    [getViewport, updateMyPresence]
+  );
+
+  console.log("nodes", storage.nodes);
+  console.log("edges", storage.edges);
+
+  console.log(
+    JSON.stringify(
+      {
+        nodes: storage.nodes,
+        edges: storage.edges,
+      },
+      null,
+      2
+    )
+  );
+
   return (
     <div className="flex h-screen w-screen">
       <Sidebar />
@@ -160,21 +195,10 @@ const Home = () => {
           onConnect={onConnect}
           onDragOver={onDragOver}
           onDrop={onDrop}
-          onMouseMove={(e) => {
-            if (reactFlowWrapper.current) {
-              const bounds = reactFlowWrapper.current.getBoundingClientRect();
-              const { zoom, x: vpX, y: vpY } = getViewport();
-
-              const flowX = (e.clientX - bounds.left - vpX) / zoom;
-              const flowY = (e.clientY - bounds.top - vpY) / zoom;
-
-              updateMyPresence({
-                cursor: {
-                  x: flowX,
-                  y: flowY,
-                  lastActive: Date.now(),
-                },
-              });
+          onMouseMove={updateCursorPosition}
+          onNodeDrag={(e) => {
+            if (e.clientX && e.clientY) {
+              updateCursorPosition(e);
             }
           }}
           onMouseLeave={() => {
