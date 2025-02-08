@@ -1,3 +1,7 @@
 fastapi
 fastapi-cli
 boto3
+langchain_openai
+langchain
+langchain_community
+beautifulsoup4
