@@ -1,12 +1,16 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { nanoid } from "nanoid"
 import { motion } from "framer-motion"
-import { FiPlus, FiUsers, FiZap, FiLock } from "react-icons/fi"
+import { FiPlus, FiUsers, FiZap, FiTool  } from "react-icons/fi"
+import { BoxesCore } from "@/components/Boxes"
+import { JoinRoomDialog } from "@/components/JoinRoom"
 
 const Home = () => {
+  const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false)
   const router = useRouter()
 
   const createNewRoom = () => {
@@ -17,11 +21,12 @@ const Home = () => {
   const features = [
     { icon: <FiZap className="w-6 h-6" />, text: "Lightning-fast AI processing" },
     { icon: <FiUsers className="w-6 h-6" />, text: "Collaborative workspaces" },
-    { icon: <FiLock className="w-6 h-6" />, text: "Upload custom AI agents" },
+    { icon: <FiTool  className="w-6 h-6" />, text: "Custom AI agentupload" },
   ]
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-blue-900 flex flex-col items-center justify-center p-4 overflow-hidden">
+      <BoxesCore />
       <div className="text-center space-y-8 max-w-4xl mx-auto relative z-10">
         <motion.h1
           className="text-6xl font-extrabold bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text"
@@ -29,7 +34,7 @@ const Home = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          CrowdFund
+          CrowdFunds
         </motion.h1>
 
         <motion.p
@@ -54,9 +59,8 @@ const Home = () => {
             <FiPlus className="w-5 h-5" />
             <span>Create New Room</span>
           </Button>
-
           <Button
-            onClick={() => router.push("/room/1")}
+            onClick={() => setIsJoinDialogOpen(true)}
             className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-6 text-lg rounded-lg transition-all duration-300 shadow-lg hover:shadow-gray-400/20 flex items-center space-x-2"
           >
             <FiUsers className="w-5 h-5" />
@@ -87,6 +91,10 @@ const Home = () => {
           Start building your AI agent workflow by creating a new room or joining an existing one
         </motion.p>
       </div>
+      <JoinRoomDialog
+        isOpen={isJoinDialogOpen}
+        onClose={() => setIsJoinDialogOpen(false)}
+      />
     </div>
   )
 }

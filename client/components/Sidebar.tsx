@@ -1,8 +1,11 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import React, { useState, useMemo } from "react";
-import { Brain, Search } from "lucide-react";
+import { Brain, Home, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Input } from "./ui/input";
+import _ from "lodash";
 
 export interface NodeType {
   type: string;
@@ -10,39 +13,16 @@ export interface NodeType {
   description: string;
 }
 
-const nodeTypes: NodeType[] = [
-  {
-    type: "aiagent",
-    label: "AI Agent",
-    description: "An AI agent that can make trading decisions",
-  },
-  {
-    type: "blocks",
-    label: "Blocks",
-    description: "An AI agent that can make trading decisions",
-  },
-  {
-    type: "transformer",
-    label: "Transformer",
-    description: "Transform and process data in your pipeline",
-  },
-  {
-    type: "classifier",
-    label: "Classifier",
-    description: "Classify and categorize inputs using ML",
-  },
-  {
-    type: "connector",
-    label: "Connector",
-    description: "Connect to external services and APIs",
-  },
-];
-
 interface SidebarProps {
   className: string;
 }
 
 export function Sidebar({ className }: SidebarProps) {
+  const { data: nodeTypes, error, isLoading } = useQuery<NodeType[]>({
+    queryKey: ["agents"],
+    queryFn: () => fetch("http://localhost:8000/agents").then((res) => res.json()),
+  });
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
@@ -50,13 +30,13 @@ export function Sidebar({ className }: SidebarProps) {
     if (!searchQuery.trim()) return nodeTypes;
     
     const query = searchQuery.toLowerCase();
-    return nodeTypes.filter(
+    return nodeTypes?.filter(
       node =>
         node.label.toLowerCase().includes(query) ||
         node.description.toLowerCase().includes(query) ||
         node.type.toLowerCase().includes(query)
     );
-  }, [searchQuery]);
+  }, [searchQuery, nodeTypes]);
 
   const onDragStart = (event: React.DragEvent, nodeType: NodeType) => {
     event.dataTransfer.setData(
@@ -66,8 +46,32 @@ export function Sidebar({ className }: SidebarProps) {
     event.dataTransfer.effectAllowed = "move";
   };
 
+  if (isLoading || !nodeTypes) {
+    return (
+      <div className={className}>
+        <h2 className="text-lg font-semibold mb-4 text-gray-200">Loading agents...</h2>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={className}>
+        <h2 className="text-lg font-semibold mb-4 text-gray-200">AI Agents</h2>
+        <p className="text-red-400">{error.message}</p>
+      </div>
+    );
+  }
+
   return (
     <div className={className}>
+      <div className="flex flex-row items-start justify-between gap-2">
+        <h2 className="text-lg font-semibold mb-4 text-gray-200">AI Agents</h2>
+        <Home 
+          className="w-6 h-6 text-blue-500 mt-1 cursor-pointer hover:text-blue-400 transition-colors" 
+          onClick={() => router.push('/')}
+        />
+      </div>
       <div className="mb-4 relative">
         <Input
           type="text"
@@ -82,7 +86,7 @@ export function Sidebar({ className }: SidebarProps) {
       </div>
       
       <div className="space-y-3">
-        {filteredNodes.map((node, index) => (
+        {filteredNodes && filteredNodes.map((node, index) => (
           <div
             key={index}
             className={`flex items-start p-3 rounded-lg shadow-sm cursor-move transition-all duration-200 ${
