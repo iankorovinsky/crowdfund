@@ -1,13 +1,13 @@
 import requests
 
 url = "http://localhost:8000/create-agent/"
-file_path = '/Users/adriangri/programming/crowdfund/agents/market_data.py'
+file_path = '/Users/adriangri/programming/crowdfund/agents/portfolio_manager.py'
 data = {
-    "type": "Market Data",
-    "label": "Market Data Node 1",
-    "description": "Get the latest market data for a given symbol",
-    "input": "symbol",
-    "output": "market_data"
+    "type": "Portfolio Manager",
+    "label": "Portfolio Manager Node 1 Verbose",
+    "description": "A node that decides the best trades to make based on the analysis",
+    "input": "analysis",
+    "output": "decision"
 }
 
 with open(file_path, 'rb') as file:
