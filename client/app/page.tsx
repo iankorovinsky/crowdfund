@@ -1,35 +1,32 @@
 "use client";
 
+import { Cursor } from "@/components/Cursor";
+import { NodeType, Sidebar } from "@/components/Sidebar";
+import { LiveEdge, LiveNode } from "@/liveblocks.config";
 import {
-  ReactFlow,
-  Controls,
+  useMutation,
+  useMyPresence,
+  useOthers,
+  useStorage,
+} from "@liveblocks/react/suspense";
+import {
   Background,
-  useNodesState,
-  useEdgesState,
-  Connection,
   BackgroundVariant,
-  useReactFlow,
-  Node,
-  Edge,
+  Connection,
+  Controls,
+  EdgeChange,
+  EdgeRemoveChange,
+  NodeChange,
+  NodePositionChange,
+  ReactFlow,
   ReactFlowProvider,
+  useReactFlow,
+  XYPosition
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useCallback, useRef } from "react";
-import { Sidebar, NodeType } from "@/components/Sidebar";
-import { useMyPresence, useOthers } from "@liveblocks/react/suspense";
-import { Cursor } from "@/components/Cursor";
 
-interface CustomNode extends Node {
-  data: {
-    label: string;
-  };
-}
-
-interface CustomEdge extends Edge {
-  type: string;
-}
-
-const initialNodes: CustomNode[] = [
+const initialNodes: LiveNode[] = [
   {
     id: "1",
     position: { x: 100, y: 100 },
@@ -44,7 +41,7 @@ const initialNodes: CustomNode[] = [
   },
 ];
 
-const initialEdges: CustomEdge[] = [
+const initialEdges: LiveEdge[] = [
   { id: "e1-2", source: "1", target: "2", type: "default" },
 ];
 
@@ -53,23 +50,69 @@ const getId = () => `dnd-${id++}`;
 
 const Home = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const storage = useStorage((root) => ({
+    nodes: root.nodes ?? initialNodes,
+    edges: root.edges ?? initialEdges,
+  }));
+  const updateNodes = useMutation(({ storage }, nodes: LiveNode[]) => {
+    storage.set("nodes", nodes);
+  }, []);
+  const updateEdges = useMutation(({ storage }, edges: LiveEdge[]) => {
+    storage.set("edges", edges);
+  }, []);
+
   const { screenToFlowPosition, getViewport } = useReactFlow();
   const [, updateMyPresence] = useMyPresence();
   const others = useOthers();
 
+  const onNodesChange = useCallback(
+    (changes: NodeChange[]) => {
+      const positionChange = changes.find(
+        (change): change is NodePositionChange => change.type === "position"
+      );
+      if (positionChange && positionChange.position) {
+        updateNodes(
+          storage.nodes.map((node) => {
+            if (node.id === positionChange.id) {
+              return {
+                ...node,
+                position: positionChange.position as XYPosition,
+              };
+            }
+            return node;
+          })
+        );
+      }
+    },
+    [storage.nodes, updateNodes]
+  );
+
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange[]) => {
+      const removeChange = changes.find(
+        (change): change is EdgeRemoveChange => change.type === "remove"
+      );
+      if (removeChange) {
+        updateEdges(
+          storage.edges.filter((edge) => edge.id !== removeChange.id)
+        );
+      }
+    },
+    [storage.edges, updateEdges]
+  );
+
   const onConnect = useCallback(
     (params: Connection) => {
-      const edge: CustomEdge = {
+      if (!params.source || !params.target) return;
+      const edge: LiveEdge = {
         id: `e${params.source}-${params.target}`,
         source: params.source,
         target: params.target,
         type: "default",
       };
-      setEdges((eds) => [...eds, edge]);
+      updateEdges([...storage.edges, edge]);
     },
-    [setEdges]
+    [storage.edges, updateEdges]
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -93,16 +136,16 @@ const Home = () => {
         y: event.clientY - reactFlowBounds.top,
       });
 
-      const newNode: CustomNode = {
+      const newNode: LiveNode = {
         id: getId(),
         type: nodeType.type,
         position,
         data: { label: nodeType.label },
       };
 
-      setNodes((nds) => [...nds, newNode]);
+      updateNodes([...storage.nodes, newNode]);
     },
-    [screenToFlowPosition, setNodes]
+    [screenToFlowPosition, storage.nodes, updateNodes]
   );
 
   return (
@@ -110,8 +153,8 @@ const Home = () => {
       <Sidebar />
       <div ref={reactFlowWrapper} className="flex-1 h-full">
         <ReactFlow
-          nodes={nodes}
-          edges={edges}
+          nodes={storage.nodes}
+          edges={storage.edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
@@ -159,6 +202,6 @@ const Home = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Home;

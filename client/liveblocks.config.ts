@@ -1,5 +1,22 @@
 import { createClient } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
+import { Node, Edge } from "@xyflow/react";
+
+export type LiveNode = {
+  id: string;
+  type: string;
+  position: { x: number; y: number };
+  data: { label: string };
+  [key: string]: any;
+};
+
+export type LiveEdge = {
+  id: string;
+  source: string;
+  target: string;
+  type: string;
+  [key: string]: any;
+};
 
 // Define Liveblocks types for your application
 // https://liveblocks.io/docs/api-reference/liveblocks-react#Typing-your-data
@@ -13,6 +30,10 @@ declare global {
       } | null;
     };
 
+    Storage: {
+      nodes: LiveNode[];
+      edges: LiveEdge[];
+    };
 
     // Custom events, for useBroadcastEvent, useEventListener
     RoomEvent: {};
@@ -52,7 +73,8 @@ export type Presence = {
 // LiveMap, LiveObject instances, for which updates are automatically
 // persisted and synced to all connected users.
 export type Storage = {
-  // Add your storage fields here
+  nodes: LiveNode[];
+  edges: LiveEdge[];
 };
 
 // UserMeta represents static/readonly metadata on each user, as opposed to
