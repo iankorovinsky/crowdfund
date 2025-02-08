@@ -42,7 +42,8 @@ async def upload_python_file(
     type: str = Form(...),
     label: str = Form(...),
     description: str = Form(...),
-    image: UploadFile | None = File(None)
+    input: str = Form(...),
+    output: str = Form(...),
 ):
     agent_id = str(uuid.uuid4())
     
@@ -61,7 +62,6 @@ async def upload_python_file(
         "success": True,
         "info": f"file '{agent_id}' saved at '{file_location}' and uploaded to R2",
         "agent_id": agent_id,
-        "image_path": image_path
     }
 
 @app.get("/agent/{agent_id}")
