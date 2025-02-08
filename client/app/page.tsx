@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { nanoid } from "nanoid"
 import { motion } from "framer-motion"
-import { FiPlus, FiUsers, FiZap, FiLock } from "react-icons/fi"
+import { FiPlus, FiUsers, FiZap, FiTool  } from "react-icons/fi"
 import { BoxesCore } from "@/components/Boxes"
 import { JoinRoomDialog } from "@/components/JoinRoom"
 
@@ -21,7 +21,7 @@ const Home = () => {
   const features = [
     { icon: <FiZap className="w-6 h-6" />, text: "Lightning-fast AI processing" },
     { icon: <FiUsers className="w-6 h-6" />, text: "Collaborative workspaces" },
-    { icon: <FiLock className="w-6 h-6" />, text: "Upload custom AI agents" },
+    { icon: <FiTool  className="w-6 h-6" />, text: "Custom AI agent upload" },
   ]
 
   return (
