@@ -1,0 +1,46 @@
+from langchain_openai import ChatOpenAI
+from langchain import hub
+from langchain.agents import create_tool_calling_agent
+from langchain.agents import AgentExecutor
+from langchain_community.tools.tavily_search import TavilySearchResults
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Initialize search tool
+search = TavilySearchResults()
+tools = [search]
+
+# Initialize language model
+llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+
+# Pull the prompt from the hub
+prompt = hub.pull("hwchase17/openai-functions-agent")
+
+# Create the agent and executor
+agent = create_tool_calling_agent(llm, tools, prompt)
+agent_executor = AgentExecutor(agent=agent, tools=tools)
+
+# Define market information
+market_information = (
+    "Over the past week, Apple's stock (AAPL) has experienced a decline, closing at $227.63 on February 7, 2025, "
+    "down from $236.00 on January 31, 2025. This decrease is partly attributed to reports that China's State Administration "
+    "for Market Regulation is preparing a potential probe into Apple's App Store fees and practices, focusing on its 30% commission "
+    "on in-app spending. Additionally, escalating trade tensions between the U.S. and China, marked by recent tariff impositions, "
+    "have contributed to the downward pressure on Apple's stock."
+)
+
+# Invoke the agent with the market information
+response = agent_executor.invoke({
+    "input": (
+        f"{market_information}"
+        "Use all the tools provided to retrieve information available for the company upon today. Analyze the positive developments "
+        "and potential concerns of the company with 2-4 most important factors respectively and keep them concise. Most factors should "
+        "be inferred from company related news. Then make a rough prediction (e.g. up/down by 2-3%) of the the company's stock price "
+        "movement for next week. Provide a summary analysis to support your prediction."
+    )
+})
+
+# Print the response
+print(response)
