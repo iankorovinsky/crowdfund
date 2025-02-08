@@ -83,7 +83,7 @@ export function UploadAgent({ className }: { className?: string }) {
           formData.append("image", value.image);
         }
 
-        const response = await fetch("http://localhost:8000/create-agent", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/create-agent`, {
           method: "POST",
           body: formData,
         });
