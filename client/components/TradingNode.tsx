@@ -12,12 +12,15 @@ import {
 } from "@/components/ui/select";
 
 const TRADING_PAIRS = [
-  "BTC/USD",
-  "ETH/USD",
-  "XRP/USD",
-  "SOL/USD",
-  "DOGE/USD",
-  "ADA/USD",
+  "PI_XBTUSD",
+  "PI_BTCUSD",
+  "PI_ETHUSD",
+  "PI_LTCUSD",
+  "PI_BCHUSD",
+  "PF_SOLUSD",
+  "PF_SUSHIUSD",
+  "PF_XRPUSD",
+  "PF_COMPUSD",
 ] as const;
 
 type TradingPair = (typeof TRADING_PAIRS)[number];
