@@ -110,7 +110,8 @@ const Home = () => {
     useStore.setState({
       updateNodeData: (nodeId, newData) => {
         updateNodes(
-          storage.nodes.map((node) => {
+          storage.nodes.map((node: any) => {
+            //todo: fix any here
             if (node.id === nodeId) {
               return {
                 ...node,
@@ -270,10 +271,12 @@ const Home = () => {
 
   return (
     <div className="flex h-screen w-screen bg-gray-900">
-      {sideBar && <Sidebar
-        className="w-80 h-full bg-gray-800 p-4 border-r border-gray-700"
-        onRunningChange={setIsRunning}
-      />}
+      {sideBar && (
+        <Sidebar
+          className="w-80 h-full bg-gray-800 p-4 border-r border-gray-700"
+          onRunningChange={setIsRunning}
+        />
+      )}
       <button
         onClick={() => setSideBar(!sideBar)}
         className={`
@@ -282,7 +285,7 @@ const Home = () => {
           border border-gray-700 hover:border-gray-600
           rounded-full p-2
           transition-all duration-300 ease-in-out
-          ${sideBar ? 'left-[20.5rem]' : 'left-2'}
+          ${sideBar ? "left-[20.5rem]" : "left-2"}
         `}
         title={sideBar ? "Collapse sidebar" : "Expand sidebar"}
       >

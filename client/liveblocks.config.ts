@@ -1,6 +1,5 @@
 import { BaseUserMeta, createClient } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
-import { Node, Edge } from "@xyflow/react";
 
 export type Presence = {
   cursor: { x: number; y: number } | null;
@@ -125,4 +124,5 @@ export const {
   },
 } = createRoomContext<Presence, Storage, UserMeta, RoomEvent>(client);
 
-export {};
+export { };
+

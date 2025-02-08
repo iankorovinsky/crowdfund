@@ -57,9 +57,7 @@ interface FormType {
 }
 
 export function UploadAgent({ className }: { className?: string }) {
-  const [imagePreview, setImagePreview] = React.useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const imageInputRef = React.useRef<HTMLInputElement>(null);
 
   const form = useForm<FormType>({
     defaultValues: {
@@ -100,7 +98,6 @@ export function UploadAgent({ className }: { className?: string }) {
         console.log("IP minted and registered on Story Protocol:", ip_url);
         window.open(ip_url, '_blank');
         form.reset();
-        setImagePreview(null);
 
         toast.success("Agent created successfully!", {
           description: `Agent ID: ${result.agent_id}`,

@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { AIAgentData } from "@/components/AIAgentNode";
-import { SymbolType } from "@/components/TradingNode";
+import { TradingPair } from "@/components/TradingNode";
 
 type NodeData = AIAgentData & {
-  symbol?: SymbolType;
+  symbol?: TradingPair;
 };
 
 interface Store {
