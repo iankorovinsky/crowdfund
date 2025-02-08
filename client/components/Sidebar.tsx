@@ -241,10 +241,17 @@ export function Sidebar({
     }
   };
 
-  const confirmStop = () => {
+  const confirmStop = async () => {
     setIsRunning(false);
     setShowStopDialog(false);
     onStop?.();
+
+    // call payRoyalty for each node
+    for (const node of storage.nodes) {
+      if (node.hash) {
+        await payRoyalty(node.hash as `0x${string}`);
+      }
+    }
   };
 
   const filteredNodes = useMemo(() => {

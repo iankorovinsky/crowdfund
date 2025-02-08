@@ -14,7 +14,7 @@ const config: StoryConfig = {
 };
 export const client = StoryClient.newClient(config);
 
-const payRoyalty = async (receiverIpId: `0x${string}`) => {
+const payRoyalty = async (receiverIpId: `0x${string}` = "0x222D64ffF449579EC1D015E6064DA521468E219f") => {
   const payRoyalty = await client.royalty.payRoyaltyOnBehalf({
     receiverIpId: receiverIpId,
     // receiverIpId: "0x222D64ffF449579EC1D015E6064DA521468E219f", // child ipId
