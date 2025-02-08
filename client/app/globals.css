@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+<<<<<<< HEAD
 
 .highlight {
   opacity: 1;
@@ -14,3 +15,67 @@
   transition: all 0.3s ease;
 }
 
+=======
+@layer base {
+  :root {
+    --background: 221, 39%, 11%; /* bg-gray-900 */
+    --foreground: 210, 40%, 98%; /* text-gray-200 */
+    --card: 217, 33%, 17%; /* bg-gray-800 */
+    --card-foreground: 210, 40%, 98%;
+    --popover: 217, 33%, 17%;
+    --popover-foreground: 210, 40%, 98%;
+    --primary: 221, 83%, 53%; /* blue-500 */
+    --primary-foreground: 210, 40%, 98%;
+    --secondary: 217, 19%, 27%; /* gray-700 */
+    --secondary-foreground: 210, 40%, 98%;
+    --muted: 215, 25%, 27%; /* bg-gray-800/50 */
+    --muted-foreground: 215, 20%, 65%; /* text-gray-400 */
+    --accent: 217, 19%, 27%;
+    --accent-foreground: 210, 40%, 98%;
+    --destructive: 0, 74%, 42%; /* border-red-900/50 */
+    --destructive-foreground: 0, 84%, 60%; /* text-red-400 */
+    --input: 217, 19%, 27%;
+    --ring: 221, 83%, 53%;
+    --chart-1: 221, 83%, 53%;
+    --chart-2: 199, 89%, 48%;
+    --chart-3: 31, 90%, 50%;
+    --chart-4: 280, 87%, 65%;
+    --chart-5: 340, 82%, 52%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+>>>>>>> 63c437e5a0d23ecb04cc7f559b2ec28c4263e7a3

@@ -1,371 +1,95 @@
-"use client";
+"use client"
 
-import { Cursor } from "@/components/Cursor";
-import { NodeType, Sidebar } from "@/components/Sidebar";
-import { LiveEdge, LiveNode } from "@/liveblocks.config";
-import {
-  useMutation,
-  useMyPresence,
-  useOthers,
-  useStorage,
-} from "@liveblocks/react/suspense";
-import {
-  Background,
-  BackgroundVariant,
-  Connection,
-  Controls,
-  EdgeChange,
-  EdgeRemoveChange,
-  NodeChange,
-  NodePositionChange,
-  ReactFlow,
-  ReactFlowProvider,
-  useReactFlow,
-  XYPosition,
-  Node,
-} from "@xyflow/react";
-import "@xyflow/react/dist/style.css";
-import { useCallback, useRef, useEffect, useState } from "react";
-import AIAgentNode from "@/components/AIAgentNode";
-import { Trash2, Coins } from "lucide-react";
-import { mintAndRegisterIp } from "@/scripts/simpleMintAndRegisterSpg";
-
-const nodeTypes = {
-  aiagent: AIAgentNode,
-};
-
-const initialNodes: LiveNode[] = [
-  {
-    id: "1",
-    type: "aiagent",
-    position: { x: 100, y: 100 },
-    data: {
-      label: "Market Analysis",
-      description: "Analyzes market conditions and trends",
-    },
-  },
-  {
-    id: "2",
-    type: "aiagent",
-    position: { x: 400, y: 100 },
-    data: {
-      label: "Decision Maker",
-      description: "Makes final trading decisions",
-    },
-  },
-];
-
-const initialEdges: LiveEdge[] = [
-  { id: "e1-2", source: "1", target: "2", type: "default" },
-];
-
-let id = 0;
-const getId = () => `dnd-${id++}`;
+import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
+import { nanoid } from "nanoid"
+import { motion } from "framer-motion"
+import { FiPlus, FiUsers, FiZap, FiLock } from "react-icons/fi"
 
 const Home = () => {
-  const reactFlowWrapper = useRef<HTMLDivElement>(null);
-  const [selectedNode, setSelectedNode] = useState<string | null>(null);
-  const storage = useStorage((root) => ({
-    nodes: root.nodes ?? initialNodes,
-    edges: root.edges ?? initialEdges,
-  }));
-  const updateNodes = useMutation(({ storage }, nodes: LiveNode[]) => {
-    storage.set("nodes", nodes);
-  }, []);
-  const updateEdges = useMutation(({ storage }, edges: LiveEdge[]) => {
-    storage.set("edges", edges);
-  }, []);
+  const router = useRouter()
 
-  const { screenToFlowPosition, getViewport } = useReactFlow();
-  const [, updateMyPresence] = useMyPresence();
-  const others = useOthers();
+  const createNewRoom = () => {
+    const roomId = nanoid(10)
+    router.push(`/room/${roomId}`)
+  }
 
-  const onNodesChange = useCallback(
-    (changes: NodeChange[]) => {
-      const positionChange = changes.find(
-        (change): change is NodePositionChange => change.type === "position"
-      );
-      if (positionChange && positionChange.position) {
-        updateNodes(
-          storage.nodes.map((node) => {
-            if (node.id === positionChange.id) {
-              return {
-                ...node,
-                position: positionChange.position as XYPosition,
-              };
-            }
-            return node;
-          })
-        );
-      }
-    },
-    [storage.nodes, updateNodes]
-  );
-
-  const onEdgesChange = useCallback(
-    (changes: EdgeChange[]) => {
-      const removeChange = changes.find(
-        (change): change is EdgeRemoveChange => change.type === "remove"
-      );
-      if (removeChange) {
-        updateEdges(
-          storage.edges.filter((edge) => edge.id !== removeChange.id)
-        );
-      }
-    },
-    [storage.edges, updateEdges]
-  );
-
-  const onConnect = useCallback(
-    (params: Connection) => {
-      if (!params.source || !params.target) return;
-      const edge: LiveEdge = {
-        id: `e${params.source}-${params.target}`,
-        source: params.source,
-        target: params.target,
-        type: "default",
-      };
-      updateEdges([...storage.edges, edge]);
-    },
-    [storage.edges, updateEdges]
-  );
-
-  const onDragOver = useCallback((event: React.DragEvent) => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = "move";
-  }, []);
-
-  const onDrop = useCallback(
-    (event: React.DragEvent) => {
-      event.preventDefault();
-
-      const reactFlowBounds = reactFlowWrapper.current?.getBoundingClientRect();
-      const nodeType = JSON.parse(
-        event.dataTransfer.getData("application/reactflow")
-      ) as NodeType;
-
-      if (!reactFlowBounds) return;
-
-      const position = screenToFlowPosition({
-        x: event.clientX - reactFlowBounds.left,
-        y: event.clientY - reactFlowBounds.top,
-      });
-
-      const newNode: LiveNode = {
-        id: getId(),
-        type: "aiagent",
-        position,
-        data: {
-          label: nodeType.label,
-          description: nodeType.description,
-        },
-      };
-
-      updateNodes([...storage.nodes, newNode]);
-    },
-    [screenToFlowPosition, storage.nodes, updateNodes]
-  );
-
-  const updateCursorPosition = useCallback(
-    (e: { clientX: number; clientY: number }) => {
-      if (reactFlowWrapper.current) {
-        const bounds = reactFlowWrapper.current.getBoundingClientRect();
-        const { zoom, x: vpX, y: vpY } = getViewport();
-
-        const flowX = (e.clientX - bounds.left - vpX) / zoom;
-        const flowY = (e.clientY - bounds.top - vpY) / zoom;
-
-        updateMyPresence({
-          cursor: {
-            x: flowX,
-            y: flowY,
-            lastActive: Date.now(),
-          },
-        });
-      }
-    },
-    [getViewport, updateMyPresence]
-  );
-
-  const onNodeClick = useCallback((event: React.MouseEvent, node: LiveNode) => {
-    setSelectedNode(node.id);
-  }, []);
-
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (
-        selectedNode &&
-        (event.key === "Backspace" || event.key === "Delete")
-      ) {
-        // Also remove any connected edges
-        const connectedEdges = storage.edges.filter(
-          (edge) => edge.source === selectedNode || edge.target === selectedNode
-        );
-        if (connectedEdges.length > 0) {
-          updateEdges(
-            storage.edges.filter(
-              (edge) =>
-                edge.source !== selectedNode && edge.target !== selectedNode
-            )
-          );
-        }
-
-        updateNodes(storage.nodes.filter((node) => node.id !== selectedNode));
-        setSelectedNode(null);
-      }
-    };
-
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [selectedNode, storage.nodes, storage.edges, updateNodes, updateEdges]);
-
-  console.log("nodes", storage.nodes);
-  console.log("edges", storage.edges);
-
-  console.log(
-    JSON.stringify(
-      {
-        nodes: storage.nodes,
-        edges: storage.edges,
-      },
-      null,
-      2
-    )
-  );
+  const features = [
+    { icon: <FiZap className="w-6 h-6" />, text: "Lightning-fast AI processing" },
+    { icon: <FiUsers className="w-6 h-6" />, text: "Collaborative workspaces" },
+    { icon: <FiLock className="w-6 h-6" />, text: "Upload custom AI agents" },
+  ]
 
   return (
-    <div className="flex h-screen w-screen">
-      <Sidebar />
-      <div ref={reactFlowWrapper} className="flex-1 h-full relative">
-        <ReactFlow
-          nodes={storage.nodes}
-          edges={storage.edges}
-          nodeTypes={nodeTypes}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          onDragOver={onDragOver}
-          onDrop={onDrop}
-          onMouseMove={updateCursorPosition}
-          onNodeDrag={(e) => {
-            if (e.clientX && e.clientY) {
-              updateCursorPosition(e);
-            }
-          }}
-          onNodeClick={onNodeClick}
-          onPaneClick={() => setSelectedNode(null)}
-          onMouseLeave={() => {
-            updateMyPresence({
-              cursor: null,
-            });
-          }}
-          fitView
+    <div className="relative min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-blue-900 flex flex-col items-center justify-center p-4 overflow-hidden">
+      <div className="text-center space-y-8 max-w-4xl mx-auto relative z-10">
+        <motion.h1
+          className="text-6xl font-extrabold bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
         >
-          <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-          <Controls />
-          {others.map(({ connectionId, presence }) => {
-            if (!presence.cursor) return null;
-            return (
-              <Cursor
-                key={connectionId}
-                x={presence.cursor.x}
-                y={presence.cursor.y}
-                lastActive={presence.cursor.lastActive}
-                name={`User ${connectionId}`}
-              />
-            );
-          })}
-        </ReactFlow>
+          CrowdFund
+        </motion.h1>
 
-        {/* Search Bar */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-96 z-10">
-          <input
-            type="text"
-            placeholder="Search nodes..."
-            className="w-full px-4 py-2 rounded-full border-2 border-gray-200 focus:border-blue-500 focus:outline-none shadow-lg bg-white"
-            onChange={(e) => {
-              const searchTerm = e.target.value.toLowerCase();
-              const filteredNodes = storage.nodes.map(node => ({
-                ...node,
-                className: node.data.label.toLowerCase().includes(searchTerm) || 
-                          node.data.description.toLowerCase().includes(searchTerm)
-                          ? 'highlight'
-                          : 'dim'
-              }));
-              updateNodes(filteredNodes);
-            }}
-          />
-        </div>
+        <motion.p
+          className="text-gray-300 text-xl"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          Connect Agentic AI models to create a revolutionary crypto trading workflow
+        </motion.p>
 
-        {/* Trash Bin and Mint Button */}
-        {selectedNode && (
-          <div className="absolute bottom-8 right-8 flex gap-4">
-            {/* Mint Button */}
-            <div
-              className="p-4 bg-white rounded-full shadow-lg border-2 border-green-100 cursor-pointer hover:bg-green-50 transition-all duration-200 group"
-              onClick={async () => {
-                const node = storage.nodes.find((n) => n.id === selectedNode);
-                if (!node) return;
-                
-                try {
-                  const url = await mintAndRegisterIp(
-                    node.data.label,
-                    node.data.description
-                  );
-                  console.log('Minting successful, opening URL:', url);
-                  window.open(url, '_blank');
-                } catch (error) {
-                  console.error('Failed to mint IP:', error);
-                  alert(`Failed to mint IP: ${error instanceof Error ? error.message : 'Unknown error'}`);
-                }
-              }}
-              title="Mint selected node as IP Asset"
-            >
-              <Coins className="w-6 h-6 text-green-400 group-hover:text-green-500 transition-colors duration-200" />
+        <motion.div
+          className="flex flex-col sm:flex-row gap-4 justify-center mt-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          <Button
+            onClick={createNewRoom}
+            className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white px-8 py-6 text-lg rounded-lg transition-all duration-300 shadow-lg hover:shadow-blue-500/20 flex items-center space-x-2"
+          >
+            <FiPlus className="w-5 h-5" />
+            <span>Create New Room</span>
+          </Button>
+
+          <Button
+            onClick={() => router.push("/room/1")}
+            className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-6 text-lg rounded-lg transition-all duration-300 shadow-lg hover:shadow-gray-400/20 flex items-center space-x-2"
+          >
+            <FiUsers className="w-5 h-5" />
+            <span>Join Existing Room</span>
+          </Button>
+        </motion.div>
+
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-16"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+        >
+          {features.map((feature, index) => (
+            <div key={index} className="bg-gray-700 bg-opacity-40 p-6 rounded-lg backdrop-blur-sm flex flex-col items-start justify-center border border-gray-700 hover:border hover:border-blue-400 transition-all duration-300">
+              <div className="text-blue-400 mb-4">{feature.icon}</div>
+              <p className="text-gray-300">{feature.text}</p>
             </div>
+          ))}
+        </motion.div>
 
-            {/* Existing Trash Button */}
-            <div
-              className="p-4 bg-white rounded-full shadow-lg border-2 border-red-100 cursor-pointer hover:bg-red-50 transition-all duration-200 group"
-              onClick={() => {
-                // Remove connected edges
-                const connectedEdges = storage.edges.filter(
-                  (edge) =>
-                    edge.source === selectedNode || edge.target === selectedNode
-                );
-                if (connectedEdges.length > 0) {
-                  updateEdges(
-                    storage.edges.filter(
-                      (edge) =>
-                        edge.source !== selectedNode &&
-                        edge.target !== selectedNode
-                    )
-                  );
-                }
-
-                // Remove the node
-                updateNodes(
-                  storage.nodes.filter((node) => node.id !== selectedNode)
-                );
-                setSelectedNode(null);
-              }}
-              title="Delete selected node (or press Delete/Backspace)"
-            >
-              <Trash2 className="w-6 h-6 text-red-400 group-hover:text-red-500 transition-colors duration-200" />
-            </div>
-          </div>
-        )}
+        <motion.p
+          className="text-gray-400 mt-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+        >
+          Start building your AI agent workflow by creating a new room or joining an existing one
+        </motion.p>
       </div>
     </div>
-  );
-};
-
-export default function App() {
-  return (
-    <ReactFlowProvider>
-      <Home />
-    </ReactFlowProvider>
-  );
+  )
 }
+
+export default Home
+
