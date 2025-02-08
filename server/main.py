@@ -1,8 +1,9 @@
-from fastapi import FastAPI, UploadFile, File, BackgroundTasks
+from fastapi import FastAPI, UploadFile, File, BackgroundTasks, Form
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from workflow import get_workflow_status, run_workflow
 import uuid
+from database import initialize_db, create_agent, get_agent, get_all_agents
 
 app = FastAPI()
 
@@ -14,6 +15,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+initialize_db()
 
 @app.get("/")
 async def root():
@@ -30,10 +33,27 @@ async def post_run_workflow(body: dict, background_tasks: BackgroundTasks):
 async def workflow_status(workflow_id: str):
     return get_workflow_status(workflow_id)
 
-@app.post("/upload-file")
-async def upload_python_file(file: UploadFile = File(...)):
-    file_location = f"/tmp/crowdfund/{file.filename}"
+@app.post("/create-agent")
+async def upload_python_file(
+    file: UploadFile = File(...),
+    type: str = Form(...),
+    label: str = Form(...),
+    description: str = Form(...)
+):
+    agent_id = str(uuid.uuid4())
+    file_location = f"/tmp/crowdfund/{agent_id}.py"
     os.makedirs(os.path.dirname(file_location), exist_ok=True)
     with open(file_location, "wb") as f:
         f.write(await file.read())
-    return {"info": f"file '{file.filename}' saved at '{file_location}'"}
+    
+    create_agent(agent_id, type, label, description)
+
+    return {"info": f"file '{agent_id}' saved at '{file_location}'"}
+
+@app.get("/agent/{agent_id}")
+async def get_agent_info(agent_id: str):
+    return get_agent(agent_id)
+
+@app.get("/agents")
+async def get_agents():
+    return get_all_agents()
