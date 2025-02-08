@@ -8,7 +8,7 @@ from cloudflare import upload_file_to_r2, delete_file_from_r2
 from kraken import router as kraken_router
 from pydantic import BaseModel
 from typing import List
-from helpers import copy_env_to_tmp
+from helpers import copy_env_to_tmp, get_node_input_and_output
 
 class Position(BaseModel):
     x: float
@@ -32,6 +32,7 @@ class Workflow(BaseModel):
 
 class WorkflowRequest(BaseModel):
     workflow: Workflow
+    symbol: str
 
 app = FastAPI()
 app.include_router(kraken_router)
@@ -55,7 +56,7 @@ async def root():
 @app.post("/run-workflow")
 async def post_run_workflow(request: WorkflowRequest, background_tasks: BackgroundTasks):
     workflow_id = str(uuid.uuid4())
-    background_tasks.add_task(run_workflow, workflow_id, request.workflow.dict())
+    background_tasks.add_task(run_workflow, workflow_id, request.workflow.dict(), request.symbol)
     return { "workflow_id": workflow_id }
 
 @app.get("/workflow-status/{workflow_id}")
@@ -68,8 +69,6 @@ async def upload_python_file(
     type: str = Form(...),
     label: str = Form(...),
     description: str = Form(...),
-    input: str = Form(...),
-    output: str = Form(...),
 ):
     agent_id = str(uuid.uuid4())
     
@@ -81,8 +80,10 @@ async def upload_python_file(
     
     # Upload Python file to R2
     upload_file_to_r2(file_location, f"{agent_id}.py")
+
+    node_input, node_output = get_node_input_and_output(type)
     
-    create_agent(agent_id, type, label, description, input, output)
+    create_agent(agent_id, type, label, description, node_input, node_output)
 
     return {
         "success": True,

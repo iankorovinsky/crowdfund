@@ -27,6 +27,7 @@ import {
   DialogTitle,
 } from "./ui/dialog";
 import { Input } from "./ui/input";
+import { ScrollArea } from "./ui/scroll-area";
 
 export interface NodeType {
   type: string;
@@ -138,7 +139,7 @@ export function Sidebar({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify({ ...body, symbol: "pi_ethusd" }),
       });
       return response.json();
     },
@@ -325,41 +326,44 @@ export function Sidebar({
           />
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         </div>
-
-        {/* Nodes list */}
-        <div className="space-y-3">
-          {filteredNodes?.map((node, index) => (
-            <div
-              key={index}
-              className={`flex items-start p-3 rounded-lg shadow-sm cursor-move transition-all duration-200 ${
-                isSearchFocused &&
-                searchQuery &&
-                node.label.toLowerCase().includes(searchQuery.toLowerCase())
-                  ? "bg-blue-500/20 scale-102"
-                  : "bg-gray-900/50 hover:bg-gray-700"
-              }`}
-              draggable
-              onDragStart={(e) => onDragStart(e, node)}
-              style={{ borderLeft: "4px solid #3B82F6" }}
-            >
+        <ScrollArea className="h-[calc(100vh-150px)]">
+          {/* Nodes list */}
+          <div className="space-y-3">
+            {filteredNodes?.map((node, index) => (
               <div
-                className={`p-2 rounded-lg mr-3 transition-colors duration-300 ${
+                key={index}
+                className={`flex items-start p-3 rounded-lg shadow-sm cursor-move transition-all duration-200 ${
                   isSearchFocused &&
                   searchQuery &&
                   node.label.toLowerCase().includes(searchQuery.toLowerCase())
-                    ? "bg-blue-500/20"
-                    : "bg-gray-800/50"
+                    ? "bg-blue-500/20 scale-102"
+                    : "bg-gray-900/50 hover:bg-gray-700"
                 }`}
+                draggable
+                onDragStart={(e) => onDragStart(e, node)}
+                style={{ borderLeft: "4px solid #3B82F6" }}
               >
-                {getIcon(node.icon || "brain")}
+                <div
+                  className={`p-2 rounded-lg mr-3 transition-colors duration-300 ${
+                    isSearchFocused &&
+                    searchQuery &&
+                    node.label.toLowerCase().includes(searchQuery.toLowerCase())
+                      ? "bg-blue-500/20"
+                      : "bg-gray-800/50"
+                  }`}
+                >
+                  {getIcon(node.icon || "brain")}
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-200">{node.label}</h3>
+                  <p className="text-sm text-gray-400 mt-1">
+                    {node.description}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-medium text-gray-200">{node.label}</h3>
-                <p className="text-sm text-gray-400 mt-1">{node.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </ScrollArea>
       </div>
 
       {/* Start Dialog */}
