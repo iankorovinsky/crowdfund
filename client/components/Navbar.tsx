@@ -26,7 +26,7 @@ export function Navbar({ roomId, isFull }: NavbarProps) {
 
   return (
     <>
-      {isLoading && <LoadingScreen LoadingText="Fetching your portfolio..."/>}
+      {isLoading && <LoadingScreen LoadingText="Rerouting to homescreen..."/>}
       <nav className={`absolute right-0 h-16 z-50 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4 ${isFull ? "left-80" : "left-0"}`}>
         <div onClick={handleHomeClick} className="cursor-pointer">
           <Home className="text-gray-600 hover:text-gray-400 transition-all duration-300" />
