@@ -25,12 +25,13 @@ import {
   Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useCallback, useRef, useEffect, useState } from "react";
+import { useCallback, useRef, useEffect, useState, useMemo } from "react";
 import AIAgentNode from "@/components/AIAgentNode";
 import { Trash2 } from "lucide-react";
 import { ResultsSidebar } from "@/components/ResultsSidebar";
 import { useParams } from "next/navigation";
 import { UploadAgent } from "@/components/UploadAgent";
+import CustomEdge from "@/components/CustomEdge";
 
 const nodeTypes = {
   aiagent: AIAgentNode,
@@ -82,6 +83,12 @@ const exampleResults = {
 const Home = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const [isRunning, setIsRunning] = useState(false);
+
+  const edgeTypes = useMemo(() => ({
+    default: (props: any) => <CustomEdge {...props} isActive={isRunning} />,
+  }), [isRunning]);
+
   const storage = useStorage((root) => ({
     nodes: root.nodes ?? initialNodes,
     edges: root.edges ?? initialEdges,
@@ -254,12 +261,16 @@ const Home = () => {
 
   return (
     <div className="flex h-screen w-screen bg-gray-900">
-      <Sidebar className="w-80 h-full bg-gray-800 p-4 border-r border-gray-700" />
+      <Sidebar 
+        className="w-80 h-full bg-gray-800 p-4 border-r border-gray-700" 
+        onRunningChange={setIsRunning}
+      />
       <div ref={reactFlowWrapper} className="flex-1 h-full relative">
         <ReactFlow
           nodes={storage.nodes}
           edges={storage.edges}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
@@ -281,7 +292,6 @@ const Home = () => {
           fitView
           className="bg-gray-900"
           defaultEdgeOptions={{
-            style: { stroke: "#4B5563" },
             type: "default",
           }}
         >
