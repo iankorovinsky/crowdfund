@@ -27,7 +27,8 @@ import {
 import "@xyflow/react/dist/style.css";
 import { useCallback, useRef, useEffect, useState } from "react";
 import AIAgentNode from "@/components/AIAgentNode";
-import { Trash2 } from "lucide-react";
+import { Trash2, Coins } from "lucide-react";
+import { mintAndRegisterIp } from "@/scripts/simpleMintAndRegisterSpg";
 
 const nodeTypes = {
   aiagent: AIAgentNode,
@@ -278,35 +279,62 @@ const Home = () => {
           })}
         </ReactFlow>
 
-        {/* Trash Bin */}
+        {/* Trash Bin and Mint Button */}
         {selectedNode && (
-          <div
-            className="absolute bottom-8 right-8 p-4 bg-white rounded-full shadow-lg border-2 border-red-100 cursor-pointer hover:bg-red-50 transition-all duration-200 group"
-            onClick={() => {
-              // Remove connected edges
-              const connectedEdges = storage.edges.filter(
-                (edge) =>
-                  edge.source === selectedNode || edge.target === selectedNode
-              );
-              if (connectedEdges.length > 0) {
-                updateEdges(
-                  storage.edges.filter(
-                    (edge) =>
-                      edge.source !== selectedNode &&
-                      edge.target !== selectedNode
-                  )
-                );
-              }
+          <div className="absolute bottom-8 right-8 flex gap-4">
+            {/* Mint Button */}
+            <div
+              className="p-4 bg-white rounded-full shadow-lg border-2 border-green-100 cursor-pointer hover:bg-green-50 transition-all duration-200 group"
+              onClick={async () => {
+                const node = storage.nodes.find((n) => n.id === selectedNode);
+                if (!node) return;
+                
+                try {
+                  const url = await mintAndRegisterIp(
+                    node.data.label,
+                    node.data.description
+                  );
+                  console.log('Minting successful, opening URL:', url);
+                  window.open(url, '_blank');
+                } catch (error) {
+                  console.error('Failed to mint IP:', error);
+                  alert(`Failed to mint IP: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                }
+              }}
+              title="Mint selected node as IP Asset"
+            >
+              <Coins className="w-6 h-6 text-green-400 group-hover:text-green-500 transition-colors duration-200" />
+            </div>
 
-              // Remove the node
-              updateNodes(
-                storage.nodes.filter((node) => node.id !== selectedNode)
-              );
-              setSelectedNode(null);
-            }}
-            title="Delete selected node (or press Delete/Backspace)"
-          >
-            <Trash2 className="w-6 h-6 text-red-400 group-hover:text-red-500 transition-colors duration-200" />
+            {/* Existing Trash Button */}
+            <div
+              className="p-4 bg-white rounded-full shadow-lg border-2 border-red-100 cursor-pointer hover:bg-red-50 transition-all duration-200 group"
+              onClick={() => {
+                // Remove connected edges
+                const connectedEdges = storage.edges.filter(
+                  (edge) =>
+                    edge.source === selectedNode || edge.target === selectedNode
+                );
+                if (connectedEdges.length > 0) {
+                  updateEdges(
+                    storage.edges.filter(
+                      (edge) =>
+                        edge.source !== selectedNode &&
+                        edge.target !== selectedNode
+                    )
+                  );
+                }
+
+                // Remove the node
+                updateNodes(
+                  storage.nodes.filter((node) => node.id !== selectedNode)
+                );
+                setSelectedNode(null);
+              }}
+              title="Delete selected node (or press Delete/Backspace)"
+            >
+              <Trash2 className="w-6 h-6 text-red-400 group-hover:text-red-500 transition-colors duration-200" />
+            </div>
           </div>
         )}
       </div>
