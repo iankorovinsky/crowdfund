@@ -138,7 +138,7 @@ export function Sidebar({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify({ ...body, "symbol": "pi_ethusd" }),
       });
       return response.json();
     },

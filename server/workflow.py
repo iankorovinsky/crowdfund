@@ -5,6 +5,7 @@ import os
 from cloudflare import download_file_from_s3
 from database import get_agent
 from datetime import datetime
+from helpers import get_node_input_and_output
 
 class WorkflowStatus:
     NOT_STARTED = "NOT_STARTED"
@@ -79,8 +80,23 @@ def run_node_script(workflow_id: str, node_name: str, state: State):
 def parse_react_flow(workflow: dict):
     return workflow['nodes'], workflow['edges']
 
+# Clean up graph
+def clean_graph(nodes: list, edges: list):
+    # remove nodes that are not supported type
+    nodes = [node for node in nodes if get_node_input_and_output(node["type"]) is not None]
+
+    node_ids = set([node["id"] for node in nodes])
+    
+    # remove edges that are not supported
+    edges = [edge for edge in edges if edge["source"] in node_ids and edge["target"] in node_ids]
+
+    return nodes, edges
+
+
 # Build the graph
 def build_graph(workflow_id: str, nodes: list, edges: list):
+    nodes, edges = clean_graph(nodes, edges)
+
     graph_builder = StateGraph(State)
     id_to_agent_id = {node["id"]: node["agent_id"] for node in nodes}
     node_names = [node["agent_id"] for node in nodes]
@@ -106,7 +122,7 @@ def build_graph(workflow_id: str, nodes: list, edges: list):
 async def invoke_graph(graph, state):
     return graph.invoke(state)
 
-def run_workflow(workflow_id, workflow: dict):
+def run_workflow(workflow_id, workflow: dict, symbol: str):
     # parse the workflow
     nodes, edges = parse_react_flow(workflow)
     graph = build_graph(workflow_id, nodes, edges)
@@ -114,7 +130,7 @@ def run_workflow(workflow_id, workflow: dict):
     workflow_statuses[workflow_id] = {}
     
     # invoke graph asynchronously
-    graph.invoke({"symbol": "pi_ethusd"})
+    graph.invoke({ "symbol": symbol })
 
     return {"success": True}
 

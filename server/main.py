@@ -32,6 +32,7 @@ class Workflow(BaseModel):
 
 class WorkflowRequest(BaseModel):
     workflow: Workflow
+    symbol: str
 
 app = FastAPI()
 app.include_router(kraken_router)
@@ -55,7 +56,7 @@ async def root():
 @app.post("/run-workflow")
 async def post_run_workflow(request: WorkflowRequest, background_tasks: BackgroundTasks):
     workflow_id = str(uuid.uuid4())
-    background_tasks.add_task(run_workflow, workflow_id, request.workflow.dict())
+    background_tasks.add_task(run_workflow, workflow_id, request.workflow.dict(), request.symbol)
     return { "workflow_id": workflow_id }
 
 @app.get("/workflow-status/{workflow_id}")
