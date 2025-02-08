@@ -61,7 +61,7 @@ export function DrawerDemo() {
   return (    
     <Drawer>
       <DrawerTrigger>
-        <Button className="absolute top-5 right-5">Upload agent</Button>
+        <Button className="absolute bottom-5 left-5 bg-blue-500 px-6 py-3">Upload agent</Button>
       </DrawerTrigger>
       <DrawerContent>
         <div className="mx-auto w-full max-w-sm mt-4">
