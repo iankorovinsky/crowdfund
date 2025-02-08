@@ -13,7 +13,7 @@ import {
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 
-export function DrawerDemo() {
+export function UploadAgent() {
   const [agentName, setAgentName] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState("");
@@ -42,19 +42,17 @@ export function DrawerDemo() {
     }
 
     try {
-      // Here you would typically send the file and name to your server
       console.log("Submitting:", {
         name: agentName,
         file: selectedFile
       });
       
-      // Clear form and close drawer
       setAgentName("");
       setSelectedFile(null);
       setError("");
-      // You might want to add a success message here
     } catch (err) {
       setError("Failed to submit. Please try again.");
+      console.error("Error submitting:", err);
     }
   };
 

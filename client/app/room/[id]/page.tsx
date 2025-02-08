@@ -30,6 +30,7 @@ import AIAgentNode from "@/components/AIAgentNode";
 import { Trash2 } from "lucide-react";
 import { ResultsSidebar } from "@/components/ResultsSidebar";
 import { useParams } from "next/navigation";
+import { UploadAgent } from "@/components/UploadAgent";
 
 const nodeTypes = {
   aiagent: AIAgentNode,
@@ -337,6 +338,7 @@ const Home = () => {
 
         <ResultsSidebar results={exampleResults} />
       </div>
+      <UploadAgent />
     </div>
   );
 };
