@@ -8,6 +8,7 @@ from cloudflare import upload_file_to_r2, delete_file_from_r2
 from kraken import router as kraken_router
 from pydantic import BaseModel
 from typing import List
+from helpers import copy_env_to_tmp
 
 class Position(BaseModel):
     x: float
@@ -45,6 +46,7 @@ app.add_middleware(
 )
 
 initialize_db()
+copy_env_to_tmp()
 
 @app.get("/")
 async def root():
