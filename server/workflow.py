@@ -118,16 +118,22 @@ def run_workflow(workflow_id, workflow: dict):
     return {"success": True}
 
 def update_workflow_status(workflow_id: str, node_id: str, status: WorkflowStatus):
-    if node_id not in workflow_statuses[workflow_id]:
-        workflow_statuses[workflow_id][node_id] = { "status": WorkflowStatus.NOT_STARTED, "logs": [] }
+    node_data = get_agent(node_id)
+    node_label = node_data["label"]
 
-    workflow_statuses[workflow_id][node_id]["status"] = status
+    if node_label not in workflow_statuses[workflow_id]:
+        workflow_statuses[workflow_id][node_label] = { "status": WorkflowStatus.NOT_STARTED, "logs": [] }
+
+    workflow_statuses[workflow_id][node_label]["status"] = status
 
 def add_workflow_log(workflow_id: str, node_id: str, log: str):
-    if node_id not in workflow_statuses[workflow_id]:
-        workflow_statuses[workflow_id][node_id] = { "status": WorkflowStatus.NOT_STARTED, "logs": [] }
+    node_data = get_agent(node_id)
+    node_label = node_data["label"]
 
-    workflow_statuses[workflow_id][node_id]["logs"].append(log)
+    if node_label not in workflow_statuses[workflow_id]:
+        workflow_statuses[workflow_id][node_label] = { "status": WorkflowStatus.NOT_STARTED, "logs": [] }
+
+    workflow_statuses[workflow_id][node_label]["logs"].append(log)
 
 def get_workflow_status(workflow_id: str):
     return workflow_statuses.get(workflow_id, {})
