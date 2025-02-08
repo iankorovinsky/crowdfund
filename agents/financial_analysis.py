@@ -38,7 +38,8 @@ response = agent_executor.invoke({
         "Use all the tools provided to retrieve information available for the company upon today. Analyze the positive developments "
         "and potential concerns of the company with 2-4 most important factors respectively and keep them concise. Most factors should "
         "be inferred from company related news. Then make a rough prediction (e.g. up/down by 2-3%) of the the company's stock price "
-        "movement for next week. Provide a summary analysis to support your prediction."
+        "movement for next week. Provide a summary analysis to support your prediction. This summary should be concise and clear and "
+        "formatted such that it can be understood by an AI agent."
     )
 })
 
