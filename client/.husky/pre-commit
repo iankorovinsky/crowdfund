@@ -1,2 +1,5 @@
-npx lint-staged
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+cd client && npx lint-staged
 npx prettier . --write
