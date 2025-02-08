@@ -43,7 +43,7 @@ export function Navbar({ roomId }: NavbarProps) {
 
   return (
     <>
-      {isLoading && <LoadingScreen LoadingText="Rerouting to your home page"/>}
+      {isLoading && <LoadingScreen LoadingText="Fetching your portfolio..."/>}
       <nav className="absolute left-80 right-0 h-16 z-50 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4">
         <div onClick={handleHomeClick} className="cursor-pointer">
           <Home className="text-gray-600 hover:text-gray-400 transition-all duration-300" />
