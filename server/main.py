@@ -72,6 +72,7 @@ async def upload_python_file(
     label: str = Form(...),
     description: str = Form(...),
     icon: str = Form(...),
+    hash: str = Form(...),
 ):
     agent_id = str(uuid.uuid4())
     
@@ -86,7 +87,7 @@ async def upload_python_file(
 
     node_input, node_output = get_node_input_and_output(type)
     
-    create_agent(agent_id, type, label, description, node_input, node_output, icon)
+    create_agent(agent_id, type, label, description, node_input, node_output, icon, hash)
 
     return {
         "success": True,

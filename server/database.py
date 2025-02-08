@@ -12,10 +12,11 @@ def migrate_db():
     conn = sqlite3.connect(DATABASE_PATH)
     cursor = conn.cursor()
     
-    # Check if icon column exists
+    # Check if icon and hash columns exist
     cursor.execute("PRAGMA table_info(agents)")
     columns = cursor.fetchall()
     has_icon = any(col[1] == 'icon' for col in columns)
+    has_hash = any(col[1] == 'hash' for col in columns)
     
     if not has_icon:
         # Add icon column
@@ -28,6 +29,18 @@ def migrate_db():
         for (agent_id,) in agent_ids:
             random_icon = random.choice(AVAILABLE_ICONS)
             cursor.execute('UPDATE agents SET icon = ? WHERE id = ?', (random_icon, agent_id))
+    
+    if not has_hash:
+        # Add hash column
+        cursor.execute('ALTER TABLE agents ADD COLUMN hash TEXT')
+
+        # Update existing rows with random icons
+        cursor.execute('SELECT id FROM agents')
+        agent_ids = cursor.fetchall()
+        dummy_hash = "0x0e14A1BB6Fa84d12f077A8C352E8114A53a1d5ab"
+        
+        for (agent_id,) in agent_ids:
+            cursor.execute('UPDATE agents SET hash = ? WHERE id = ?', (dummy_hash, agent_id))
     
     conn.commit()
     conn.close()
@@ -44,7 +57,8 @@ def initialize_db():
             description TEXT,
             input TEXT,
             output TEXT,
-            icon TEXT
+            icon TEXT,
+            hash TEXT
         )
     ''')
     conn.commit()
@@ -53,12 +67,12 @@ def initialize_db():
     # Run migration to handle existing data
     migrate_db()
 
-def create_agent(agent_id: str, agent_type: str, label: str, description: str, input: str, output: str, icon: str):
+def create_agent(agent_id: str, agent_type: str, label: str, description: str, input: str, output: str, icon: str, hash: str):
     conn = sqlite3.connect(DATABASE_PATH)
     cursor = conn.cursor()
     cursor.execute('''
-        INSERT INTO agents (id, type, label, description, input, output, icon) VALUES (?, ?, ?, ?, ?, ?, ?)
-    ''', (agent_id, agent_type, label, description, input, output, icon))
+        INSERT INTO agents (id, type, label, description, input, output, icon, hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (agent_id, agent_type, label, description, input, output, icon, hash))
     conn.commit()
     conn.close()
 
@@ -66,23 +80,23 @@ def get_agent(agent_id: str) -> Dict[str, Any]:
     conn = sqlite3.connect(DATABASE_PATH)
     cursor = conn.cursor()
     cursor.execute('''
-        SELECT id, type, label, description, input, output, icon FROM agents WHERE id = ?
+        SELECT id, type, label, description, input, output, icon, hash FROM agents WHERE id = ?
     ''', (agent_id,))
     row = cursor.fetchone()
     conn.close()
     if row:
-        return {"id": row[0], "type": row[1], "label": row[2], "description": row[3], "input": row[4], "output": row[5], "icon": row[6]}
+        return {"id": row[0], "type": row[1], "label": row[2], "description": row[3], "input": row[4], "output": row[5], "icon": row[6], "hash": row[7]}
     return {}
 
 def get_all_agents() -> List[Dict[str, Any]]:
     conn = sqlite3.connect(DATABASE_PATH)
     cursor = conn.cursor()
     cursor.execute('''
-        SELECT id, type, label, description, input, output, icon FROM agents
+        SELECT id, type, label, description, input, output, icon, hash FROM agents
     ''')
     rows = cursor.fetchall()
     conn.close()
-    return [{"id": row[0], "type": row[1], "label": row[2], "description": row[3], "input": row[4], "output": row[5], "icon": row[6]} for row in rows]
+    return [{"id": row[0], "type": row[1], "label": row[2], "description": row[3], "input": row[4], "output": row[5], "icon": row[6], "hash": row[7]} for row in rows]
 
 def update_agent_type(agent_id: str, agent_type: str):
     conn = sqlite3.connect(DATABASE_PATH)
