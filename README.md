@@ -12,11 +12,23 @@ We set out to **redefine crypto trading** by blending **AI automation** with **d
 More than just automation, we also wanted to create **a developer-friendly ecosystem** where anyone can build AI agents, protect their IP with **Story Protocol**, and **earn royalties** as others use their creations.  
 
 ## ⚡ **What It Does**  
-🔗 **Connect Your Crypto Wallet** – Seamlessly integrate with your wallet for direct trade execution.  
+![image](https://github.com/user-attachments/assets/7a8e5b12-c7a4-428e-aa8b-8a17099da253)
+
+🖌️ **Create Custom Workspace** – Create or join a custom workspace to build your agentic flows; multiplayer mode enabled!
+
 🤖 **AI-Driven Workflows** – Select AI agents to fetch market data, analyze trends, and make trading decisions.  
+
+🔗 **Connect Your Crypto Wallet** – Seamlessly integrate with your wallet for direct trade execution.  
+
 💰 **Automated Trades** – AI agents can execute buy/sell orders straight from your wallet.  
-🛠️ **Developer Marketplace** – Create AI agents, secure IP via **Story Protocol**, and earn royalties.  
+
+![image](https://github.com/user-attachments/assets/b4f00c6f-73a5-45be-b5ae-97d1c8e8fbe4)
+
+🛠️ **Developer Royalties** – Create AI agents, secure IP via **Story Protocol**, and earn royalties from agent usage.  
+
 🎟 **Ripple Integration** – Users **earn tokens** when they run workflows & **profit from currency swaps**.  
+
+![image](https://github.com/user-attachments/assets/f7edad29-e15c-44da-b76f-92a1591a1698)
 
 ## 🛠️ **How We Built It**  
 Our stack includes:  
