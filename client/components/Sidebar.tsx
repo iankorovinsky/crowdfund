@@ -272,7 +272,7 @@ export function Sidebar({
       <Dialog open={showStartDialog} onOpenChange={setShowStartDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Start Flow</DialogTitle>
+            <DialogTitle>Start Trading Agent</DialogTitle>
             <DialogDescription className="pt-3">
               This will cost <span className="font-semibold text-white">{initialCost} ETH</span> to run. 
               Do you want to proceed?
@@ -300,7 +300,7 @@ export function Sidebar({
       <Dialog open={showStopDialog} onOpenChange={setShowStopDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Stop Flow</DialogTitle>
+            <DialogTitle>Stop Trading Agent</DialogTitle>
             <DialogDescription asChild>
               <div className="space-y-4 pt-3">
                 <div className="flex flex-col gap-1">
