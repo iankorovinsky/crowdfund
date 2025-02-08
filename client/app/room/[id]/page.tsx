@@ -34,6 +34,7 @@ import CustomEdge from "@/components/CustomEdge";
 import { Navbar } from "@/components/Navbar";
 import { useStore } from "@/lib/store";
 import TradingNode from "@/components/TradingNode";
+import { useAccount } from "wagmi";
 
 const nodeTypes = new Proxy(
   {
@@ -73,6 +74,7 @@ const Home = () => {
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [sideBar, setSideBar] = useState(true);
+  const { address } = useAccount();
 
   const storage = useStorage((root) => ({
     nodes: root.nodes ?? initialNodes,
@@ -124,6 +126,12 @@ const Home = () => {
       },
     });
   }, [storage.nodes, updateNodes]);
+
+  useEffect(() => {
+    updateMyPresence({
+      walletAddress: address || null,
+    });
+  }, [address, updateMyPresence]);
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
@@ -228,10 +236,11 @@ const Home = () => {
             y: flowY,
             lastActive: Date.now(),
           },
+          walletAddress: address || null,
         });
       }
     },
-    [getViewport, updateMyPresence],
+    [getViewport, updateMyPresence, address],
   );
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: LiveNode) => {
@@ -340,7 +349,7 @@ const Home = () => {
                 x={presence.cursor.x}
                 y={presence.cursor.y}
                 lastActive={presence.cursor.lastActive}
-                name={`User ${connectionId}`}
+                name={presence.walletAddress || "Anonymous User"}
               />
             );
           })}

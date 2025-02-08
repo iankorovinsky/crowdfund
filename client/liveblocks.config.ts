@@ -2,7 +2,8 @@ import { BaseUserMeta, createClient } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
 
 export type Presence = {
-  cursor: { x: number; y: number } | null;
+  cursor: { x: number; y: number; lastActive: number } | null;
+  walletAddress: string | null;
 };
 
 export type NodeData = {
@@ -45,6 +46,7 @@ declare global {
         y: number;
         lastActive: number;
       } | null;
+      walletAddress: string | null;
     };
 
     Storage: {
@@ -124,5 +126,4 @@ export const {
   },
 } = createRoomContext<Presence, Storage, UserMeta, RoomEvent>(client);
 
-export { };
-
+export {};

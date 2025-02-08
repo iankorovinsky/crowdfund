@@ -42,12 +42,7 @@ const Home = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <Image 
-            src="/logo.png" 
-            alt="CrowdFund Logo"
-            width={80}
-            height={92}
-          />
+          <Image src="/logo.png" alt="CrowdFund Logo" width={80} height={92} />
           <h1 className="text-6xl font-extrabold bg-gradient-to-r from-cyan-400 to-blue-600 text-transparent bg-clip-text">
             CrowdFund
           </h1>
