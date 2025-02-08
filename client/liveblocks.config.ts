@@ -18,6 +18,7 @@ export type NodeData = {
   licenseTermsId?: string;
   path?: string;
   ipId?: string;
+  symbol?: string;
 };
 
 export type LiveNode = {

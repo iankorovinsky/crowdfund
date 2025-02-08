@@ -21,10 +21,10 @@ const TRADING_PAIRS = [
   "USDT",
   "LTC",
   "USDC",
-  "XBT"
+  "XBT",
 ] as const;
 
-type TradingPair = (typeof TRADING_PAIRS)[number];
+export type TradingPair = (typeof TRADING_PAIRS)[number];
 
 interface TradingNodeData {
   label: string;
@@ -42,8 +42,16 @@ export default function TradingNode({ id, data }: TradingNodeProps) {
 
   return (
     <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg border-2 border-green-500/30 shadow-lg min-w-[200px] hover:border-green-500/50 transition-all duration-300">
-      <Handle type="target" position={Position.Left} className="w-3 h-3 !bg-green-500" />
-      <Handle type="source" position={Position.Right} className="w-3 h-3 !bg-green-500" />
+      <Handle
+        type="target"
+        position={Position.Left}
+        className="w-3 h-3 !bg-green-500"
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="w-3 h-3 !bg-green-500"
+      />
 
       <div className="p-4">
         <div className="flex items-center gap-3 mb-2">
@@ -64,7 +72,10 @@ export default function TradingNode({ id, data }: TradingNodeProps) {
           }}
         >
           <SelectTrigger className="w-full bg-gray-900/50 border-green-900 hover:border-green-700 transition-colors duration-300">
-            <SelectValue placeholder="Select symbol" className="text-green-300/70" />
+            <SelectValue
+              placeholder="Select symbol"
+              className="text-green-300/70"
+            />
           </SelectTrigger>
           <SelectContent className="bg-gray-900 border-green-900">
             {TRADING_PAIRS.map((pair) => (

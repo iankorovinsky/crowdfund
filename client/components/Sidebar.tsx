@@ -28,6 +28,7 @@ import {
 } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
+import { TradingPair } from "./TradingNode";
 
 export interface NodeType {
   type: string;
@@ -58,6 +59,19 @@ const SYMBOL_NODE: NodeType = {
   icon: "coins",
   agentId: "123021093821903812093801923",
 };
+
+export const SYMBOL_TO_KRAKEN_SYMBOL_MAPPING: Record<TradingPair, string> = {
+  "EUR": "PI_EURUSD",
+  "GBP": "PI_GBPUSD",
+  "BCH": "PI_BCHUSD",
+  "XRP": "PI_XRPUSD",
+  "USD": "PI_USDUSD",
+  "ETH": "PI_ETHUSD",
+  "USDT": "PI_USDTUSD",
+  "LTC": "PI_LTCUSD",
+  "USDC": "PI_USDCUSD",
+  "XBT": "PI_XBTUSD",
+} as const;
 
 export function Sidebar({
   className,
@@ -129,17 +143,26 @@ export function Sidebar({
       return data;
     },
     enabled: !!currentWorkflowId && isRunning,
-    refetchInterval: 5000, // Poll every 5 seconds
+    refetchInterval: 4000,
   });
 
   const { mutate: createWorkflow } = useMutation({
     mutationFn: async (body: any) => {
+      const modifiedBody = { ...body };
+      const symbolNode = storage.nodes.find((node) => node.type === "trading");
+
+      if (symbolNode) {
+        modifiedBody.symbol = symbolNode.data?.symbol
+          ? SYMBOL_TO_KRAKEN_SYMBOL_MAPPING[symbolNode.data.symbol as TradingPair]
+          : "pi_ethusd";
+      }
+
       const response = await fetch("http://localhost:8000/run-workflow", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...body, symbol: "pi_ethusd" }),
+        body: JSON.stringify(modifiedBody),
       });
       return response.json();
     },
