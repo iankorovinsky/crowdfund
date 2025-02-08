@@ -35,7 +35,7 @@ const Home = () => {
     <div className="relative min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-blue-900 flex flex-col items-center justify-center p-4 overflow-hidden">
       {isLoading && <LoadingScreen />}
       <BoxesCore />
-      <div className="text-center space-y-8 max-w-4xl mx-auto relative z-10">
+      <div className="text-center space-y-8 max-w-4xl mx-auto relative z-10 pointer-events-none">
         <motion.div
           className="flex flex-row items-center justify-center gap-4"
           initial={{ opacity: 0, y: -20 }}
@@ -71,14 +71,14 @@ const Home = () => {
         >
           <Button
             onClick={createNewRoom}
-            className="bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white px-8 py-6 text-lg rounded-lg transition-all duration-300 shadow-lg hover:shadow-blue-500/20 flex items-center space-x-2"
+            className="bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white px-8 py-6 text-lg rounded-lg transition-all duration-300 shadow-lg hover:shadow-blue-500/20 flex items-center space-x-2 pointer-events-auto"
           >
             <FiPlus className="w-5 h-5" />
             <span>Create New Room</span>
           </Button>
           <Button
             onClick={() => setIsJoinDialogOpen(true)}
-            className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-6 text-lg rounded-lg transition-all duration-300 shadow-lg hover:shadow-gray-400/20 flex items-center space-x-2"
+            className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-6 text-lg rounded-lg transition-all duration-300 shadow-lg hover:shadow-gray-400/20 flex items-center space-x-2 pointer-events-auto"
           >
             <FiUsers className="w-5 h-5" />
             <span>Join Existing Room</span>
@@ -94,7 +94,7 @@ const Home = () => {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="bg-gray-700 bg-opacity-40 p-6 rounded-lg backdrop-blur-sm flex flex-col items-start justify-center border border-gray-700 hover:border hover:border-blue-400 transition-all duration-300"
+              className="bg-gray-700 bg-opacity-40 p-6 rounded-lg backdrop-blur-sm flex flex-col items-start justify-center border border-gray-700 hover:border hover:border-blue-400 transition-all duration-300 pointer-events-auto"
             >
               <div className="text-blue-400 mb-4">{feature.icon}</div>
               <p className="text-gray-300">{feature.text}</p>
