@@ -1,8 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Brain } from "lucide-react";
 import React from "react";
+import { Brain, Home } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export interface NodeType {
   type: string;
@@ -19,6 +20,7 @@ export function Sidebar({ className }: SidebarProps) {
     queryKey: ["agents"],
     queryFn: () => fetch("http://localhost:8000/agents").then((res) => res.json()),
   });
+  const router = useRouter();
 
   const onDragStart = (event: React.DragEvent, nodeType: NodeType) => {
     event.dataTransfer.setData(
@@ -47,7 +49,13 @@ export function Sidebar({ className }: SidebarProps) {
 
   return (
     <div className={className}>
-      <h2 className="text-lg font-semibold mb-4 text-gray-200">AI Agents</h2>
+      <div className="flex flex-row items-start justify-between gap-2">
+        <h2 className="text-lg font-semibold mb-4 text-gray-200">AI Agents</h2>
+        <Home 
+          className="w-6 h-6 text-blue-500 mt-1 cursor-pointer hover:text-blue-400 transition-colors" 
+          onClick={() => router.push('/')}
+        />
+      </div>
       <div className="space-y-3">
         {nodeTypes.map((node, index) => (
           <div
