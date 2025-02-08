@@ -6,6 +6,31 @@ import uuid
 from database import initialize_db, create_agent, get_agent, get_all_agents, update_agent_type, delete_agent
 from cloudflare import upload_file_to_r2, delete_file_from_r2
 from kraken import router as kraken_router
+from pydantic import BaseModel
+from typing import List
+
+class Position(BaseModel):
+    x: float
+    y: float
+
+class Node(BaseModel):
+    id: str
+    agent_id: str
+    type: str
+    position: Position
+
+class Edge(BaseModel):
+    id: str
+    source: str
+    target: str
+    type: str
+
+class Workflow(BaseModel):
+    nodes: List[Node]
+    edges: List[Edge]
+
+class WorkflowRequest(BaseModel):
+    workflow: Workflow
 
 app = FastAPI()
 app.include_router(kraken_router)
@@ -26,10 +51,9 @@ async def root():
     return {"message": "Hello World"}
 
 @app.post("/run-workflow")
-async def post_run_workflow(body: dict, background_tasks: BackgroundTasks):
+async def post_run_workflow(request: WorkflowRequest, background_tasks: BackgroundTasks):
     workflow_id = str(uuid.uuid4())
-    background_tasks.add_task(run_workflow, workflow_id, body["workflow"])
-
+    background_tasks.add_task(run_workflow, workflow_id, request.workflow.dict())
     return { "workflow_id": workflow_id }
 
 @app.get("/workflow-status/{workflow_id}")
@@ -42,7 +66,8 @@ async def upload_python_file(
     type: str = Form(...),
     label: str = Form(...),
     description: str = Form(...),
-    image: UploadFile | None = File(None)
+    input: str = Form(...),
+    output: str = Form(...),
 ):
     agent_id = str(uuid.uuid4())
     
@@ -61,7 +86,6 @@ async def upload_python_file(
         "success": True,
         "info": f"file '{agent_id}' saved at '{file_location}' and uploaded to R2",
         "agent_id": agent_id,
-        "image_path": image_path
     }
 
 @app.get("/agent/{agent_id}")

@@ -97,6 +97,9 @@ export function Sidebar({
     mutationFn: async (body: any) => {
       const response = await fetch("http://localhost:8000/run-workflow", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(body),
       });
       return response.json();
@@ -119,18 +122,26 @@ export function Sidebar({
 
   const handleStart = async () => {
     setShowStartDialog(true);
-    const workflow = await createWorkflow({
+    const response = await createWorkflow({
       workflow: {
         nodes: storage.nodes.map((node) => ({
           id: node.id,
           agent_id: node.data.agentId,
           type: node.type,
-          position: node.position,
+          position: {
+            x: node.position.x,
+            y: node.position.y,
+          },
         })),
-        edges: storage.edges,
+        edges: storage.edges.map((edge) => ({
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+          type: edge.type,
+        })),
       },
     });
-    console.log("workflow", workflow);
+    console.log("workflow", response);
   };
 
   const handleStop = () => {
@@ -154,16 +165,21 @@ export function Sidebar({
     if (!searchQuery.trim()) return [SYMBOL_NODE, ...nodeTypes];
 
     const query = searchQuery.toLowerCase();
-    if (SYMBOL_NODE.label.toLowerCase().includes(query) ||
-        SYMBOL_NODE.description.toLowerCase().includes(query)) {
-      return [SYMBOL_NODE, ...nodeTypes.filter(
-        (node) =>
-          node.label.toLowerCase().includes(query) ||
-          node.description.toLowerCase().includes(query) ||
-          node.type.toLowerCase().includes(query),
-      )];
+    if (
+      SYMBOL_NODE.label.toLowerCase().includes(query) ||
+      SYMBOL_NODE.description.toLowerCase().includes(query)
+    ) {
+      return [
+        SYMBOL_NODE,
+        ...nodeTypes.filter(
+          (node) =>
+            node.label.toLowerCase().includes(query) ||
+            node.description.toLowerCase().includes(query) ||
+            node.type.toLowerCase().includes(query),
+        ),
+      ];
     }
-    
+
     return nodeTypes.filter(
       (node) =>
         node.label.toLowerCase().includes(query) ||
