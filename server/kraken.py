@@ -103,6 +103,21 @@ def get_data(symbol: str):
     )
     return response.json()
 
+
+def get_balance():
+    path = '/api/v3/accounts'
+    nonce = get_nonce()
+    payload = {
+    }
+    headers = {
+        'Accept': 'application/json',
+        'APIKey': API_KEY,
+        'Authent': sign_message(path, custom_urlencode(payload), nonce),
+        'Nonce': nonce
+    }
+    response = requests.get(API_URL + path, headers=headers, data=payload)
+    return response.json()
+    
 # symbol = 'pi_ethusd'  # ETHUSD perpetual future
 # order_type = 'mkt'    # Market order
 # size = 1           # Size of the order
@@ -121,18 +136,5 @@ async def get_market_data(symbol: str):  # Changed function name to be more desc
     return get_data(symbol)
 
 @router.get("/get_balance/")
-def get_balance():
-    url = "https://demo-futures.kraken.com/derivatives/api/v3/accounts"
-
-    payload = {}
-    headers = {
-    'Accept': 'application/json',
-    'APIKey': API_KEY,
-    'Authent': API_SECRET
-    }
-
-    response = requests.request("GET", url, headers=headers, data=payload)
-
-    print(response.text)
-    return response.json()
-
+def get_account_balance():
+    return get_balance()
