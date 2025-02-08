@@ -23,6 +23,8 @@ import {
   useReactFlow,
   XYPosition,
   Node,
+  MarkerType,
+  Position,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useCallback, useRef, useEffect, useState, useMemo } from "react";
@@ -161,6 +163,19 @@ const Home = () => {
         source: params.source,
         target: params.target,
         type: "default",
+        sourceHandle: params.sourceHandle,
+        targetHandle: params.targetHandle,
+        markerEnd: {
+          type: MarkerType.Arrow,
+          width: 15,
+          height: 15,
+          color: "#3b82f6",
+        },
+        style: {
+          strokeWidth: 2,
+          stroke: "#3b82f6",
+        },
+        animated: false,
       };
       updateEdges([...storage.edges, edge]);
     },
@@ -231,6 +246,28 @@ const Home = () => {
   const onNodeClick = useCallback((event: React.MouseEvent, node: LiveNode) => {
     setSelectedNode(node.id);
   }, []);
+
+  const onNodeDragStop = useCallback(
+    (event: React.MouseEvent, node: Node) => {
+      const roundedPosition = {
+        x: Math.round(node.position.x),
+        y: Math.round(node.position.y),
+      };
+
+      updateNodes(
+        storage.nodes.map((n) => {
+          if (n.id === node.id) {
+            return {
+              ...n,
+              position: roundedPosition,
+            };
+          }
+          return n;
+        }),
+      );
+    },
+    [storage.nodes, updateNodes],
+  );
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -306,6 +343,7 @@ const Home = () => {
               updateCursorPosition(e);
             }
           }}
+          onNodeDragStop={onNodeDragStop}
           onNodeClick={onNodeClick}
           onPaneClick={() => setSelectedNode(null)}
           onMouseLeave={() => {
@@ -317,7 +355,24 @@ const Home = () => {
           className="bg-gray-900"
           defaultEdgeOptions={{
             type: "default",
+            style: {
+              strokeWidth: 2,
+              stroke: "#3b82f6",
+            },
+            markerEnd: {
+              type: MarkerType.Arrow,
+              width: 15,
+              height: 15,
+              color: "#3b82f6",
+            },
           }}
+          snapToGrid={true}
+          snapGrid={[10, 10]}
+          elevateNodesOnSelect={true}
+          preventScrolling={true}
+          nodesDraggable={true}
+          nodesConnectable={true}
+          selectNodesOnDrag={false}
         >
           <Background
             variant={BackgroundVariant.Dots}
@@ -378,5 +433,3 @@ const Home = () => {
 };
 
 export default Home;
-
-// DATA (fetches the data), FINANCIAL ANALYSIS, PORTFOLIO MANAGER (decider), PERSONALITY

@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 from workflow import get_workflow_status, run_workflow
 import uuid
-from database import initialize_db, create_agent, get_agent, get_all_agents, update_agent_type, delete_agent, migrate_db, update_agent_label
+from database import initialize_db, create_agent, get_agent, get_all_agents, update_agent_type, delete_agent, migrate_db, update_agent_label, update_agent_hash
 from cloudflare import upload_file_to_r2, delete_file_from_r2
 from kraken import router as kraken_router
 from pydantic import BaseModel
@@ -35,6 +35,9 @@ class Workflow(BaseModel):
 class WorkflowRequest(BaseModel):
     workflow: Workflow
     symbol: str
+
+class HashUpdate(BaseModel):
+    hash: str
 
 app = FastAPI()
 app.include_router(kraken_router)
@@ -124,6 +127,12 @@ async def update_agent_type_endpoint(agent_id: str, type: str = Form(...)):
 async def update_agent_label_endpoint(agent_id: str, label: str = Form(...)):
     update_agent_label(agent_id, label)
     return {"info": f"Agent '{agent_id}' label updated to '{label}'"}
+
+@app.put("/agent/{agent_id}/hash")
+async def update_agent_hash(agent_id: str, hash_update: HashUpdate):
+    print("Updating agent hash:", agent_id, hash_update.hash)
+    update_agent_hash(agent_id, hash_update.hash)
+    return {"info": f"Agent '{agent_id}' hash updated to '{hash_update.hash}'"}
 
 @app.delete("/agent/{agent_id}")
 async def delete_agent_endpoint(agent_id: str):

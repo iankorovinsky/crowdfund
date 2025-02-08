@@ -19,3 +19,6 @@ def get_node_input_and_output(node_type: str) -> Tuple[str, str]:
         return 'market_data', 'analysis'
     elif node_type == 'Portfolio Manager':
         return 'analysis', 'decision'
+    else:
+        # Default case for unknown node types
+        return 'input', 'output'  # Generic input/output names for unknown types

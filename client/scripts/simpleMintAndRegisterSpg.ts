@@ -83,7 +83,7 @@ export const mintAndRegisterIp = async (
 
 //   const license_reg_response = await client.license.registerCommercialRemixPIL({
 //     currency: '0x1514000000000000000000000000000000000000', // $WIP token address
-//     defaultMintingFee: '10', // 10 $WIP tokens
+//     defaultMintingFee: '1', // 10 $WIP tokens
 //     commercialRevShare: 10, // 10% revenue share
 //     txOptions: { waitForTransaction: true }
 //   });
@@ -114,7 +114,7 @@ export const mintAndRegisterIp = async (
     console.log(`License Terms already attached to this IPA.`)
   }
   console.log(`https://explorer.story.foundation/ipa/${mintResponse.ipId}`)
-  return `https://explorer.story.foundation/ipa/${mintResponse.ipId}`;
+  return `${mintResponse.ipId}`;
 };
 
 

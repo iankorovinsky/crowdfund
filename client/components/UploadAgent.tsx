@@ -23,6 +23,7 @@ import {
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import { mintAndRegisterIp } from "../scripts/simpleMintAndRegisterSpg";
+import payRoyalty from "@/scripts/payRoyalty";
 
 const AGENT_TYPES = [
   "Data",
@@ -94,9 +95,22 @@ export function UploadAgent({ className }: { className?: string }) {
 
         const result = await response.json();
         console.log("Agent created, minting IP on Story Protocol:", result);
-        const ip_url = await mintAndRegisterIp(value.agentName, value.description);
-        console.log("IP minted and registered on Story Protocol:", ip_url);
+        const ip_id = await mintAndRegisterIp(value.agentName, value.description);
+        const ip_url = `https://explorer.story.foundation/ipa/${ip_id}`;
         window.open(ip_url, '_blank');
+        console.log("IP minted and registered on Story Protocol:", ip_url);
+        
+        const saveIpIdResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/agent/${result.agent_id}/hash`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ hash: ip_id }),
+        });
+        if (!saveIpIdResponse) {
+          throw new Error(`Failed to save IP ID: ${saveIpIdResponse}`);
+        }
+        console.log("IP ID saved to agent!!! Here is the response:", saveIpIdResponse);
         form.reset();
 
         toast.success("Agent created successfully!", {
