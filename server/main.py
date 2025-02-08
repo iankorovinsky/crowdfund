@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 from workflow import get_workflow_status, run_workflow
 import uuid
-from database import initialize_db, create_agent, get_agent, get_all_agents, update_agent_type, delete_agent
+from database import initialize_db, create_agent, get_agent, get_all_agents, update_agent_type, delete_agent, migrate_db
 from cloudflare import upload_file_to_r2, delete_file_from_r2
 from kraken import router as kraken_router
 from pydantic import BaseModel
@@ -46,7 +46,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Initialize and migrate database
 initialize_db()
+migrate_db()  # Run migration again to ensure it's up to date
 copy_env_to_tmp()
 
 @app.get("/")
@@ -69,6 +71,7 @@ async def upload_python_file(
     type: str = Form(...),
     label: str = Form(...),
     description: str = Form(...),
+    icon: str = Form(...),
 ):
     agent_id = str(uuid.uuid4())
     
@@ -83,7 +86,7 @@ async def upload_python_file(
 
     node_input, node_output = get_node_input_and_output(type)
     
-    create_agent(agent_id, type, label, description, node_input, node_output)
+    create_agent(agent_id, type, label, description, node_input, node_output, icon)
 
     return {
         "success": True,
