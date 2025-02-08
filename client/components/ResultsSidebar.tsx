@@ -1,19 +1,22 @@
-"use client"
+"use client";
 
 import { CheckCircle2, Loader2, AlertCircle, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
+import { useWorkflowStatus, NodeStatus } from "./WorkflowStatus";
+import { useWorkflow } from "@/contexts/WorkflowContext";
+import { useQuery } from "@tanstack/react-query";
 
-type Status = "COMPLETED" | "IN PROGRESS" | "NOT STARTED";
+type Status = "COMPLETED" | "IN_PROGRESS" | "NOT_STARTED" | "FAILED";
 
 interface NodeResult {
-  status: Status;
+  status: NodeStatus;
   logs: string[];
 }
 
-interface ResultsSidebarProps {
-  results: Record<string, NodeResult>;
+interface WorkflowResults {
+  [nodeId: string]: NodeResult;
 }
 
 const getStatusConfig = (status: Status) => {
@@ -25,31 +28,86 @@ const getStatusConfig = (status: Status) => {
         gradient: "from-green-500/10",
         textColor: "text-green-400",
         bgColor: "bg-green-500/10",
-        dotColor: "bg-green-500/50"
+        dotColor: "bg-green-500/50",
       };
-    case "IN PROGRESS":
+    case "IN_PROGRESS":
       return {
         icon: <Loader2 className="h-3 w-3 text-yellow-500 animate-spin" />,
         color: "yellow",
         gradient: "from-yellow-500/10",
         textColor: "text-yellow-500",
         bgColor: "bg-yellow-500/10",
-        dotColor: "bg-yellow-500/50"
+        dotColor: "bg-yellow-500/50",
       };
-    case "NOT STARTED":
+    case "FAILED":
+      return {
+        icon: <AlertCircle className="h-3 w-3 text-red-400" />,
+        color: "red",
+        gradient: "from-red-500/10",
+        textColor: "text-red-400",
+        bgColor: "bg-red-500/10",
+        dotColor: "bg-red-500/50",
+      };
+    case "NOT_STARTED":
+    default:
       return {
         icon: <AlertCircle className="h-3 w-3 text-gray-400" />,
         color: "gray",
         gradient: "from-gray-500/10",
         textColor: "text-gray-400",
         bgColor: "bg-gray-500/10",
-        dotColor: "bg-gray-500/50"
+        dotColor: "bg-gray-500/50",
       };
   }
 };
 
-export function ResultsSidebar({ results }: ResultsSidebarProps) {
+type TWorkflowStatus = {
+  [key: string]: {
+    status: string;
+    logs: string[];
+  };
+};
+
+export function ResultsSidebar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { currentWorkflowId } = useWorkflow();
+  const [called, setCalled] = useState(false);
+
+  const {
+    data: workflowStatus,
+    isLoading,
+    error,
+  } = useQuery<TWorkflowStatus>({
+    queryKey: ["workflow-status", currentWorkflowId],
+    queryFn: async () => {
+      if (!currentWorkflowId) throw new Error("No workflow ID");
+      setCalled(true);
+      const response = await fetch(
+        `http://localhost:8000/workflow-status/${currentWorkflowId}`,
+      );
+      return response.json();
+    },
+    refetchInterval: 5000,
+  });
+
+  // Transform workflow status data into the format we need
+  const results = workflowStatus || {};
+
+  const getDisplayStatus = (status: NodeStatus): Status => {
+    const lowerCaseStatus = status.toLowerCase();
+    switch (lowerCaseStatus) {
+      case "completed":
+        return "COMPLETED";
+      case "in_progress":
+        return "IN_PROGRESS";
+      case "not_started":
+        return "NOT_STARTED";
+      case "failed":
+        return "FAILED";
+      default:
+        return "NOT_STARTED";
+    }
+  };
 
   return (
     <div
@@ -75,11 +133,25 @@ export function ResultsSidebar({ results }: ResultsSidebarProps) {
             Execution Results
           </h2>
 
+          {called && isLoading && (
+            <div className="text-gray-400 text-sm">Loading results...</div>
+          )}
+
+          {error && (
+            <div className="text-red-400 text-sm">
+              Error loading results: {error.message}
+            </div>
+          )}
+
           <div className="space-y-4">
             {Object.entries(results).map(([nodeId, result]) => {
-              const config = getStatusConfig(result.status);
+              const status = getDisplayStatus(result.status as NodeStatus);
+              const config = getStatusConfig(status);
               return (
-                <Card key={nodeId} className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 border-gray-800">
+                <Card
+                  key={nodeId}
+                  className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 border-gray-800"
+                >
                   <motion.div
                     className={`absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l ${config.gradient} to-transparent`}
                     animate={{
@@ -94,20 +166,26 @@ export function ResultsSidebar({ results }: ResultsSidebarProps) {
                   <div className="p-4 relative">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-lg font-semibold text-gray-100">
-                        Node {nodeId.replace('node', '')}
+                        Node {nodeId}
                       </h3>
-                      <div className={`flex items-center gap-2 ${config.bgColor} px-3 py-1 rounded-full`}>
+                      <div
+                        className={`flex items-center gap-2 ${config.bgColor} px-3 py-1 rounded-full`}
+                      >
                         {config.icon}
-                        <span className={`text-xs font-medium ${config.textColor}`}>
-                          {result.status}
+                        <span
+                          className={`text-xs font-medium ${config.textColor}`}
+                        >
+                          {status}
                         </span>
                       </div>
                     </div>
-                    {result.logs.map((log, index) => (
+                    {result.logs?.map((log, index) => (
                       <div key={index} className="flex items-center gap-3 mt-2">
-                        <div className={`h-2 w-2 rounded-full ${config.dotColor} ${
-                          result.status === "IN PROGRESS" ? "animate-pulse" : ""
-                        }`} />
+                        <div
+                          className={`h-2 w-2 rounded-full ${config.dotColor} ${
+                            status === "IN_PROGRESS" ? "animate-pulse" : ""
+                          }`}
+                        />
                         <p className="text-sm text-gray-400">{log}</p>
                       </div>
                     ))}

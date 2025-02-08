@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useStorage } from "@/liveblocks.config";
 import { toast } from "sonner";
+import { useWorkflow } from "@/contexts/WorkflowContext";
 
 export interface NodeType {
   type: string;
@@ -35,12 +36,19 @@ export interface NodeType {
   icon?: string;
   agentId: string;
 }
+
 interface SidebarProps {
   className: string;
   initialCost?: number;
   onStart?: () => void;
   onStop?: () => void;
   onRunningChange?: (isRunning: boolean) => void;
+}
+
+interface WorkflowStatus {
+  status: string;
+  results?: any;
+  error?: string;
 }
 
 const SYMBOL_NODE: NodeType = {
@@ -58,22 +66,23 @@ export function Sidebar({
   onStop,
   onRunningChange,
 }: SidebarProps) {
-  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [showStartDialog, setShowStartDialog] = useState(false);
   const [showStopDialog, setShowStopDialog] = useState(false);
-  const [isRunning, setIsRunning] = useState(false);
+  const {
+    isRunning,
+    setIsRunning,
+    currentWorkflowId,
+    setWorkflowId,
+    resetWorkflow,
+  } = useWorkflow();
 
-  // Get current nodes and edges from Liveblocks storage
   const storage = useStorage((root) => ({
     nodes: root.nodes,
     edges: root.edges,
   }));
 
-  console.log("storage", storage);
-
-  // Fetch blocks from backend
   const {
     data: nodeTypes,
     error,
@@ -93,6 +102,36 @@ export function Sidebar({
     },
   });
 
+  // Add workflow status polling
+  const { data: workflowStatus } = useQuery({
+    queryKey: ["workflow-status", currentWorkflowId],
+    queryFn: async () => {
+      if (!currentWorkflowId) throw new Error("No workflow ID");
+      const response = await fetch(
+        `http://localhost:8000/workflow-status/${currentWorkflowId}`,
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch workflow status");
+      }
+      const data: WorkflowStatus = await response.json();
+      if (data.status === "completed") {
+        resetWorkflow();
+        toast.success("Workflow completed", {
+          description: "Your workflow has finished running",
+        });
+      } else if (data.status === "failed") {
+        resetWorkflow();
+        toast.error("Workflow failed", {
+          description:
+            data.error || "An error occurred while running the workflow",
+        });
+      }
+      return data;
+    },
+    enabled: !!currentWorkflowId && isRunning,
+    refetchInterval: 5000, // Poll every 5 seconds
+  });
+
   const { mutate: createWorkflow } = useMutation({
     mutationFn: async (body: any) => {
       const response = await fetch("http://localhost:8000/run-workflow", {
@@ -109,43 +148,39 @@ export function Sidebar({
         description: error instanceof Error ? error.message : "Unknown error",
       });
     },
+    onSuccess: (data: { workflow_id: string }) => {
+      setWorkflowId(data.workflow_id);
+      toast.success("Workflow started", {
+        description: `Workflow ID: ${data.workflow_id}`,
+      });
+    },
   });
 
-  // Mock values - replace with real data
   const profit = 0.25; // Example profit
   const royalties = profit * 0.1; // Example royalty calculation
 
-  // Notify parent of running state changes
   useEffect(() => {
     onRunningChange?.(isRunning);
   }, [isRunning, onRunningChange]);
 
   const handleStart = async () => {
     setShowStartDialog(true);
-    const response = await createWorkflow({
+    await createWorkflow({
       workflow: {
         nodes: storage.nodes.map((node) => ({
           id: node.id,
           agent_id: node.data.agentId,
           type: node.type,
-          position: {
-            x: node.position.x,
-            y: node.position.y,
-          },
+          position: node.position,
         })),
-        edges: storage.edges.map((edge) => ({
-          id: edge.id,
-          source: edge.source,
-          target: edge.target,
-          type: edge.type,
-        })),
+        edges: storage.edges,
       },
     });
-    console.log("workflow", response);
   };
 
   const handleStop = () => {
     setShowStopDialog(true);
+    resetWorkflow();
   };
 
   const confirmStart = () => {
