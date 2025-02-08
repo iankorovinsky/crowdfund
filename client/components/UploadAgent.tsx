@@ -26,11 +26,9 @@ import { mintAndRegisterIp } from "../scripts/simpleMintAndRegisterSpg";
 import payRoyalty from "@/scripts/payRoyalty";
 
 const AGENT_TYPES = [
-  "Data",
+  "Market Data",
   "Financial Analysis",
   "Portfolio Manager",
-  "Personality",
-  "XRP",
 ] as const;
 
 const ICON_OPTIONS = [
