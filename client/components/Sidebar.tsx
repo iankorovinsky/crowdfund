@@ -164,36 +164,39 @@ export function Sidebar({
   return (
     <>
       <div className={className}>
-        {/* Control buttons */}
-        <div className="absolute top-4 right-4 flex gap-2 z-10">
-          <Button
-            variant="default"
-            size="sm"
-            onClick={handleStart}
-            disabled={isRunning}
-            className={`${
-              !isRunning 
-                ? "bg-green-600 hover:bg-green-700 text-white" 
-                : "bg-gray-600 cursor-not-allowed"
-            }`}
-          >
-            <Play className="w-4 h-4 mr-1" />
-            Start
-          </Button>
-          <Button
-            variant="default"
-            size="sm"
-            onClick={handleStop}
-            disabled={!isRunning}
-            className={`${
-              isRunning 
-                ? "bg-red-600 hover:bg-red-700 text-white" 
-                : "bg-gray-600 cursor-not-allowed"
-            }`}
-          >
-            <Square className="w-4 h-4 mr-1" />
-            Stop
-          </Button>
+        {/* Header with title and controls */}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-200">AI Agents</h2>
+          <div className="flex gap-2">
+            <Button
+              variant="default"
+              size="sm"
+              onClick={handleStart}
+              disabled={isRunning}
+              className={`${
+                !isRunning 
+                  ? "bg-green-600 hover:bg-green-700 text-white" 
+                  : "bg-gray-600 cursor-not-allowed"
+              }`}
+            >
+              <Play className="w-4 h-4 mr-1" />
+              Start
+            </Button>
+            <Button
+              variant="default"
+              size="sm"
+              onClick={handleStop}
+              disabled={!isRunning}
+              className={`${
+                isRunning 
+                  ? "bg-red-600 hover:bg-red-700 text-white" 
+                  : "bg-gray-600 cursor-not-allowed"
+              }`}
+            >
+              <Square className="w-4 h-4 mr-1" />
+              Stop
+            </Button>
+          </div>
         </div>
 
         {/* Search input */}
