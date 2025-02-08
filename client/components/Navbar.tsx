@@ -1,10 +1,10 @@
 "use client";
 
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useRouter, usePathname } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { Brain } from 'lucide-react';
-import Link from 'next/link';
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useRouter, usePathname } from "next/navigation";
+import { motion } from "framer-motion";
+import { Brain } from "lucide-react";
+import Link from "next/link";
 
 export function Navbar() {
   const router = useRouter();
@@ -12,7 +12,7 @@ export function Navbar() {
 
   const isActive = (path: string) => pathname === path;
 
-  if (pathname === '/') {
+  if (pathname === "/") {
     return null;
   }
 
@@ -23,7 +23,6 @@ export function Navbar() {
           {/* Logo and Brand */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              
               <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
                 Crowdfund
               </span>
@@ -56,9 +55,11 @@ interface NavLinkProps {
 function NavLink({ href, label, isActive }: NavLinkProps) {
   return (
     <Link href={href} className="relative">
-      <span className={`text-sm font-medium transition-colors duration-200 ${
-        isActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'
-      }`}>
+      <span
+        className={`text-sm font-medium transition-colors duration-200 ${
+          isActive ? "text-blue-400" : "text-gray-300 hover:text-blue-400"
+        }`}
+      >
         {label}
       </span>
       {isActive && (
@@ -71,4 +72,4 @@ function NavLink({ href, label, isActive }: NavLinkProps) {
       )}
     </Link>
   );
-} 
+}

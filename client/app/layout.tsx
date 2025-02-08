@@ -3,30 +3,18 @@
 import { ReactFlowProvider } from "@xyflow/react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import {
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Navbar } from "@/components/Navbar";
 
-import '@rainbow-me/rainbowkit/styles.css';
+import "@rainbow-me/rainbowkit/styles.css";
 
-import {
-  getDefaultConfig,
-  RainbowKitProvider,
-} from '@rainbow-me/rainbowkit';
-import { WagmiProvider } from 'wagmi';
-import {
-  mainnet,
-  polygon,
-  optimism,
-  arbitrum,
-  base,
-} from 'wagmi/chains';
+import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { WagmiProvider } from "wagmi";
+import { mainnet, polygon, optimism, arbitrum, base } from "wagmi/chains";
 
 const config = getDefaultConfig({
-  appName: 'crowdfund',
-  projectId: 'YOUR_PROJECT_ID', // walletconnect project id
+  appName: "crowdfund",
+  projectId: "YOUR_PROJECT_ID", // walletconnect project id
   chains: [mainnet, polygon, optimism, arbitrum, base],
   ssr: true,
 });

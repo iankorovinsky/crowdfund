@@ -102,7 +102,7 @@ const Home = () => {
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
       const positionChange = changes.find(
-        (change): change is NodePositionChange => change.type === "position"
+        (change): change is NodePositionChange => change.type === "position",
       );
       if (positionChange && positionChange.position) {
         updateNodes(
@@ -114,25 +114,25 @@ const Home = () => {
               };
             }
             return node;
-          })
+          }),
         );
       }
     },
-    [storage.nodes, updateNodes]
+    [storage.nodes, updateNodes],
   );
 
   const onEdgesChange = useCallback(
     (changes: EdgeChange[]) => {
       const removeChange = changes.find(
-        (change): change is EdgeRemoveChange => change.type === "remove"
+        (change): change is EdgeRemoveChange => change.type === "remove",
       );
       if (removeChange) {
         updateEdges(
-          storage.edges.filter((edge) => edge.id !== removeChange.id)
+          storage.edges.filter((edge) => edge.id !== removeChange.id),
         );
       }
     },
-    [storage.edges, updateEdges]
+    [storage.edges, updateEdges],
   );
 
   const onConnect = useCallback(
@@ -146,7 +146,7 @@ const Home = () => {
       };
       updateEdges([...storage.edges, edge]);
     },
-    [storage.edges, updateEdges]
+    [storage.edges, updateEdges],
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -160,7 +160,7 @@ const Home = () => {
 
       const reactFlowBounds = reactFlowWrapper.current?.getBoundingClientRect();
       const nodeType = JSON.parse(
-        event.dataTransfer.getData("application/reactflow")
+        event.dataTransfer.getData("application/reactflow"),
       ) as NodeType;
 
       if (!reactFlowBounds) return;
@@ -182,7 +182,7 @@ const Home = () => {
 
       updateNodes([...storage.nodes, newNode]);
     },
-    [screenToFlowPosition, storage.nodes, updateNodes]
+    [screenToFlowPosition, storage.nodes, updateNodes],
   );
 
   const updateCursorPosition = useCallback(
@@ -203,7 +203,7 @@ const Home = () => {
         });
       }
     },
-    [getViewport, updateMyPresence]
+    [getViewport, updateMyPresence],
   );
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: LiveNode) => {
@@ -218,14 +218,15 @@ const Home = () => {
       ) {
         // Also remove any connected edges
         const connectedEdges = storage.edges.filter(
-          (edge) => edge.source === selectedNode || edge.target === selectedNode
+          (edge) =>
+            edge.source === selectedNode || edge.target === selectedNode,
         );
         if (connectedEdges.length > 0) {
           updateEdges(
             storage.edges.filter(
               (edge) =>
-                edge.source !== selectedNode && edge.target !== selectedNode
-            )
+                edge.source !== selectedNode && edge.target !== selectedNode,
+            ),
           );
         }
 
@@ -250,8 +251,8 @@ const Home = () => {
         edges: storage.edges,
       },
       null,
-      2
-    )
+      2,
+    ),
   );
 
   return (
@@ -259,7 +260,6 @@ const Home = () => {
       <Sidebar className="w-80 h-full bg-gray-800 p-4 border-r border-gray-700" />
       <div className="flex-1 h-full relative flex flex-col">
         <div ref={reactFlowWrapper} className="flex-1 relative">
-          
           <ReactFlow
             nodes={storage.nodes}
             edges={storage.edges}
@@ -318,20 +318,21 @@ const Home = () => {
               onClick={() => {
                 const connectedEdges = storage.edges.filter(
                   (edge) =>
-                    edge.source === selectedNode || edge.target === selectedNode
+                    edge.source === selectedNode ||
+                    edge.target === selectedNode,
                 );
                 if (connectedEdges.length > 0) {
                   updateEdges(
                     storage.edges.filter(
                       (edge) =>
                         edge.source !== selectedNode &&
-                        edge.target !== selectedNode
-                    )
+                        edge.target !== selectedNode,
+                    ),
                   );
                 }
 
                 updateNodes(
-                  storage.nodes.filter((node) => node.id !== selectedNode)
+                  storage.nodes.filter((node) => node.id !== selectedNode),
                 );
                 setSelectedNode(null);
               }}

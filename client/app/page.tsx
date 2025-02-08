@@ -1,28 +1,31 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
-import { nanoid } from "nanoid"
-import { motion } from "framer-motion"
-import { FiPlus, FiUsers, FiZap, FiTool  } from "react-icons/fi"
-import { BoxesCore } from "@/components/Boxes"
-import { JoinRoomDialog } from "@/components/JoinRoom"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { nanoid } from "nanoid";
+import { motion } from "framer-motion";
+import { FiPlus, FiUsers, FiZap, FiTool } from "react-icons/fi";
+import { BoxesCore } from "@/components/Boxes";
+import { JoinRoomDialog } from "@/components/JoinRoom";
 
 const Home = () => {
-  const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false)
-  const router = useRouter()
+  const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
+  const router = useRouter();
 
   const createNewRoom = () => {
-    const roomId = nanoid(10)
-    router.push(`/room/${roomId}`)
-  }
+    const roomId = nanoid(10);
+    router.push(`/room/${roomId}`);
+  };
 
   const features = [
-    { icon: <FiZap className="w-6 h-6" />, text: "Lightning-fast AI processing" },
+    {
+      icon: <FiZap className="w-6 h-6" />,
+      text: "Lightning-fast AI processing",
+    },
     { icon: <FiUsers className="w-6 h-6" />, text: "Collaborative workspaces" },
-    { icon: <FiTool  className="w-6 h-6" />, text: "Custom AI agentupload" },
-  ]
+    { icon: <FiTool className="w-6 h-6" />, text: "Custom AI agentupload" },
+  ];
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-blue-900 flex flex-col items-center justify-center p-4 overflow-hidden">
@@ -43,7 +46,8 @@ const Home = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          Connect Agentic AI models to create a revolutionary crypto trading workflow
+          Connect Agentic AI models to create a revolutionary crypto trading
+          workflow
         </motion.p>
 
         <motion.div
@@ -75,7 +79,10 @@ const Home = () => {
           transition={{ duration: 0.8, delay: 0.6 }}
         >
           {features.map((feature, index) => (
-            <div key={index} className="bg-gray-700 bg-opacity-40 p-6 rounded-lg backdrop-blur-sm flex flex-col items-start justify-center border border-gray-700 hover:border hover:border-blue-400 transition-all duration-300">
+            <div
+              key={index}
+              className="bg-gray-700 bg-opacity-40 p-6 rounded-lg backdrop-blur-sm flex flex-col items-start justify-center border border-gray-700 hover:border hover:border-blue-400 transition-all duration-300"
+            >
               <div className="text-blue-400 mb-4">{feature.icon}</div>
               <p className="text-gray-300">{feature.text}</p>
             </div>
@@ -88,7 +95,8 @@ const Home = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
         >
-          Start building your AI agent workflow by creating a new room or joining an existing one
+          Start building your AI agent workflow by creating a new room or
+          joining an existing one
         </motion.p>
       </div>
       <JoinRoomDialog
@@ -96,8 +104,7 @@ const Home = () => {
         onClose={() => setIsJoinDialogOpen(false)}
       />
     </div>
-  )
-}
+  );
+};
 
-export default Home
-
+export default Home;

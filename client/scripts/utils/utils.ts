@@ -25,7 +25,7 @@ const formattedPrivateKey = privateKey.startsWith("0x")
   ? privateKey
   : `0x${privateKey}`;
 export const account = privateKeyToAccount(
-  formattedPrivateKey as `0x${string}`
+  formattedPrivateKey as `0x${string}`,
 );
 
 const config: StoryConfig = {
