@@ -14,7 +14,11 @@
     "register-deriv-com": "npx ts-node ./scripts/registerDerivativeCommercial.ts",
     "register-deriv-com-spg": "npx ts-node ./scripts/registerDerivativeCommercialSpg.ts",
     "dispute-ip": "npx ts-node ./scripts/disputeIp.ts",
-    "create-spg-collection": "npx ts-node ./scripts/utils/createSpgNftCollection.ts"
+    "create-spg-collection": "npx ts-node ./scripts/utils/createSpgNftCollection.ts",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
   },
   "dependencies": {
     "@liveblocks/client": "^2.17.0",
@@ -52,6 +56,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
     "postcss": "^8",
     "prettier": "3.4.2",
     "tailwindcss": "^3.4.1",
