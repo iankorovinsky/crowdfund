@@ -32,9 +32,22 @@ import { ResultsSidebar } from "@/components/ResultsSidebar";
 import { useParams } from "next/navigation";
 import CustomEdge from "@/components/CustomEdge";
 import { Navbar } from "@/components/Navbar";
+import ElizaNode from "@/components/ElizaNode";
+import TokenNode from "@/components/TokenNode";
+import LicenseNode from "@/components/LicenseNode";
+import IPFSNode from "@/components/IPFSNode";
+import FlowNode from "@/components/FlowNode";
+import BranchNode from "@/components/BranchNode";
+import { useStore } from "@/lib/store";
 
 const nodeTypes = {
   aiagent: AIAgentNode,
+  eliza: ElizaNode,
+  token: TokenNode,
+  license: LicenseNode,
+  ipfs: IPFSNode,
+  flow: FlowNode,
+  branch: BranchNode,
 };
 
 const initialNodes: LiveNode[] = [
@@ -105,6 +118,26 @@ const Home = () => {
   const { screenToFlowPosition, getViewport } = useReactFlow();
   const [, updateMyPresence] = useMyPresence();
   const others = useOthers();
+
+  const updateNodeData = useStore(state => state.updateNodeData);
+
+  useEffect(() => {
+    useStore.setState({
+      updateNodeData: (nodeId, newData) => {
+        updateNodes(
+          storage.nodes.map((node) => {
+            if (node.id === nodeId) {
+              return {
+                ...node,
+                data: newData,
+              };
+            }
+            return node;
+          })
+        );
+      },
+    });
+  }, [storage.nodes, updateNodes]);
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
@@ -179,11 +212,30 @@ const Home = () => {
 
       const newNode: LiveNode = {
         id: getId(),
-        type: "aiagent",
+        type: nodeType.type,
         position,
         data: {
           label: nodeType.label,
           description: nodeType.description,
+          ...(nodeType.type === 'token' && {
+            tokenName: '',
+            supply: '',
+            issuance: '',
+          }),
+          ...(nodeType.type === 'eliza' && {
+            personality: '',
+            responses: '',
+          }),
+          ...(nodeType.type === 'license' && {
+            licenseTermsId: '',
+          }),
+          ...(nodeType.type === 'ipfs' && {
+            path: '',
+          }),
+          ...(nodeType.type === 'aiagent' && {
+            ipId: '',
+            licenseTermsId: '',
+          }),
         },
       };
 

@@ -46,7 +46,8 @@
     "tsparticles": "^3.8.1",
     "vaul": "^1.1.2",
     "viem": "^2.22.23",
-    "wagmi": "^2.14.11"
+    "wagmi": "^2.14.11",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
