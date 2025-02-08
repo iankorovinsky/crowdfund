@@ -117,7 +117,6 @@ def update_agent_label(agent_id: str, label: str):
     conn.close()
 
 def update_agent_hash(agent_id: str, hash: str):
-    """Update the hash for an agent"""
     conn = sqlite3.connect(DATABASE_PATH)
     cursor = conn.cursor()
     cursor.execute(

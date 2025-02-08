@@ -117,6 +117,7 @@ async def update_agent_label_endpoint(agent_id: str, label: str = Form(...)):
 
 @app.put("/agent/{agent_id}/hash")
 async def update_agent_hash(agent_id: str, hash_update: HashUpdate):
+    print("Updating agent hash:", agent_id, hash_update.hash)
     update_agent_hash(agent_id, hash_update.hash)
     return {"info": f"Agent '{agent_id}' hash updated to '{hash_update.hash}'"}
 
