@@ -279,6 +279,26 @@ const Home = () => {
           })}
         </ReactFlow>
 
+        {/* Search Bar */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-96 z-10">
+          <input
+            type="text"
+            placeholder="Search nodes..."
+            className="w-full px-4 py-2 rounded-full border-2 border-gray-200 focus:border-blue-500 focus:outline-none shadow-lg bg-white"
+            onChange={(e) => {
+              const searchTerm = e.target.value.toLowerCase();
+              const filteredNodes = storage.nodes.map(node => ({
+                ...node,
+                className: node.data.label.toLowerCase().includes(searchTerm) || 
+                          node.data.description.toLowerCase().includes(searchTerm)
+                          ? 'highlight'
+                          : 'dim'
+              }));
+              updateNodes(filteredNodes);
+            }}
+          />
+        </div>
+
         {/* Trash Bin and Mint Button */}
         {selectedNode && (
           <div className="absolute bottom-8 right-8 flex gap-4">

@@ -2,3 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+.highlight {
+  opacity: 1;
+  filter: brightness(1.2);
+  transition: all 0.3s ease;
+}
+
+.dim {
+  opacity: 0.4;
+  filter: brightness(0.8);
+  transition: all 0.3s ease;
+}
+
