@@ -17,7 +17,7 @@ const openai = new OpenAI({
 
 export const mintAndRegisterIp = async (
   title: string,
-  description: string
+  description: string,
 ): Promise<string> => {
   // 1. Set up your IP Metadata
   //
@@ -77,5 +77,45 @@ export const mintAndRegisterIp = async (
     txOptions: { waitForTransaction: true },
   });
 
-  return `https://explorer.story.foundation/ipa/${mintResponse.ipId}`;
+  if (!mintResponse.ipId) {
+    throw new Error("Failed to get ipId from mint response");
+  }
+
+//   const license_reg_response = await client.license.registerCommercialRemixPIL({
+//     currency: '0x1514000000000000000000000000000000000000', // $WIP token address
+//     defaultMintingFee: '1', // 10 $WIP tokens
+//     commercialRevShare: 10, // 10% revenue share
+//     txOptions: { waitForTransaction: true }
+//   });
+  
+//   console.log(`PIL Terms registered at transaction hash ${license_reg_response.txHash}, License Terms ID: ${72}`) 
+
+
+  const response = await client.license.attachLicenseTerms({
+    licenseTermsId: 72, 
+    ipId: mintResponse.ipId,
+    txOptions: { waitForTransaction: true }
+  });
+
+    
+  const mint_license_response = await client.license.mintLicenseTokens({
+    licenseTermsId: 72, 
+    licensorIpId: mintResponse.ipId,
+    receiver: "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955", 
+    amount: 1,
+    maxMintingFee: BigInt(0), // disabled
+    maxRevenueShare: 100, // default
+    txOptions: { waitForTransaction: true }
+  });
+  
+  if (response.success) {
+    console.log(`Attached License Terms to IPA at transaction hash ${response.txHash}.`)
+  } else {
+    console.log(`License Terms already attached to this IPA.`)
+  }
+  console.log(`https://explorer.story.foundation/ipa/${mintResponse.ipId}`)
+  return `${mintResponse.ipId}`;
 };
+
+
+mintAndRegisterIp("Test Running Full", "Test Running Full")

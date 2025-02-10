@@ -5,18 +5,21 @@ import { cn } from "@/lib/utils";
 
 export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
   const rows = new Array(100).fill(1);
-  const cols = new Array(60).fill(1);
-  
-  const colors = useMemo(() => [
-    "--sky-300",
-    "--blue-300",
-    "--sky-400",
-    "--blue-400",
-    "--cyan-300",
-    "--indigo-300",
-    "--cyan-400",
-    "--indigo-400",
-  ], []);
+  const cols = new Array(70).fill(1);
+
+  const colors = useMemo(
+    () => [
+      "--sky-300",
+      "--blue-300",
+      "--sky-400",
+      "--blue-400",
+      "--cyan-300",
+      "--indigo-300",
+      "--cyan-400",
+      "--indigo-400",
+    ],
+    [],
+  );
 
   const getRandomColor = () => {
     return colors[Math.floor(Math.random() * colors.length)];
@@ -59,7 +62,7 @@ export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
         ))}
       </motion.div>
     ));
-  }, []); 
+  }, []);
 
   return (
     <div
@@ -68,7 +71,7 @@ export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
       }}
       className={cn(
         "fixed left-1/2 top-1/2 flex w-[250%] h-[250%] z-0",
-        className
+        className,
       )}
       {...rest}
     >

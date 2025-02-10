@@ -6,6 +6,7 @@ import {
   RoomProvider,
   ClientSideSuspense,
 } from "@liveblocks/react/suspense";
+import { LoadingScreen } from "./LoadingScreen";
 
 const initialStorage = {
   nodes: [],
@@ -26,10 +27,13 @@ const Room = ({ children, roomId }: RoomProps) => {
     >
       <RoomProvider
         id={roomId || "tartanhacks-flow-editor"}
-        initialPresence={{ cursor: null }}
+        initialPresence={{
+          cursor: null,
+          walletAddress: null,
+        }}
         initialStorage={initialStorage}
       >
-        <ClientSideSuspense fallback={<div>Loading…</div>}>
+        <ClientSideSuspense fallback={<LoadingScreen />}>
           {children}
         </ClientSideSuspense>
       </RoomProvider>

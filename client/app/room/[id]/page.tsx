@@ -1,7 +1,13 @@
 "use client";
 
+import AIAgentNode from "@/components/AIAgentNode";
 import { Cursor } from "@/components/Cursor";
-import { NodeType, Sidebar } from "@/components/Sidebar";
+import CustomEdge from "@/components/CustomEdge";
+import { Navbar } from "@/components/Navbar";
+import { ResultsSidebar } from "@/components/ResultsSidebar";
+import { Sidebar } from "@/components/Sidebar";
+import TradingNode from "@/components/TradingNode";
+import { useStore } from "@/lib/store";
 import { LiveEdge, LiveNode } from "@/liveblocks.config";
 import {
   useMutation,
@@ -16,78 +22,65 @@ import {
   Controls,
   EdgeChange,
   EdgeRemoveChange,
+  MarkerType,
+  Node,
   NodeChange,
   NodePositionChange,
   ReactFlow,
-  ReactFlowProvider,
   useReactFlow,
   XYPosition,
-  Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useCallback, useRef, useEffect, useState } from "react";
-import AIAgentNode from "@/components/AIAgentNode";
-import { Trash2, Copy } from "lucide-react";
-import { ResultsSidebar } from "@/components/ResultsSidebar";
+import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { useParams } from "next/navigation";
-import { UploadAgent } from "@/components/UploadAgent";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useAccount } from "wagmi";
 
-const nodeTypes = {
-  aiagent: AIAgentNode,
-};
-
-const initialNodes: LiveNode[] = [
+const nodeTypes = new Proxy(
   {
-    id: "1",
-    type: "aiagent",
-    position: { x: 100, y: 100 },
-    data: {
-      label: "Market Analysis",
-      description: "Analyzes market conditions and trends",
-    },
+    aiagent: AIAgentNode,
+    trading: TradingNode,
   },
   {
-    id: "2",
-    type: "aiagent",
-    position: { x: 400, y: 100 },
-    data: {
-      label: "Decision Maker",
-      description: "Makes final trading decisions",
+    get: (target, prop) => {
+      return target[prop as keyof typeof target] || AIAgentNode;
     },
   },
-];
+);
 
-const initialEdges: LiveEdge[] = [
-  { id: "e1-2", source: "1", target: "2", type: "default" },
-];
-
-let nextId = Math.max(...initialNodes.map((node) => parseInt(node.id)), 0) + 1;
-const getId = () => String(nextId++);
-
-const exampleResults = {
-  node1: {
-    status: "COMPLETED" as const,
-    logs: ["Completed analysis"],
-  },
-  node2: {
-    status: "IN PROGRESS" as const,
-    logs: ["Calculating trade"],
-  },
-  node3: {
-    status: "NOT STARTED" as const,
-    logs: [],
-  },
-};
+const initialNodes: LiveNode[] = [];
+const initialEdges: LiveEdge[] = [];
 
 const Home = () => {
   const params = useParams();
   const roomId = params.id as string;
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const [isRunning, setIsRunning] = useState(false);
+  const [sideBar, setSideBar] = useState(true);
+  const { address } = useAccount();
+
   const storage = useStorage((root) => ({
     nodes: root.nodes ?? initialNodes,
     edges: root.edges ?? initialEdges,
   }));
+
+  const getId = useCallback(() => {
+    const highestId = Math.max(
+      ...initialNodes.map((node) => parseInt(node.id)),
+      ...storage.nodes.map((node) => parseInt(node.id)),
+      0,
+    );
+    return String(highestId + 1);
+  }, [storage.nodes]);
+
+  const edgeTypes = useMemo(
+    () => ({
+      default: (props: any) => <CustomEdge {...props} isActive={isRunning} />,
+    }),
+    [isRunning],
+  );
+
   const updateNodes = useMutation(({ storage }, nodes: LiveNode[]) => {
     storage.set("nodes", nodes);
   }, []);
@@ -99,10 +92,34 @@ const Home = () => {
   const [, updateMyPresence] = useMyPresence();
   const others = useOthers();
 
+  useEffect(() => {
+    useStore.setState({
+      updateNodeData: (nodeId, newData) => {
+        updateNodes(
+          storage.nodes.map((node: any) => {
+            if (node.id === nodeId) {
+              return {
+                ...node,
+                data: newData,
+              };
+            }
+            return node;
+          }),
+        );
+      },
+    });
+  }, [storage.nodes, updateNodes]);
+
+  useEffect(() => {
+    updateMyPresence({
+      walletAddress: address || null,
+    });
+  }, [address, updateMyPresence]);
+
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
       const positionChange = changes.find(
-        (change): change is NodePositionChange => change.type === "position"
+        (change): change is NodePositionChange => change.type === "position",
       );
       if (positionChange && positionChange.position) {
         updateNodes(
@@ -114,25 +131,25 @@ const Home = () => {
               };
             }
             return node;
-          })
+          }),
         );
       }
     },
-    [storage.nodes, updateNodes]
+    [storage.nodes, updateNodes],
   );
 
   const onEdgesChange = useCallback(
     (changes: EdgeChange[]) => {
       const removeChange = changes.find(
-        (change): change is EdgeRemoveChange => change.type === "remove"
+        (change): change is EdgeRemoveChange => change.type === "remove",
       );
       if (removeChange) {
         updateEdges(
-          storage.edges.filter((edge) => edge.id !== removeChange.id)
+          storage.edges.filter((edge) => edge.id !== removeChange.id),
         );
       }
     },
-    [storage.edges, updateEdges]
+    [storage.edges, updateEdges],
   );
 
   const onConnect = useCallback(
@@ -143,10 +160,23 @@ const Home = () => {
         source: params.source,
         target: params.target,
         type: "default",
+        sourceHandle: params.sourceHandle,
+        targetHandle: params.targetHandle,
+        markerEnd: {
+          type: MarkerType.Arrow,
+          width: 15,
+          height: 15,
+          color: "#3b82f6",
+        },
+        style: {
+          strokeWidth: 2,
+          stroke: "#3b82f6",
+        },
+        animated: false,
       };
       updateEdges([...storage.edges, edge]);
     },
-    [storage.edges, updateEdges]
+    [storage.edges, updateEdges],
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -159,9 +189,9 @@ const Home = () => {
       event.preventDefault();
 
       const reactFlowBounds = reactFlowWrapper.current?.getBoundingClientRect();
-      const nodeType = JSON.parse(
-        event.dataTransfer.getData("application/reactflow")
-      ) as NodeType;
+      const nodeData = JSON.parse(
+        event.dataTransfer.getData("application/reactflow"),
+      );
 
       if (!reactFlowBounds) return;
 
@@ -172,17 +202,21 @@ const Home = () => {
 
       const newNode: LiveNode = {
         id: getId(),
-        type: "aiagent",
+        type: nodeData.type,
         position,
         data: {
-          label: nodeType.label,
-          description: nodeType.description,
+          label: nodeData.data.label,
+          description: nodeData.data.description,
+          icon: nodeData.data.icon,
+          agentId: nodeData.data.agentId,
         },
+        agentId: nodeData.agentId,
+        hash: nodeData.hash,
       };
 
       updateNodes([...storage.nodes, newNode]);
     },
-    [screenToFlowPosition, storage.nodes, updateNodes]
+    [screenToFlowPosition, storage.nodes, updateNodes, getId],
   );
 
   const updateCursorPosition = useCallback(
@@ -200,15 +234,38 @@ const Home = () => {
             y: flowY,
             lastActive: Date.now(),
           },
+          walletAddress: address || null,
         });
       }
     },
-    [getViewport, updateMyPresence]
+    [getViewport, updateMyPresence, address],
   );
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: LiveNode) => {
     setSelectedNode(node.id);
   }, []);
+
+  const onNodeDragStop = useCallback(
+    (event: React.MouseEvent, node: Node) => {
+      const roundedPosition = {
+        x: Math.round(node.position.x),
+        y: Math.round(node.position.y),
+      };
+
+      updateNodes(
+        storage.nodes.map((n) => {
+          if (n.id === node.id) {
+            return {
+              ...n,
+              position: roundedPosition,
+            };
+          }
+          return n;
+        }),
+      );
+    },
+    [storage.nodes, updateNodes],
+  );
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -218,14 +275,15 @@ const Home = () => {
       ) {
         // Also remove any connected edges
         const connectedEdges = storage.edges.filter(
-          (edge) => edge.source === selectedNode || edge.target === selectedNode
+          (edge) =>
+            edge.source === selectedNode || edge.target === selectedNode,
         );
         if (connectedEdges.length > 0) {
           updateEdges(
             storage.edges.filter(
               (edge) =>
-                edge.source !== selectedNode && edge.target !== selectedNode
-            )
+                edge.source !== selectedNode && edge.target !== selectedNode,
+            ),
           );
         }
 
@@ -240,124 +298,136 @@ const Home = () => {
     };
   }, [selectedNode, storage.nodes, storage.edges, updateNodes, updateEdges]);
 
-  console.log("nodes", storage.nodes);
-  console.log("edges", storage.edges);
-
-  console.log(
-    JSON.stringify(
-      {
-        nodes: storage.nodes,
-        edges: storage.edges,
-      },
-      null,
-      2
-    )
-  );
-
   return (
     <div className="flex h-screen w-screen bg-gray-900">
-      <Sidebar className="w-80 h-full bg-gray-800 p-4 border-r border-gray-700" />
-      <div className="flex-1 h-full relative flex flex-col">
-        <div ref={reactFlowWrapper} className="flex-1 relative">
-          
-          <ReactFlow
-            nodes={storage.nodes}
-            edges={storage.edges}
-            nodeTypes={nodeTypes}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onDragOver={onDragOver}
-            onDrop={onDrop}
-            onMouseMove={updateCursorPosition}
-            onNodeDrag={(e) => {
-              if (e.clientX && e.clientY) {
-                updateCursorPosition(e);
-              }
-            }}
-            onNodeClick={onNodeClick}
-            onPaneClick={() => setSelectedNode(null)}
-            onMouseLeave={() => {
-              updateMyPresence({
-                cursor: null,
-              });
-            }}
-            fitView
-            className="bg-gray-900"
-            defaultEdgeOptions={{
-              style: { stroke: "#4B5563" },
-              type: "default",
-            }}
-          >
-            <Background
-              variant={BackgroundVariant.Dots}
-              gap={12}
-              size={1}
-              color="#4B5563"
-            />
-
-            <Controls className="bg-gray-800 border-gray-700 fill-gray-400 [&>button]:border-gray-700 [&>button]:bg-gray-800" />
-            {others.map(({ connectionId, presence }) => {
-              if (!presence.cursor) return null;
-              return (
-                <Cursor
-                  key={connectionId}
-                  x={presence.cursor.x}
-                  y={presence.cursor.y}
-                  lastActive={presence.cursor.lastActive}
-                  name={`User ${connectionId}`}
-                />
-              );
-            })}
-          </ReactFlow>
-
-          {/* Trash Bin */}
-          {selectedNode && (
-            <div
-              className="absolute bottom-8 right-8 p-4 bg-gray-800 rounded-full shadow-lg border-2 border-red-900/50 cursor-pointer hover:bg-gray-700 transition-all duration-200 group"
-              onClick={() => {
-                const connectedEdges = storage.edges.filter(
-                  (edge) =>
-                    edge.source === selectedNode || edge.target === selectedNode
-                );
-                if (connectedEdges.length > 0) {
-                  updateEdges(
-                    storage.edges.filter(
-                      (edge) =>
-                        edge.source !== selectedNode &&
-                        edge.target !== selectedNode
-                    )
-                  );
-                }
-
-                updateNodes(
-                  storage.nodes.filter((node) => node.id !== selectedNode)
-                );
-                setSelectedNode(null);
-              }}
-              title="Delete selected node (or press Delete/Backspace)"
-            >
-              <Trash2 className="w-6 h-6 text-red-400 group-hover:text-red-300 transition-colors duration-200" />
-            </div>
-          )}
-
-          <ResultsSidebar results={exampleResults} />
-        </div>
-      </div>
-      <UploadAgent />
-      <div className="bg-gray-800 px-4 py-2 border-gray-700 border-2 flex items-center gap-3 rounded-2xl absolute top-4 left-[60%] -translate-x-1/2">
-        <span className="text-gray-300">Room ID: {roomId}</span>
-        <Copy
-          onClick={() => {
-            navigator.clipboard.writeText(roomId);
-          }}
-          className="h-4 w-4 text-gray-500 hover:text-gray-100 cursor-pointer transition-colors"
+      {sideBar && (
+        <Sidebar
+          className="w-80 h-full bg-gray-800 p-4 border-r border-gray-700"
+          onRunningChange={setIsRunning}
         />
+      )}
+      <button
+        onClick={() => setSideBar(!sideBar)}
+        className={`
+          absolute top-1/2 -translate-y-1/2 z-50
+          bg-gray-800 hover:bg-gray-700
+          border border-gray-700 hover:border-gray-600
+          rounded-full p-2
+          transition-all duration-300 ease-in-out
+          ${sideBar ? "left-[20.5rem]" : "left-2"}
+        `}
+        title={sideBar ? "Collapse sidebar" : "Expand sidebar"}
+      >
+        {sideBar ? (
+          <ChevronLeft className="w-4 h-4 text-gray-400" />
+        ) : (
+          <ChevronRight className="w-4 h-4 text-gray-400" />
+        )}
+      </button>
+      <div ref={reactFlowWrapper} className="flex-1 h-full relative">
+        <ReactFlow
+          nodes={storage.nodes}
+          edges={storage.edges}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onDragOver={onDragOver}
+          onDrop={onDrop}
+          onMouseMove={updateCursorPosition}
+          onNodeDrag={(e) => {
+            if (e.clientX && e.clientY) {
+              updateCursorPosition(e);
+            }
+          }}
+          onNodeDragStop={onNodeDragStop}
+          onNodeClick={onNodeClick}
+          onPaneClick={() => setSelectedNode(null)}
+          onMouseLeave={() => {
+            updateMyPresence({
+              cursor: null,
+            });
+          }}
+          fitView
+          className="bg-gray-900"
+          defaultEdgeOptions={{
+            type: "default",
+            style: {
+              strokeWidth: 2,
+              stroke: "#3b82f6",
+            },
+            markerEnd: {
+              type: MarkerType.Arrow,
+              width: 15,
+              height: 15,
+              color: "#3b82f6",
+            },
+          }}
+          snapToGrid={true}
+          snapGrid={[10, 10]}
+          elevateNodesOnSelect={true}
+          preventScrolling={true}
+          nodesDraggable={true}
+          nodesConnectable={true}
+          selectNodesOnDrag={false}
+        >
+          <Background
+            variant={BackgroundVariant.Dots}
+            gap={12}
+            size={1}
+            color="#4B5563"
+          />
+          <Controls className="bg-gray-800 border-gray-700 fill-gray-400 [&>button]:border-gray-700 [&>button]:bg-gray-800" />
+          {others.map(({ connectionId, presence }) => {
+            if (!presence.cursor) return null;
+            return (
+              <Cursor
+                key={connectionId}
+                x={presence.cursor.x}
+                y={presence.cursor.y}
+                lastActive={presence.cursor.lastActive}
+                name={presence.walletAddress || "Anonymous User"}
+              />
+            );
+          })}
+        </ReactFlow>
+
+        {/* Trash Bin */}
+        {selectedNode && (
+          <div
+            className="absolute bottom-8 right-8 p-4 bg-gray-800 rounded-full shadow-lg border-2 border-red-900/50 cursor-pointer hover:bg-gray-700 transition-all duration-200 group"
+            onClick={() => {
+              const connectedEdges = storage.edges.filter(
+                (edge) =>
+                  edge.source === selectedNode || edge.target === selectedNode,
+              );
+              if (connectedEdges.length > 0) {
+                updateEdges(
+                  storage.edges.filter(
+                    (edge) =>
+                      edge.source !== selectedNode &&
+                      edge.target !== selectedNode,
+                  ),
+                );
+              }
+
+              updateNodes(
+                storage.nodes.filter((node) => node.id !== selectedNode),
+              );
+              setSelectedNode(null);
+            }}
+            title="Delete selected node (or press Delete/Backspace)"
+          >
+            <Trash2 className="w-6 h-6 text-red-400 group-hover:text-red-300 transition-colors duration-200" />
+          </div>
+        )}
+
+        <ResultsSidebar />
       </div>
+      <Navbar roomId={roomId} isFull={sideBar} />
     </div>
   );
 };
 
 export default Home;
-
-// DATA (fetches the data), FINANCIAL ANALYSIS, PORTFOLIO MANAGER (decider), PERSONALITY

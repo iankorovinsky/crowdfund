@@ -1,13 +1,34 @@
-import { createClient } from "@liveblocks/client";
+import { BaseUserMeta, createClient } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
-import { Node, Edge } from "@xyflow/react";
+
+export type Presence = {
+  cursor: { x: number; y: number; lastActive: number } | null;
+  walletAddress: string | null;
+};
+
+export type NodeData = {
+  label: string;
+  description: string;
+  agentId: string;
+  icon?: string;
+  tokenName?: string;
+  supply?: string;
+  issuance?: string;
+  personality?: string;
+  responses?: string;
+  licenseTermsId?: string;
+  path?: string;
+  ipId?: string;
+  symbol?: string;
+};
 
 export type LiveNode = {
   id: string;
   type: string;
   position: { x: number; y: number };
-  data: { label: string; description: string };
-  [key: string]: any;
+  data: NodeData;
+  agentId: string;
+  hash?: `0x${string}`;
 };
 
 export type LiveEdge = {
@@ -15,7 +36,6 @@ export type LiveEdge = {
   source: string;
   target: string;
   type: string;
-  [key: string]: any;
 };
 
 // Define Liveblocks types for your application
@@ -28,6 +48,7 @@ declare global {
         y: number;
         lastActive: number;
       } | null;
+      walletAddress: string | null;
     };
 
     Storage: {
@@ -57,17 +78,6 @@ declare global {
   }
 }
 
-// Presence represents the properties that exist on every user in the Room
-// and that will automatically be kept in sync. Accessible through the
-// `user.presence` property. Must be JSON-serializable.
-export type Presence = {
-  cursor: {
-    x: number;
-    y: number;
-    lastActive: number;
-  } | null;
-};
-
 // Storage represents the shared document that persists in the Room, even
 // after all users leave. Fields under Storage typically are LiveList,
 // LiveMap, LiveObject instances, for which updates are automatically
@@ -80,17 +90,13 @@ export type Storage = {
 // UserMeta represents static/readonly metadata on each user, as opposed to
 // Presence which is dynamic and can be updated. Accessible through the
 // `user.info` property. Must be JSON-serializable.
-export type UserMeta = {
-  id: string; // Required by liveblocks
-  name?: string;
-};
+export type UserMeta = BaseUserMeta;
 
 // The type of custom events broadcasted and listened to in this room
-// export type RoomEvent = {};
+export type RoomEvent = {};
 
 const client = createClient({
   publicApiKey:
-    process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY ||
     "pk_prod_hxsifK11dNff7o_wuiZQx9FH2z5jvTZmS09I6wFNacLK924Rwh0gvA1WL3s6mldT",
 });
 
@@ -100,20 +106,26 @@ export const {
     useRoom,
     useMyPresence,
     useUpdateMyPresence,
+    useSelf,
     useOthers,
     useOthersMapped,
+    useOthersConnectionIds,
     useOther,
-    useSelf,
+    useBroadcastEvent,
+    useEventListener,
+    useErrorListener,
     useStorage,
-    useMutation,
+    // useObject,
+    // useMap,
+    // useList,
+    useBatch,
     useHistory,
     useUndo,
     useRedo,
     useCanUndo,
     useCanRedo,
-    useBatch,
-    useStatus,
+    useMutation,
   },
-} = createRoomContext<Presence, Storage, UserMeta>(client);
+} = createRoomContext<Presence, Storage, UserMeta, RoomEvent>(client);
 
 export {};

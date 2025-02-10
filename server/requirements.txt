@@ -1,3 +1,9 @@
 fastapi
 fastapi-cli
 boto3
+langchain_openai
+langchain
+langchain_community
+beautifulsoup4
+python-dotenv
+xrpl-py @ git+https://github.com/AdrianGri/xrpl-py.git
