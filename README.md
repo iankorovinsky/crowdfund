@@ -1,4 +1,4 @@
-![Crowd Fund](https://github.com/user-attachments/assets/af844ac3-f4b7-43ba-89f3-3072dac8dfef)
+![Crowd Fund](https://github.com/user-attachments/assets/cab49ffd-f5cd-48d5-a977-e6b21a450b8d)
 
 # CrowdFund
 ## 🌟 **Demo & Submission**  
